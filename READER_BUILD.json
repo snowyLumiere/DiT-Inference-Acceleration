@@ -1,0 +1,821 @@
+{
+  "status": "new_render_validated",
+  "sources": [
+    {
+      "path": "RELEASE_DIT_INFRA.md",
+      "role": "repository_entry",
+      "bytes": 2460,
+      "sha256": "b05a3d619d476308c8d5b864acedf856ffc706b71f1d1812ffffd8ec508cd290"
+    },
+    {
+      "path": "examples/README.md",
+      "role": "repository_entry",
+      "bytes": 4111,
+      "sha256": "00dda90a16cf9fb696a20f03dcd1ab5a7486badcaf37589b9bb00f7689753df4"
+    },
+    {
+      "path": "docs/manuscript/part-1.md",
+      "role": "part_guide",
+      "bytes": 590,
+      "sha256": "7b988b706576f2d6ea59bb41058810d41d6e97f6cee697903a9e2f857eb19151"
+    },
+    {
+      "path": "docs/manuscript/01-paradigms.md",
+      "role": "embedded_chapter",
+      "bytes": 5645,
+      "sha256": "f4f6958571e573e9c84d4f97bab4679fa7e11aeb8fdcaa74cb063846bdb81d75"
+    },
+    {
+      "path": "docs/manuscript/02-execution-graph.md",
+      "role": "embedded_chapter",
+      "bytes": 9477,
+      "sha256": "b1647e4a8e123d6362f1f24990bd67e1551395a268227adc2a3cd9440f585bc8"
+    },
+    {
+      "path": "docs/manuscript/03-gpu-execution.md",
+      "role": "embedded_chapter",
+      "bytes": 5675,
+      "sha256": "2d9d02304b40300e50c24e96d38d7d7c86ffeeb580c2586166141888b3194e87"
+    },
+    {
+      "path": "docs/manuscript/04-memory-and-state.md",
+      "role": "embedded_chapter",
+      "bytes": 5968,
+      "sha256": "0d04d890fc0659b8fdf65316f83c23d4817dcf2e970ad47826800835490490bd"
+    },
+    {
+      "path": "docs/manuscript/05-measurement.md",
+      "role": "embedded_chapter",
+      "bytes": 7821,
+      "sha256": "ba237b3e2cde4a03a7d868785582b29b0f981daf212a3cb72bda50f4e1cb09a8"
+    },
+    {
+      "path": "docs/manuscript/part-2.md",
+      "role": "part_guide",
+      "bytes": 1655,
+      "sha256": "7a78f44dc4f29ce908ef6f693419bdb436db7364b227ccd3b3fe324fd9f20ed6"
+    },
+    {
+      "path": "docs/manuscript/06-evaluations-and-distillation.md",
+      "role": "embedded_chapter",
+      "bytes": 12369,
+      "sha256": "3ffb5244420e6d7e382943f48a788a4a455ed2bf0b8bac8c97da92d9b94451b7"
+    },
+    {
+      "path": "docs/manuscript/07-feature-cache.md",
+      "role": "embedded_chapter",
+      "bytes": 9388,
+      "sha256": "56ea54b769239d86875e6cf5cf2f3b3cd753106224111d70ccee7b573a5d85c3"
+    },
+    {
+      "path": "docs/manuscript/08-attention-kernels.md",
+      "role": "embedded_chapter",
+      "bytes": 11338,
+      "sha256": "20f36cfe8545f8f693ae9c12d19e5d2a644e28f5bf83d500df9f4ead0ee5e4a7"
+    },
+    {
+      "path": "docs/manuscript/09-sparsity-and-tokens.md",
+      "role": "embedded_chapter",
+      "bytes": 7525,
+      "sha256": "d7ab21c9e5fe35d8eca0c58722e0c829cb0518d42b39a5d82b3056ffd2ffbebd"
+    },
+    {
+      "path": "docs/manuscript/10-gemm-and-quantization.md",
+      "role": "embedded_chapter",
+      "bytes": 16410,
+      "sha256": "bb0a40038d9757e82e1865e334c80cc696f952e712fc9ab285eef54effa680ef"
+    },
+    {
+      "path": "docs/manuscript/11-fusion-and-graphs.md",
+      "role": "embedded_chapter",
+      "bytes": 12514,
+      "sha256": "481bcd421ba396b61f1e933918b7b6b21e818afff5df8f973e01e00066243547"
+    },
+    {
+      "path": "docs/manuscript/12-ar-state.md",
+      "role": "embedded_chapter",
+      "bytes": 11313,
+      "sha256": "f2016c6d3e81e0dea58259ca98c68ba158fa588e9c099a74194ce9cc4ea5dde8"
+    },
+    {
+      "path": "docs/manuscript/13-residency-and-transfer.md",
+      "role": "embedded_chapter",
+      "bytes": 8093,
+      "sha256": "1dad15210f786e7d30b31ce13c969fae7e90cbad7dbb7de69a4f5f618ccbbf98"
+    },
+    {
+      "path": "docs/manuscript/14-parallelism.md",
+      "role": "embedded_chapter",
+      "bytes": 8942,
+      "sha256": "f66eb266058ba38eb5259f35e43202cb25312d2f47ff61fa96b95e30dbaffb5e"
+    },
+    {
+      "path": "docs/manuscript/15-decoding-and-streaming.md",
+      "role": "embedded_chapter",
+      "bytes": 10307,
+      "sha256": "9ef7c8e98135fdd1749d4e7821ed7bbfdd8d40eec4826fff9caa100f2629917c"
+    },
+    {
+      "path": "docs/manuscript/16-composition-and-validation.md",
+      "role": "embedded_chapter",
+      "bytes": 8535,
+      "sha256": "5f5bca25ae3166218c0129f415965b839f284c273e0b4f0af9866795366a1fdf"
+    },
+    {
+      "path": "docs/manuscript/extension-omni.md",
+      "role": "embedded_chapter",
+      "bytes": 854,
+      "sha256": "aecd772083ba48dd1edc3081f526eec4499c25919a894409d094db5a9e0245c9"
+    },
+    {
+      "path": "docs/manuscript/appendix-a-model-contracts.md",
+      "role": "embedded_chapter",
+      "bytes": 8029,
+      "sha256": "e3626781bb1372fb9955a34f7ea4b308b07374165f7930768af08bea78a0afdd"
+    },
+    {
+      "path": "docs/manuscript/appendix-b-reproduction.md",
+      "role": "embedded_chapter",
+      "bytes": 6794,
+      "sha256": "69d3affc9307f2db39862fd1dcdca6e9983f2c9d141ee63f515cb2e171f24afb"
+    },
+    {
+      "path": "docs/manuscript/appendix-c-evidence.md",
+      "role": "embedded_chapter",
+      "bytes": 4156,
+      "sha256": "42c92aec336853bcd03a92ca59baaad4fa58ac32bbd2a94247d1907f9d081fe7"
+    }
+  ],
+  "render_assets": [
+    {
+      "path": "assets/vendor/katex-0.16.8/auto-render.min.js",
+      "bytes": 3478,
+      "sha256": "9cb8dacfc086c2966c9ec4ba54f4a2dc43b7cbe2b33cec1a2743d886c7fb47a7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.ttf",
+      "bytes": 63632,
+      "sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.woff",
+      "bytes": 33516,
+      "sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.woff2",
+      "bytes": 28076,
+      "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.ttf",
+      "bytes": 12368,
+      "sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.woff",
+      "bytes": 7716,
+      "sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "bytes": 6912,
+      "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.ttf",
+      "bytes": 12344,
+      "sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.woff",
+      "bytes": 7656,
+      "sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "bytes": 6908,
+      "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.ttf",
+      "bytes": 19584,
+      "sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.woff",
+      "bytes": 13296,
+      "sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.woff2",
+      "bytes": 11348,
+      "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.ttf",
+      "bytes": 19572,
+      "sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.woff",
+      "bytes": 13208,
+      "sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.woff2",
+      "bytes": 11316,
+      "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.ttf",
+      "bytes": 51336,
+      "sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.woff",
+      "bytes": 29912,
+      "sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.woff2",
+      "bytes": 25324,
+      "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.ttf",
+      "bytes": 32968,
+      "sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.woff",
+      "bytes": 19412,
+      "sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.woff2",
+      "bytes": 16780,
+      "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.ttf",
+      "bytes": 33580,
+      "sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.woff",
+      "bytes": 19676,
+      "sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.woff2",
+      "bytes": 16988,
+      "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.ttf",
+      "bytes": 53580,
+      "sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.woff",
+      "bytes": 30772,
+      "sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.woff2",
+      "bytes": 26272,
+      "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.ttf",
+      "bytes": 31196,
+      "sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.woff",
+      "bytes": 18668,
+      "sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.woff2",
+      "bytes": 16400,
+      "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.ttf",
+      "bytes": 31308,
+      "sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.woff",
+      "bytes": 18748,
+      "sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.woff2",
+      "bytes": 16440,
+      "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.ttf",
+      "bytes": 24504,
+      "sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.woff",
+      "bytes": 14408,
+      "sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.woff2",
+      "bytes": 12216,
+      "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.ttf",
+      "bytes": 22364,
+      "sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.woff",
+      "bytes": 14112,
+      "sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.woff2",
+      "bytes": 12028,
+      "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.ttf",
+      "bytes": 19436,
+      "sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.woff",
+      "bytes": 12316,
+      "sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.woff2",
+      "bytes": 10344,
+      "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.ttf",
+      "bytes": 16648,
+      "sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.woff",
+      "bytes": 10588,
+      "sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.woff2",
+      "bytes": 9644,
+      "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.ttf",
+      "bytes": 12228,
+      "sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.woff",
+      "bytes": 6496,
+      "sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.woff2",
+      "bytes": 5468,
+      "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.ttf",
+      "bytes": 11508,
+      "sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.woff",
+      "bytes": 6188,
+      "sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.woff2",
+      "bytes": 5208,
+      "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.ttf",
+      "bytes": 7588,
+      "sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.woff",
+      "bytes": 4420,
+      "sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.woff2",
+      "bytes": 3624,
+      "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.ttf",
+      "bytes": 10364,
+      "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.woff",
+      "bytes": 5980,
+      "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.woff2",
+      "bytes": 4928,
+      "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.ttf",
+      "bytes": 27556,
+      "sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.woff",
+      "bytes": 16028,
+      "sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.woff2",
+      "bytes": 13568,
+      "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/katex.min.css",
+      "bytes": 23112,
+      "sha256": "df9ef84e97d38557de02183e238f8ddfd10988b37741492e12c3157bc856011e"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/katex.min.js",
+      "bytes": 276862,
+      "sha256": "d4f0ea25c4ccb7986b229d6427794b7063cf3209b0376cf5a64bfc4dd7918c95"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/mermaid.min.js",
+      "bytes": 3336760,
+      "sha256": "5a8ec91820bd55afef049068489369910e5d6ce70c8103952f27e29d3e76e8bc"
+    }
+  ],
+  "sources_sha256": "fc43027e509c8a5658f43d2477ac25ce5ba87c02988680782ad9627fe106cba1",
+  "embedded_sources": 20,
+  "repository_entry_links": 2,
+  "links": {
+    "rewritten_local_links": 30,
+    "local_link_format": "relative_URI",
+    "base": "artifact_directory",
+    "requires_companion_files": true
+  },
+  "navigation": {
+    "bookmarks": 25,
+    "destinations_verified": true,
+    "watermark": {
+      "method": "non_text_background_png_xobject",
+      "text": "© 2026 SnowyLumiere · github.com/SnowyLumiere",
+      "dpi": 150,
+      "opacity": 0.09,
+      "overlay": false,
+      "skip_first_page": true,
+      "pages_watermarked": 62,
+      "png_bytes": 53121,
+      "png_sha256": "408790ff63b9503d40c63d9d4944b6060bd4989287983cb6ebb529fcd230c117"
+    }
+  },
+  "pdf": {
+    "path": "DiT_Inference_Acceleration_Whitepaper_v1.0.pdf",
+    "bytes": 5425296,
+    "pages": 63,
+    "sha256": "824c205850360f236a70fd51590fefef435e2be50fadf4c7f9cc33e6935e344c"
+  },
+  "html": {
+    "path": "build_whitepaper.html",
+    "bytes": 231711,
+    "sha256": "b46ce3cf79f472d53fe3d3101c5995b0f1f031fd539e3038631f5fac837c3338"
+  },
+  "artifact_sha_match_required": true,
+  "schema": "dit.reader-build.v1",
+  "document": "main",
+  "builder": {
+    "path": "scripts/build_whitepaper_pdf.py",
+    "bytes": 67244,
+    "sha256": "f04d80331f2d28d68ab36d1b97baec077ff35869bfb4b5a20b141cc78f5a4ddc"
+  },
+  "runtime": {
+    "python_version": "3.12.16",
+    "dependencies": {
+      "Markdown": "3.9",
+      "PyMuPDF": "1.26.5"
+    }
+  },
+  "original_build_receipt_sha256": "851cd785cfe15a6972b17a390f018cb262b2cbae0040434b7d617eeeecb89758",
+  "diagram_export": {
+    "method": "whole_diagram_image_xobject",
+    "dpi": 300,
+    "expected_diagrams": 16,
+    "rasterized_diagrams": 16,
+    "temporary_marker_links_removed": 16,
+    "diagrams": [
+      {
+        "id": "0001",
+        "source_sha256": "e974524f3cb4232bf36a1bc7ec58b6760ce4724b604b589cc1d5a59114610815",
+        "page": 3,
+        "rect_points": [
+          45.0,
+          474.25640869140625,
+          549.57421875,
+          699.3426513671875
+        ],
+        "pixel_size": [
+          2103,
+          938
+        ],
+        "png_bytes": 111781,
+        "png_sha256": "080d50f14936a016563bfd67d69d2c2e6be674ebcb7747f290d9a57e25f77c96",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0002",
+        "source_sha256": "28f5495009f41d727cce0c05c3c9e06f6b1e69f57ea6c3f08257fc74b7a4741a",
+        "page": 7,
+        "rect_points": [
+          45.0,
+          89.1417236328125,
+          549.57421875,
+          446.58795166015625
+        ],
+        "pixel_size": [
+          2103,
+          1490
+        ],
+        "png_bytes": 62843,
+        "png_sha256": "fafa79a7d1621fa5a18bfd350eb0949d6bac034e5992ad85897515b403f955e2",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0003",
+        "source_sha256": "98aa6191f1c64851caad2f82994e65452e7e11cb9a71ae91b8196fb6e14ae3ba",
+        "page": 12,
+        "rect_points": [
+          45.0,
+          147.46966552734375,
+          549.57421875,
+          206.5452880859375
+        ],
+        "pixel_size": [
+          2103,
+          247
+        ],
+        "png_bytes": 37958,
+        "png_sha256": "e69ca48ed87fc4d79f3b4d19b9836bfbd75ca2e7edc21460c92d42ac58f3310f",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0004",
+        "source_sha256": "39cc15bb0e5c1108e97be68f50a8f3dbf966d8ddca4c593331cdd60790a47892",
+        "page": 14,
+        "rect_points": [
+          45.0,
+          190.8421630859375,
+          549.57421875,
+          241.69219970703125
+        ],
+        "pixel_size": [
+          2103,
+          213
+        ],
+        "png_bytes": 40874,
+        "png_sha256": "b941229bcc1a5b0f4bbd8a6cc00644088460ba7177847ea7b27ae4910de6a503",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0005",
+        "source_sha256": "60c001ccdac905e054488fa412963f361726401f7a2260822a808ad8fb2b128d",
+        "page": 14,
+        "rect_points": [
+          45.0,
+          419.66717529296875,
+          549.57421875,
+          777.1134033203125
+        ],
+        "pixel_size": [
+          2103,
+          1490
+        ],
+        "png_bytes": 160521,
+        "png_sha256": "ba1b5402c51f0b7ffdef245cef377cd0a0529a71a9f6d83ca322da399452946e",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0006",
+        "source_sha256": "ae6e0641ed72e8bc7864eeb9ebd16badcf6ec7b6c8bdb4c69fe32cf58e75c37f",
+        "page": 18,
+        "rect_points": [
+          45.0,
+          306.00189208984375,
+          549.57421875,
+          663.4481201171875
+        ],
+        "pixel_size": [
+          2103,
+          1490
+        ],
+        "png_bytes": 103078,
+        "png_sha256": "68b16e5e0ec587ee0fe4d8650f48125009d951109fe2ba76d50fdad912ddcf0e",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0007",
+        "source_sha256": "8612dd880617945d06457f2881faa3e5a8d58d0ea6e09f6477a5318b347e05e0",
+        "page": 21,
+        "rect_points": [
+          45.0,
+          240.94403076171875,
+          549.57421875,
+          598.3903198242188
+        ],
+        "pixel_size": [
+          2103,
+          1491
+        ],
+        "png_bytes": 83243,
+        "png_sha256": "7e03dfcac9164070acc7c0dced5665e30afdbf314f131cc7b0de721c69337a52",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0008",
+        "source_sha256": "0ed5c9248b9234fdef960f2dff354b17c134e71324543be7854912d595585dcc",
+        "page": 24,
+        "rect_points": [
+          45.0,
+          604.3724975585938,
+          549.57421875,
+          774.1218872070312
+        ],
+        "pixel_size": [
+          2103,
+          708
+        ],
+        "png_bytes": 84260,
+        "png_sha256": "bd2a49fb9bb2e16caff48ce748ab18de104e8e9fe91c24229bca189c20b2e060",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0009",
+        "source_sha256": "5f0aa85d8ea25853572b4b6f4bf0adb4e7bac6e4c11d2b4943f93cc929d9df0b",
+        "page": 33,
+        "rect_points": [
+          45.0,
+          52.5,
+          549.57421875,
+          294.03753662109375
+        ],
+        "pixel_size": [
+          2103,
+          1008
+        ],
+        "png_bytes": 73789,
+        "png_sha256": "afdd7271f6689ba7afedf4294362c8188923022b2b3ddee977dfa1e6f8045e70",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0010",
+        "source_sha256": "938581750aff0f427284ff3ebff34bb8e861d7bac338583902fd0d550fe1f4ff",
+        "page": 35,
+        "rect_points": [
+          45.0,
+          52.5,
+          549.57421875,
+          409.94622802734375
+        ],
+        "pixel_size": [
+          2103,
+          1491
+        ],
+        "png_bytes": 88630,
+        "png_sha256": "e26a6cb2929c1b015ddd76bc8864313c1aef0f05c2052f3c0515d9f9df14df31",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0011",
+        "source_sha256": "34964b4540a22c6607a95fea09f4b34fb1f3c265d76c143c84357584e50a67e8",
+        "page": 38,
+        "rect_points": [
+          45.0,
+          164.66815185546875,
+          549.57421875,
+          451.8224792480469
+        ],
+        "pixel_size": [
+          2103,
+          1197
+        ],
+        "png_bytes": 86932,
+        "png_sha256": "7f83e3abe85e9fe07b76690b785287cc392c5954bc537c77c9e9955f8b30309d",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0012",
+        "source_sha256": "351e02cd78607ebd206ba3daeda347f58b3b21e3a54e4b40bafa546178ded9c1",
+        "page": 41,
+        "rect_points": [
+          45.0,
+          602.876220703125,
+          549.57421875,
+          641.0137329101562
+        ],
+        "pixel_size": [
+          2103,
+          160
+        ],
+        "png_bytes": 29811,
+        "png_sha256": "7a6e9dd64747f4762e552142ea5c1aa4265867b512b3360efadc0c123c7cc64a",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0013",
+        "source_sha256": "8a1c4a8babef84e8c4355c994f38dc939d182695630ff4462523e49fd4b71d16",
+        "page": 42,
+        "rect_points": [
+          45.0,
+          325.44378662109375,
+          549.57421875,
+          528.84375
+        ],
+        "pixel_size": [
+          2103,
+          848
+        ],
+        "png_bytes": 47151,
+        "png_sha256": "e5c4d7561f232108e4143e264f55c5056538f615323cd25c851ada44ccf432ba",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0014",
+        "source_sha256": "f42eeb75317d65c6161c7ecad5415e7e05806e6f51f7da15cd227b4b2368a7a3",
+        "page": 48,
+        "rect_points": [
+          45.0,
+          147.46875,
+          549.57421875,
+          225.98626708984375
+        ],
+        "pixel_size": [
+          2103,
+          328
+        ],
+        "png_bytes": 39139,
+        "png_sha256": "72f211fd1ab721baf80ea8c3999f62f89a0ab745059db9677ef20517762a24fe",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0015",
+        "source_sha256": "1a59bda35a1614e7517161d1271fde81592ae4c54617ff7c11f720ab62ca6abb",
+        "page": 49,
+        "rect_points": [
+          45.0,
+          52.5,
+          549.57421875,
+          409.94622802734375
+        ],
+        "pixel_size": [
+          2103,
+          1491
+        ],
+        "png_bytes": 101429,
+        "png_sha256": "9e105aaa254bfcd243acd8f9cd8c49e174ec14b3ac610572c30738c11e5cc943",
+        "image_xobject_created": true
+      },
+      {
+        "id": "0016",
+        "source_sha256": "74e7950e573124b7ed263c2d08ad0fba354837998ad4f76c8acb090c333107ab",
+        "page": 52,
+        "rect_points": [
+          45.0,
+          648.4912109375,
+          549.57421875,
+          772.6237182617188
+        ],
+        "pixel_size": [
+          2103,
+          518
+        ],
+        "png_bytes": 64182,
+        "png_sha256": "864f81c3616e2e92a930569d844ad32f64a9820437f813af88ffab3334def6e7",
+        "image_xobject_created": true
+      }
+    ],
+    "offline_html": "original Mermaid SVG",
+    "body_text_and_math": "retained outside diagram rectangles"
+  }
+}

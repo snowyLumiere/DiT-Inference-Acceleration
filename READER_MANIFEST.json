@@ -1,0 +1,1225 @@
+{
+  "schema": "dit.reader-package.v1",
+  "title": "DiT 推理加速：原理与工程实践",
+  "author": "SnowyLumiere",
+  "edition": "v1.0 (r9 · 2026-11-20)",
+  "scope": "Explicit manuscript, examples, field-selected evidence and offline render assets",
+  "files": [
+    {
+      "path": "COPYRIGHT.md",
+      "bytes": 588,
+      "sha256": "96113afe93426c3eb468ed0bac8f4cdd54958abedc6bb35c6812db878002a4d8"
+    },
+    {
+      "path": "DiT_Inference_Acceleration_Whitepaper_v1.0.pdf",
+      "bytes": 5425296,
+      "sha256": "824c205850360f236a70fd51590fefef435e2be50fadf4c7f9cc33e6935e344c"
+    },
+    {
+      "path": "OMNI_BUILD.json",
+      "bytes": 15077,
+      "sha256": "51afae3debdf03d1d6e09f4a7573178fb6c0ec22bdf3ef571cbd90084b6cd6a9"
+    },
+    {
+      "path": "Omni_Inference_Frameworks.html",
+      "bytes": 39385,
+      "sha256": "f53014bb5f481bc1b5ad0936a5572d1201e6453b8eed2254c63b5f3dbfa0f3a0"
+    },
+    {
+      "path": "Omni_Inference_Frameworks.pdf",
+      "bytes": 1741123,
+      "sha256": "0b3496b70bca6d5962fa0b2dcbc7072286bd2ab0eb5682528cd2fca8c93023ce"
+    },
+    {
+      "path": "PDF_COMPATIBILITY_R7.json",
+      "bytes": 16772,
+      "sha256": "8691ed38388452e0e8d254bb4d50e03946e77f775a1de67c938d93933c23bf30"
+    },
+    {
+      "path": "PDF_COMPATIBILITY_R9.json",
+      "bytes": 17734,
+      "sha256": "b6c9fbdec7e0b1932e2e8d25b7855fe000ab4d082cd28b9d0544f2d10fa73c0b"
+    },
+    {
+      "path": "READER_BUILD.json",
+      "bytes": 27329,
+      "sha256": "697583295a7ca22b4f54c669b7b9f02161a9a6e3e5d3f6f92cb4cc52c89befb9"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4711,
+      "sha256": "2b445ee5abceb24ee2f6fae7af7886cb02dec4df7769a7413e0158fbb7dade8f"
+    },
+    {
+      "path": "READ_FIRST.md",
+      "bytes": 1939,
+      "sha256": "dcd632bab255f2f539ea35e422e12cf8d65f290ace51bbf46e397541a92cc8a0"
+    },
+    {
+      "path": "RELEASE_DIT_INFRA.md",
+      "bytes": 2460,
+      "sha256": "b05a3d619d476308c8d5b864acedf856ffc706b71f1d1812ffffd8ec508cd290"
+    },
+    {
+      "path": "RELEASE_NOTES_R6.md",
+      "bytes": 2405,
+      "sha256": "3a4e0ca69c0feea6e6711227fb0d82ed9839ef2e1be380d92e8d0968c4a7cdcb"
+    },
+    {
+      "path": "RELEASE_NOTES_R7.md",
+      "bytes": 2471,
+      "sha256": "fa26249ce3efe943dae703906fd04257fcceb3eb2624dd55364fb1bf5803c000"
+    },
+    {
+      "path": "RELEASE_NOTES_R9.md",
+      "bytes": 5569,
+      "sha256": "33dfa62f033c7e4964fb1beceae78fbf2d68fc1ccf8a0ae6772f8f2973ccbbca"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 2617,
+      "sha256": "b4ab33289145debe395d9a022c5b94b249f1a9db133e22d1246820190799025d"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/FONT-NOTICES.txt",
+      "bytes": 10745,
+      "sha256": "391105b75a1c3970310b74b721660a8b7d97b67d78c51717622da1b8ae40b703"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/LICENSE",
+      "bytes": 1107,
+      "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/OFL-1.1.txt",
+      "bytes": 4599,
+      "sha256": "1d361a8f8e8ce6e68457dcd93fb56e162e6baa3bbb7e7573a290d44399f6b57e"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/auto-render.min.js",
+      "bytes": 3478,
+      "sha256": "9cb8dacfc086c2966c9ec4ba54f4a2dc43b7cbe2b33cec1a2743d886c7fb47a7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.ttf",
+      "bytes": 63632,
+      "sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.woff",
+      "bytes": 33516,
+      "sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_AMS-Regular.woff2",
+      "bytes": 28076,
+      "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.ttf",
+      "bytes": 12368,
+      "sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.woff",
+      "bytes": 7716,
+      "sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "bytes": 6912,
+      "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.ttf",
+      "bytes": 12344,
+      "sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.woff",
+      "bytes": 7656,
+      "sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "bytes": 6908,
+      "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.ttf",
+      "bytes": 19584,
+      "sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.woff",
+      "bytes": 13296,
+      "sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Bold.woff2",
+      "bytes": 11348,
+      "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.ttf",
+      "bytes": 19572,
+      "sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.woff",
+      "bytes": 13208,
+      "sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Fraktur-Regular.woff2",
+      "bytes": 11316,
+      "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.ttf",
+      "bytes": 51336,
+      "sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.woff",
+      "bytes": 29912,
+      "sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Bold.woff2",
+      "bytes": 25324,
+      "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.ttf",
+      "bytes": 32968,
+      "sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.woff",
+      "bytes": 19412,
+      "sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-BoldItalic.woff2",
+      "bytes": 16780,
+      "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.ttf",
+      "bytes": 33580,
+      "sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.woff",
+      "bytes": 19676,
+      "sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Italic.woff2",
+      "bytes": 16988,
+      "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.ttf",
+      "bytes": 53580,
+      "sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.woff",
+      "bytes": 30772,
+      "sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Main-Regular.woff2",
+      "bytes": 26272,
+      "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.ttf",
+      "bytes": 31196,
+      "sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.woff",
+      "bytes": 18668,
+      "sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-BoldItalic.woff2",
+      "bytes": 16400,
+      "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.ttf",
+      "bytes": 31308,
+      "sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.woff",
+      "bytes": 18748,
+      "sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Math-Italic.woff2",
+      "bytes": 16440,
+      "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.ttf",
+      "bytes": 24504,
+      "sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.woff",
+      "bytes": 14408,
+      "sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Bold.woff2",
+      "bytes": 12216,
+      "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.ttf",
+      "bytes": 22364,
+      "sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.woff",
+      "bytes": 14112,
+      "sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Italic.woff2",
+      "bytes": 12028,
+      "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.ttf",
+      "bytes": 19436,
+      "sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.woff",
+      "bytes": 12316,
+      "sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_SansSerif-Regular.woff2",
+      "bytes": 10344,
+      "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.ttf",
+      "bytes": 16648,
+      "sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.woff",
+      "bytes": 10588,
+      "sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Script-Regular.woff2",
+      "bytes": 9644,
+      "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.ttf",
+      "bytes": 12228,
+      "sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.woff",
+      "bytes": 6496,
+      "sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size1-Regular.woff2",
+      "bytes": 5468,
+      "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.ttf",
+      "bytes": 11508,
+      "sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.woff",
+      "bytes": 6188,
+      "sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size2-Regular.woff2",
+      "bytes": 5208,
+      "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.ttf",
+      "bytes": 7588,
+      "sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.woff",
+      "bytes": 4420,
+      "sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size3-Regular.woff2",
+      "bytes": 3624,
+      "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.ttf",
+      "bytes": 10364,
+      "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.woff",
+      "bytes": 5980,
+      "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Size4-Regular.woff2",
+      "bytes": 4928,
+      "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.ttf",
+      "bytes": 27556,
+      "sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.woff",
+      "bytes": 16028,
+      "sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/fonts/KaTeX_Typewriter-Regular.woff2",
+      "bytes": 13568,
+      "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/katex.min.css",
+      "bytes": 23112,
+      "sha256": "df9ef84e97d38557de02183e238f8ddfd10988b37741492e12c3157bc856011e"
+    },
+    {
+      "path": "assets/vendor/katex-0.16.8/katex.min.js",
+      "bytes": 276862,
+      "sha256": "d4f0ea25c4ccb7986b229d6427794b7063cf3209b0376cf5a64bfc4dd7918c95"
+    },
+    {
+      "path": "assets/vendor/manifest.json",
+      "bytes": 338039,
+      "sha256": "9fce6c4bf3fc5196ab9f2eb261d19d7d4f6dd5497dbb5dce96a15146b1f7911d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/BUNDLE-LICENSE-COMMENTS.txt",
+      "bytes": 964,
+      "sha256": "5a1f23a685c179e917ca6ce2502bc6f7bda6a4b0c8f6b1e6b707949148533637"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/BUNDLED-DEPENDENCY-NOTICES-r4.md",
+      "bytes": 16276,
+      "sha256": "d27f6a9aa1a1cbba0cf74393ca00fbddaa497d8f61e3183a93f6e4dda12790f6"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/BUNDLED-EMBEDDED-NOTICES-r6.md",
+      "bytes": 5981,
+      "sha256": "d956fb406911b414070bb04a553dbae21ba2bd4ca16b37b4d4c3b5467432b698"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/LICENSE",
+      "bytes": 1089,
+      "sha256": "ec9fb67dcb25eccc416ed56e1aab819222c805a2a4bfe4cb19e7556bf2ffde80"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/braintree--sanitize-url-6.0.4/LICENSE",
+      "bytes": 1066,
+      "sha256": "0984740e0c3d725c8044dec7edcefe1dbce180ef5a7bc710c251e19607000158"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/character-entities-2.0.2/license",
+      "bytes": 1099,
+      "sha256": "63cb98b3f6abfb3c3592c16f88253c1bdc834087bf52671e8ce5609e4eb693cf"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/commander-7.2.0/LICENSE",
+      "bytes": 1098,
+      "sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/commander-8.3.0/LICENSE",
+      "bytes": 1098,
+      "sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cose-base-1.0.3/LICENSE",
+      "bytes": 1081,
+      "sha256": "5fb3cf4a14c3c5af6e473a192df8bca10c77754e3a0c6492c79fb92a76a5478a"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-3.28.1/LICENSE",
+      "bytes": 1082,
+      "sha256": "ac2a446d6e1b489d9568def4ba7790ab81f5023ebba335d49a77dbff1960232e"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-cose-bilkent-4.1.0/LICENSE",
+      "bytes": 1084,
+      "sha256": "440fc58a56a12814e417d2b341da89b050da052dc75bdb235607d37ec5fe74ef"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-embedded-mit/THENABLE-1.0.7-NOTICE-AND-MIT.txt",
+      "bytes": 1728,
+      "sha256": "86f32f28ee668a7ba0830263235c6a33f38bbc3c621cd49e427dc7f05498c74c"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-embedded-mit/UPSTREAM-Framer-20140624-LICENSE.txt",
+      "bytes": 1075,
+      "sha256": "298012b8b6c965d489221b5b79be5f77ca2027ec65d47a80b16b73812cb60a46"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-embedded-mit/UPSTREAM-bezier-easing-20140717-LICENSE.txt",
+      "bytes": 1061,
+      "sha256": "32bfd1097d45b41ca6792bf07b389b26ee4045e7f7db28349f4199eef889c516"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/cytoscape-embedded-mit/UPSTREAM-jquery-3.7.1-LICENSE.txt",
+      "bytes": 1097,
+      "sha256": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-7.8.5/LICENSE",
+      "bytes": 731,
+      "sha256": "3e6849627f74ff73c257a3ae1efb574015d94fc1035c05ec3c15805165efcbc4"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-array-2.12.1/LICENSE",
+      "bytes": 1475,
+      "sha256": "0747bebeb06b10954913149be9b9a8bdf6fad3e6fdcbd9f9524e7a94c13d2cea"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-array-3.2.4/LICENSE",
+      "bytes": 731,
+      "sha256": "3e6849627f74ff73c257a3ae1efb574015d94fc1035c05ec3c15805165efcbc4"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-axis-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-brush-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-chord-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-color-3.1.0/LICENSE",
+      "bytes": 731,
+      "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-contour-4.0.2/LICENSE",
+      "bytes": 731,
+      "sha256": "e51cba0e4fa1d8c078e15319868f2b90188f413f9ce9dac1043b62db32901e93"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-delaunay-6.0.4/LICENSE",
+      "bytes": 757,
+      "sha256": "582c3022bd01942336095f92b58a90b1be624dc547d987555c6c956512dd24c1"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-dispatch-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-drag-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-dsv-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "7842a82012622e5a37bfe4f6c1b67cd3bae6350716b5bf87f36cea0bdc1319dc"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-ease-3.0.1/LICENSE",
+      "bytes": 1504,
+      "sha256": "b989d9085148d21ff64a75e14462aefa06b2589a55553b07b1460c70081c7d08"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-fetch-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "ffdc17dc9040006bddeb891c95bfbb492e86d6bc64a4a4233666febab1be35e0"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-force-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-format-3.1.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-geo-3.1.0/LICENSE",
+      "bytes": 1857,
+      "sha256": "c53822a70309da589d4a7821c3a0dfc9449bbb4429cecaa295e0cb0461b950c9"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-hierarchy-3.1.2/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-interpolate-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-path-1.0.9/LICENSE",
+      "bytes": 1475,
+      "sha256": "b8265327ab678f554800e71188b1cc6b1ff57522e292d2b1c0be66f27cf328b6"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-path-3.1.0/LICENSE",
+      "bytes": 731,
+      "sha256": "a09b0d6d76e768fca2085fad05743ee81ddd11946bcda160a3cf5e1081a479aa"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-polygon-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-quadtree-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-random-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-sankey-0.12.3/LICENSE",
+      "bytes": 1471,
+      "sha256": "2bf785e778d67a4f5266cffcd4f2cc5bb98cde73791666e7efeb8002ba32dfa5"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-scale-4.0.2/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-scale-chromatic-3.0.0/LICENSE",
+      "bytes": 1423,
+      "sha256": "dadb5ea138eef5ab133854c3d26bd0a158f649d0bd433b3eebe177f6d981730e"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-selection-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-shape-1.3.7/LICENSE",
+      "bytes": 1475,
+      "sha256": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-shape-3.2.0/LICENSE",
+      "bytes": 731,
+      "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-time-3.1.0/LICENSE",
+      "bytes": 731,
+      "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-time-format-4.1.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-timer-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-transition-3.0.1/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/d3-zoom-3.0.0/LICENSE",
+      "bytes": 731,
+      "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/dagre-d3-es-7.0.10/UPSTREAM-dagre-d3-0.6.4-LICENSE.txt",
+      "bytes": 1057,
+      "sha256": "6561c1da473f6d143cc203866ceafa66b35a3a15c3bbd9352b8275cf684fc52d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/dayjs-1.11.10/LICENSE",
+      "bytes": 1072,
+      "sha256": "5faab7526d055651be3aab769d58897be6bd91f3d39d137f25f12dba1b31d5dc"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/debug-4.3.4/LICENSE",
+      "bytes": 1139,
+      "sha256": "3a61c6c96caf5c1d9b623fb9b04c822b783dfcb78aa7e49c76a3f643e6ed7f95"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/decode-named-character-reference-1.0.2/license",
+      "bytes": 1099,
+      "sha256": "807a88522a850092aece49486207c17c313c4d5708ac276524840fe1caa0b0fa"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/delaunator-5.0.1/LICENSE",
+      "bytes": 738,
+      "sha256": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/dequal-2.0.3/license",
+      "bytes": 1114,
+      "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/diff-5.1.0/LICENSE",
+      "bytes": 1572,
+      "sha256": "152f0fb43e953fcf5c56c5bfa4c834bb96b1603e4026319c613dd3e734f305cf"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/dompurify-3.1.6/LICENSE",
+      "bytes": 27729,
+      "sha256": "7de658e2401fe36e2a3965a5a11a560d2fffe768194849718a4b58c75bf84bda"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/elkjs-0.9.2/LICENSE.md",
+      "bytes": 14480,
+      "sha256": "89591d4578fb1ebd91501312a3d25f021bd865a2e436641c1cf7b1bc7e3c1617"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/has-flag-4.0.0/license",
+      "bytes": 1109,
+      "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/heap-0.2.7/LICENSE",
+      "bytes": 1040,
+      "sha256": "e78f28382ac236a42dcbc16caaaaf2e76da55ddc67053a8bcb3aabdfc72df9cc"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/iconv-lite-0.6.3/LICENSE",
+      "bytes": 1064,
+      "sha256": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/internmap-1.0.1/LICENSE",
+      "bytes": 726,
+      "sha256": "9ea8903938dab5f12c4572d60725069bec2d1b0dc3bcc210b09bae946a5ebb1f"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/internmap-2.0.3/LICENSE",
+      "bytes": 726,
+      "sha256": "9ea8903938dab5f12c4572d60725069bec2d1b0dc3bcc210b09bae946a5ebb1f"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/js-yaml-4.1.0/LICENSE",
+      "bytes": 1084,
+      "sha256": "a07bc24468b9654ce76a547d47a2db282d07733b715db4c73a98bd63961f9550"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/katex-0.16.11/LICENSE",
+      "bytes": 1107,
+      "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/khroma-2.1.0/license",
+      "bytes": 1105,
+      "sha256": "66b333b0f66759a0b710459e03f7029abe17f4358114a128d2c972e642961b49"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/kleur-4.1.5/license",
+      "bytes": 1114,
+      "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/layout-base-1.0.2/LICENSE",
+      "bytes": 1069,
+      "sha256": "eabb762d8a95109a39c9be3247325529a5239a7aca327d909c3ccdc41f3a06bf"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/lodash-4.17.21/LICENSE",
+      "bytes": 1952,
+      "sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/lodash-es-4.17.21/LICENSE",
+      "bytes": 1952,
+      "sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/mdast-util-from-markdown-1.3.1/license",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/mdast-util-to-string-3.2.0/license",
+      "bytes": 1099,
+      "sha256": "63cb98b3f6abfb3c3592c16f88253c1bdc834087bf52671e8ce5609e4eb693cf"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-3.2.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-core-commonmark-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-factory-destination-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-factory-label-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-factory-space-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-factory-title-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-factory-whitespace-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-character-1.2.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-chunked-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-classify-character-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-combine-extensions-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-decode-numeric-character-reference-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-decode-string-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-encode-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-html-tag-name-1.2.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-normalize-identifier-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-resolve-all-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-sanitize-uri-1.2.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-subtokenize-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-symbol-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/micromark-util-types-1.1.0/LICENSE-from-upstream.txt",
+      "bytes": 1099,
+      "sha256": "536804b3adbff17dbbb9ed0d2bf9655b78f07640278581e37e3d7475282d5e61"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/mri-1.2.0/license.md",
+      "bytes": 1114,
+      "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/ms-2.1.2/license.md",
+      "bytes": 1077,
+      "sha256": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/non-layered-tidy-tree-layout-2.0.2/LICENSE",
+      "bytes": 1068,
+      "sha256": "4f2be5251c6ca29343617220bce48bbbe814de871dc42435164442a0c007d11e"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/robust-predicates-3.0.2/LICENSE",
+      "bytes": 1210,
+      "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/rw-1.3.3/LICENSE",
+      "bytes": 1429,
+      "sha256": "e273680c43c2ab5bb3b50af28de6a08000b333396834db7bf6129cd6f130c9cd"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/sade-1.8.1/license",
+      "bytes": 1122,
+      "sha256": "ba573393f24555ac0528612ad39665fab5bdcc80330a61096024bbf5f736526d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/safer-buffer-2.1.2/LICENSE",
+      "bytes": 1094,
+      "sha256": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/stylis-4.3.1/LICENSE",
+      "bytes": 1078,
+      "sha256": "88c579c6ee44b41137a21321190d177982e5b17d4fa1b83a4a2e3ea325a8fc9a"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/supports-color-8.1.1/license",
+      "bytes": 1117,
+      "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/ts-dedent-2.2.0/LICENSE",
+      "bytes": 1073,
+      "sha256": "eff13095d9d762c3bd9dda74370c81e2130c28f2691bc455603abf973bac25b9"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--d3-scale-4.0.8/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--d3-scale-chromatic-3.0.3/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--d3-time-3.0.3/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--debug-4.1.12/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--mdast-3.0.15/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--ms-0.7.34/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/types--unist-2.0.10/LICENSE",
+      "bytes": 1141,
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/unist-util-stringify-position-3.0.3/license",
+      "bytes": 1099,
+      "sha256": "ca4662cb5d1b738fbe5350c0d5485ba11773b4b7208974082ae6e129a52d631d"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/uuid-9.0.1/LICENSE.md",
+      "bytes": 1109,
+      "sha256": "beaa6b04fb82e41dd2ad679e19e27953afb5999b1abbb455b6564e78ebfeb332"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/uvu-0.5.6/license",
+      "bytes": 1114,
+      "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/licenses/web-worker-1.3.0/LICENSE",
+      "bytes": 11356,
+      "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+    },
+    {
+      "path": "assets/vendor/mermaid-10.9.3/mermaid.min.js",
+      "bytes": 3336760,
+      "sha256": "5a8ec91820bd55afef049068489369910e5d6ce70c8103952f27e29d3e76e8bc"
+    },
+    {
+      "path": "build_whitepaper.html",
+      "bytes": 231711,
+      "sha256": "b46ce3cf79f472d53fe3d3101c5995b0f1f031fd539e3038631f5fac837c3338"
+    },
+    {
+      "path": "docs/manuscript/01-paradigms.md",
+      "bytes": 5645,
+      "sha256": "f4f6958571e573e9c84d4f97bab4679fa7e11aeb8fdcaa74cb063846bdb81d75"
+    },
+    {
+      "path": "docs/manuscript/02-execution-graph.md",
+      "bytes": 9477,
+      "sha256": "b1647e4a8e123d6362f1f24990bd67e1551395a268227adc2a3cd9440f585bc8"
+    },
+    {
+      "path": "docs/manuscript/03-gpu-execution.md",
+      "bytes": 5675,
+      "sha256": "2d9d02304b40300e50c24e96d38d7d7c86ffeeb580c2586166141888b3194e87"
+    },
+    {
+      "path": "docs/manuscript/04-memory-and-state.md",
+      "bytes": 5968,
+      "sha256": "0d04d890fc0659b8fdf65316f83c23d4817dcf2e970ad47826800835490490bd"
+    },
+    {
+      "path": "docs/manuscript/05-measurement.md",
+      "bytes": 7821,
+      "sha256": "ba237b3e2cde4a03a7d868785582b29b0f981daf212a3cb72bda50f4e1cb09a8"
+    },
+    {
+      "path": "docs/manuscript/06-evaluations-and-distillation.md",
+      "bytes": 12369,
+      "sha256": "3ffb5244420e6d7e382943f48a788a4a455ed2bf0b8bac8c97da92d9b94451b7"
+    },
+    {
+      "path": "docs/manuscript/07-feature-cache.md",
+      "bytes": 9388,
+      "sha256": "56ea54b769239d86875e6cf5cf2f3b3cd753106224111d70ccee7b573a5d85c3"
+    },
+    {
+      "path": "docs/manuscript/08-attention-kernels.md",
+      "bytes": 11338,
+      "sha256": "20f36cfe8545f8f693ae9c12d19e5d2a644e28f5bf83d500df9f4ead0ee5e4a7"
+    },
+    {
+      "path": "docs/manuscript/09-sparsity-and-tokens.md",
+      "bytes": 7525,
+      "sha256": "d7ab21c9e5fe35d8eca0c58722e0c829cb0518d42b39a5d82b3056ffd2ffbebd"
+    },
+    {
+      "path": "docs/manuscript/10-gemm-and-quantization.md",
+      "bytes": 16410,
+      "sha256": "bb0a40038d9757e82e1865e334c80cc696f952e712fc9ab285eef54effa680ef"
+    },
+    {
+      "path": "docs/manuscript/11-fusion-and-graphs.md",
+      "bytes": 12514,
+      "sha256": "481bcd421ba396b61f1e933918b7b6b21e818afff5df8f973e01e00066243547"
+    },
+    {
+      "path": "docs/manuscript/12-ar-state.md",
+      "bytes": 11313,
+      "sha256": "f2016c6d3e81e0dea58259ca98c68ba158fa588e9c099a74194ce9cc4ea5dde8"
+    },
+    {
+      "path": "docs/manuscript/13-residency-and-transfer.md",
+      "bytes": 8093,
+      "sha256": "1dad15210f786e7d30b31ce13c969fae7e90cbad7dbb7de69a4f5f618ccbbf98"
+    },
+    {
+      "path": "docs/manuscript/14-parallelism.md",
+      "bytes": 8942,
+      "sha256": "f66eb266058ba38eb5259f35e43202cb25312d2f47ff61fa96b95e30dbaffb5e"
+    },
+    {
+      "path": "docs/manuscript/15-decoding-and-streaming.md",
+      "bytes": 10307,
+      "sha256": "9ef7c8e98135fdd1749d4e7821ed7bbfdd8d40eec4826fff9caa100f2629917c"
+    },
+    {
+      "path": "docs/manuscript/16-composition-and-validation.md",
+      "bytes": 8535,
+      "sha256": "5f5bca25ae3166218c0129f415965b839f284c273e0b4f0af9866795366a1fdf"
+    },
+    {
+      "path": "docs/manuscript/appendix-a-model-contracts.md",
+      "bytes": 8029,
+      "sha256": "e3626781bb1372fb9955a34f7ea4b308b07374165f7930768af08bea78a0afdd"
+    },
+    {
+      "path": "docs/manuscript/appendix-b-reproduction.md",
+      "bytes": 6794,
+      "sha256": "69d3affc9307f2db39862fd1dcdca6e9983f2c9d141ee63f515cb2e171f24afb"
+    },
+    {
+      "path": "docs/manuscript/appendix-c-evidence.md",
+      "bytes": 4156,
+      "sha256": "42c92aec336853bcd03a92ca59baaad4fa58ac32bbd2a94247d1907f9d081fe7"
+    },
+    {
+      "path": "docs/manuscript/evidence/ar_microbench_sm90.json",
+      "bytes": 2588,
+      "sha256": "498f314b63f02d652a6914f66e5aa54a22cdd58d736751f6cbf1eef92c4f7208"
+    },
+    {
+      "path": "docs/manuscript/evidence/measurements.json",
+      "bytes": 152787,
+      "sha256": "913b1771b4221171c3d22cc1d87adedf870b74def6154f93f2a1aacf7f2329bd"
+    },
+    {
+      "path": "docs/manuscript/evidence/measurements_sm90.json",
+      "bytes": 205026,
+      "sha256": "afa95e08c2bb401a556020a9a3c3a61fe6282963ac1c9c83176c36e388d49e7e"
+    },
+    {
+      "path": "docs/manuscript/evidence/primary-sources.json",
+      "bytes": 23857,
+      "sha256": "fb4441ed0fb823442ee215b68446332e58f493b362179cb5f982854c33208e80"
+    },
+    {
+      "path": "docs/manuscript/extension-omni.md",
+      "bytes": 854,
+      "sha256": "aecd772083ba48dd1edc3081f526eec4499c25919a894409d094db5a9e0245c9"
+    },
+    {
+      "path": "docs/manuscript/part-1.md",
+      "bytes": 590,
+      "sha256": "7b988b706576f2d6ea59bb41058810d41d6e97f6cee697903a9e2f857eb19151"
+    },
+    {
+      "path": "docs/manuscript/part-2.md",
+      "bytes": 1655,
+      "sha256": "7a78f44dc4f29ce908ef6f693419bdb436db7364b227ccd3b3fe324fd9f20ed6"
+    },
+    {
+      "path": "docs/omni/inference-frameworks.md",
+      "bytes": 25131,
+      "sha256": "63490ffe1c722e9747db980bdd730cd9905c880a390ed4e2b688121dc4a56598"
+    },
+    {
+      "path": "examples/README.md",
+      "bytes": 4111,
+      "sha256": "00dda90a16cf9fb696a20f03dcd1ab5a7486badcaf37589b9bb00f7689753df4"
+    },
+    {
+      "path": "examples/review_public_evidence.py",
+      "bytes": 12058,
+      "sha256": "60327f9ba3b2913864f35bd9bd0634393e63f4dfcee0171c173d753d81afc517"
+    },
+    {
+      "path": "examples/rtx_dit_lab.py",
+      "bytes": 29875,
+      "sha256": "25ef771f1f89872ef4f20e79f2351ba5fbaf14e6187f325e1de1bd0d8e581271"
+    },
+    {
+      "path": "examples/rtx_kv_transfer_lab.py",
+      "bytes": 29803,
+      "sha256": "a451242833e1d30f13a63505c1d2aa9f84b5d669f66d1fffcf9c24f4ff341c53"
+    },
+    {
+      "path": "examples/test_attention_acceptance.py",
+      "bytes": 8177,
+      "sha256": "d7b4e8816599aa2fedac360a8f93c6657eae220ab79f9e05ae461e72f5b8d922"
+    },
+    {
+      "path": "examples/test_review_public_evidence.py",
+      "bytes": 6248,
+      "sha256": "aad7b284a4422e37c9f1cb3ea3d08e5d0c147765da1f5bc0244c3d2cd0d4f494"
+    },
+    {
+      "path": "requirements/pdf-build.txt",
+      "bytes": 273,
+      "sha256": "d4d8d9a57b497cb85ff86ffe4618cbae570b6f3861f10bc3cb39dd34f855cf6a"
+    },
+    {
+      "path": "requirements/rtx-lab-py310-cu128-wheels-public.json",
+      "bytes": 19596,
+      "sha256": "cefa81395f44db1de674937c8ba5e025ddd5bd83f1fd4a1899d1174f53ce733b"
+    },
+    {
+      "path": "requirements/rtx-lab-py310-cu128.lock.txt",
+      "bytes": 2746,
+      "sha256": "b9f31bdaf60b1fbca2c713f0147207bcacaf81e8dbc4563b444e1293851c07db"
+    },
+    {
+      "path": "scripts/build_whitepaper_pdf.py",
+      "bytes": 67244,
+      "sha256": "f04d80331f2d28d68ab36d1b97baec077ff35869bfb4b5a20b141cc78f5a4ddc"
+    },
+    {
+      "path": "scripts/fetch_rtx_lab_wheels.py",
+      "bytes": 6323,
+      "sha256": "d8f7a0090f6114525753a0f25e819435ddc8d18f8e8cecaabc3a330c71e7562b"
+    },
+    {
+      "path": "scripts/render_pdf_review.py",
+      "bytes": 3357,
+      "sha256": "cb4df6e00232b3cd3e63e57ec4b1e91c967de238738503ebe9a0f866b8145014"
+    },
+    {
+      "path": "scripts/test_build_whitepaper_pdf.py",
+      "bytes": 39303,
+      "sha256": "5a7fc7e7b58cbb32564d9bbb440fea150db8a39543ab956906fc3c179c37a637"
+    },
+    {
+      "path": "scripts/test_fetch_rtx_lab_wheels.py",
+      "bytes": 7108,
+      "sha256": "c64a5db3587e92e603b6dc2f5beac2f00f02e2c6e2103e339d38bcde6ae81c99"
+    },
+    {
+      "path": "scripts/verify_reader_package.py",
+      "bytes": 2886,
+      "sha256": "5b34ecece4592a1e204f4852ed879ae66e8c09e1f0034ccf31dfdbab583e1136"
+    }
+  ],
+  "local_links_checked": 277,
+  "pdf": {
+    "pages": 63,
+    "bookmarks": 25,
+    "embedded_files": 0
+  },
+  "omni_pdf": {
+    "pages": 7,
+    "bookmarks": 13,
+    "embedded_files": 0
+  }
+}

@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="SnowyLumiere">
+  <title>DiT 推理加速：原理与工程实践</title>
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="assets/vendor/katex-0.16.8/katex.min.css">
+  <script defer src="assets/vendor/katex-0.16.8/katex.min.js"></script>
+  <script defer src="assets/vendor/katex-0.16.8/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <!-- Mermaid -->
+  <script src="assets/vendor/mermaid-10.9.3/mermaid.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      mermaid.initialize({ startOnLoad: true, theme: 'neutral',
+        themeVariables: { xyChart: { plotColorPalette: '#2563eb' } } });
+    });
+  </script>
+
+  <style>
+    @page {
+      size: A4;
+      margin: 18.5mm 16mm 18.5mm 16mm;
+      @bottom-right {
+        content: counter(page);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 9pt;
+        color: #718096;
+      }
+      @bottom-left {
+        content: "DiT 推理加速：原理与工程实践 · © 2026 SnowyLumiere (github.com/SnowyLumiere)";
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+    }
+    @page :first {
+      margin: 0;
+      @bottom-right { content: none; }
+      @bottom-left { content: none; }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.56;
+      color: #2d3748;
+      background-color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 50px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #ffffff;
+      page-break-after: always;
+    }
+    .cover-badge {
+      display: inline-block;
+      align-self: flex-start;
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11pt;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 800;
+      line-height: 1.25;
+      margin: 0 0 16px 0;
+      color: #f8fafc;
+    }
+    .cover-subtitle {
+      font-size: 15pt;
+      color: #94a3b8;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .cover-author {
+      font-size: 11pt;
+      color: #e2e8f0;
+      margin-bottom: 36px;
+      letter-spacing: 0.3px;
+    }
+    .cover-author a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    .cover-meta-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid #38bdf8;
+      padding: 20px 24px;
+      border-radius: 4px;
+      margin-top: auto;
+    }
+    .cover-meta-item {
+      font-size: 10.5pt;
+      color: #cbd5e1;
+      margin: 6px 0;
+    }
+    .cover-meta-item strong {
+      color: #ffffff;
+    }
+    .edition-colophon {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #2563eb;
+      border-radius: 4px;
+      font-size: 8.8pt;
+      line-height: 1.48;
+      color: #334155;
+      break-inside: avoid;
+    }
+    .edition-colophon p {
+      margin: 2px 0;
+      text-align: left;
+    }
+    #reading-guide {
+      margin-bottom: 14px;
+    }
+    #reading-guide h1 {
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+    #reading-guide > p {
+      font-size: 9.7pt;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+    #global-contents h1 {
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+    .companion-meta {
+      font-size: 9pt;
+      color: #475569;
+      margin: -6px 0 12px 0;
+      text-align: left;
+    }
+    @media screen {
+      body {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 24px 28px 64px;
+        position: relative;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27360%27%20height%3D%27220%27%3E%3Ctext%20x%3D%27180%27%20y%3D%27110%27%20text-anchor%3D%27middle%27%20font-family%3D%27sans-serif%27%20font-size%3D%2713%27%20fill%3D%27%23334155%27%20fill-opacity%3D%270.065%27%20transform%3D%27rotate%28-26%20180%20110%29%27%3E%C2%A9%202026%20SnowyLumiere%20%C2%B7%20github.com%2FSnowyLumiere%3C%2Ftext%3E%3C%2Fsvg%3E");
+        background-repeat: repeat;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+      }
+      body > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cover-page {
+        height: auto;
+        min-height: 440px;
+        border-radius: 10px;
+        margin-bottom: 32px;
+      }
+      .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 0;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      @media (max-width: 640px) {
+        body { padding: 14px 14px 48px; font-size: 10pt; }
+        .cover-page { padding: 32px 22px; }
+        .cover-title { font-size: 24pt; }
+        .contents-grid { grid-template-columns: 1fr; }
+        .contents-backmatter ul { columns: 1; }
+      }
+    }
+
+    /* Part Header */
+    .part-banner {
+      background: #f1f5f9;
+      border-left: 6px solid #2563eb;
+      padding: 16px 20px;
+      margin-top: 20px;
+      margin-bottom: 25px;
+      border-radius: 0 4px 4px 0;
+      page-break-before: always;
+      break-inside: avoid;
+      break-after: avoid-page;
+    }
+    .part-title {
+      font-size: 20pt;
+      font-weight: 800;
+      color: #1e3a8a;
+      margin: 0;
+    }
+    .contents {
+      break-before: auto;
+      font-size: 9.5pt;
+    }
+    .contents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .contents-backmatter ul { columns: 2; column-gap: 18px; }
+    .contents li { break-inside: avoid; }
+    .contents ul, .part-banner ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0;
+    }
+    .contents li, .part-banner li { margin: 3.5px 0; }
+    .contents a, .part-banner a { color: #1e3a8a; text-decoration: none; }
+    .contents h2 { font-size: 11.5pt; margin-top: 10px; margin-bottom: 6px; }
+    .part-banner p { margin-top: 12px; }
+
+    /* Chapter Header */
+    .chapter-container {
+      margin-bottom: 30px;
+    }
+    .last-chapter, .last-chapter > :last-child {
+      margin-bottom: 0;
+    }
+    .chapter-divider {
+      break-before: auto;
+    }
+
+    h1 {
+      font-size: 18pt;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-top: 20px;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 18px;
+      margin-bottom: 12px;
+      border-left: 4px solid #3b82f6;
+      padding-left: 10px;
+    }
+    h3 {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    p {
+      margin: 0 0 8.5px 0;
+      text-align: justify;
+      orphans: 3;
+      widows: 3;
+    }
+    a {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+    table.long-table {
+      page-break-inside: auto;
+      break-inside: auto;
+    }
+    table.long-table thead { display: table-header-group; }
+    table.long-table tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 5px 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    th[style*="text-align: right"], td[style*="text-align: right"] {
+      white-space: nowrap;
+    }
+    th { line-break: strict; }
+    tr:nth-child(even) {
+      background-color: #f1f5f9;
+    }
+
+    /* Code blocks */
+    pre {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 8.5pt;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 9pt;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      overflow-wrap: anywhere;
+    }
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Blockquotes */
+    blockquote {
+      margin: 16px 0;
+      padding: 12px 18px;
+      background-color: #f8fafc;
+      border-left: 4px solid #64748b;
+      color: #334155;
+      border-radius: 0 4px 4px 0;
+      page-break-inside: avoid;
+    }
+    blockquote p {
+      margin: 0;
+    }
+
+    /* Mermaid container */
+    .mermaid {
+      margin: 20px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .diagram-figure { margin: 16px 0; break-inside: avoid; }
+    .diagram-figure figcaption { font-size: 9.5pt; color: #475569; }
+    .diagram-figure .mermaid { margin-top: 8px; }
+    @media print {
+      html, body { background: transparent !important; background-color: transparent !important; }
+      h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+      .mermaid svg {
+        width: auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 125mm !important;
+      }
+      .mermaid-chart svg { max-height: 84mm !important; }
+      .mermaid-sequence svg { max-height: 100mm !important; }
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #e2e8f0;
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="cover-page">
+    <div class="cover-badge">Diffusion Transformer · AI Infrastructure</div>
+    <div class="cover-title">DiT 推理加速<br/>原理与工程实践</div>
+    <div class="cover-subtitle">计算图、GPU 执行、状态与通信：视频 DiT 与 AR-chunk 的优化方法（源码解析与合成实验）</div>
+    <div class="cover-author">作者：SnowyLumiere · <a href="https://github.com/SnowyLumiere">github.com/SnowyLumiere</a> · 读者版 v1.0（r9 · 2026-11-20）</div>
+
+    <div class="cover-meta-box">
+      <div class="cover-meta-item"><strong>计算与算子</strong>：采样、Attention、低精度与 Kernel 执行</div>
+      <div class="cover-meta-item"><strong>状态与系统</strong>：KV 生命周期、显存、通信与流式调度</div>
+      <div class="cover-meta-item"><strong>方法实践</strong>：公开源码分析；RTX 5090 / SM90 单卡合成案例</div>
+      <div class="cover-meta-item"><strong>版权与归属</strong>：© 2026 SnowyLumiere · 仅供阅读与学习参考，详见 COPYRIGHT.md</div>
+    </div>
+  </div>
+
+
+    <div id="reading-guide" class="chapter-container">
+      <h1>阅读说明</h1>
+      <p>第一篇用五章建立生成范式、执行图、GPU、显存和测量的共同基础；第二篇按加速方法组织十一章，
+      将原理、实现、模型差异及验证放在同一处。Wan2.2 与 SolarWM 构成双向扩散和连续 AR-chunk 的两条主线，
+      H3 与 ABot-World 用于架构和训练对照。Omni 框架已拆为独立配套文档，末尾附阅读指引。</p>
+      <p>实测覆盖 RTX 5090 与数据中心 SM90 GPU（80 GB）的单卡算子、搬运和 CPU 状态小例，以及 50 层 AR 规模 KV 容量与 Gather 汇总。
+      整模性能、多卡扩展与视频质量对照需另建基线。各实验的配置与适用边界见附录 A、C，测量原则见第 5 章。</p>
+      <p>阅读入口：<a href="#global-contents">总目录</a>。配套入口：<a href="RELEASE_DIT_INFRA.md">发布说明与配套文件</a>；<a href="examples/README.md">代码案例入口与复现说明</a>。PDF 和 HTML 与配套目录放在同一根目录，代码和证据摘录使用相对路径。
+      模型权重、完整 trace 和视频不随包分发。部分 PDF 阅读器禁用本地文件跳转时，可打开同目录 HTML 或按附录路径查阅。</p>
+      <p>PDF 中流程图按 300 DPI 整图嵌入，避免 Zotero“阅读模式”把节点、文字和箭头拆开；正文各页底层带有不干扰文本选择的轻量归属水印。
+      重排模式仍可能遗漏行内公式；核对公式时请使用普通 PDF 页面视图或同目录 HTML。</p>
+      <div class="edition-colophon">
+        <p><strong>版本与署名</strong>：作者 SnowyLumiere（<a href="https://github.com/SnowyLumiere">https://github.com/SnowyLumiere</a>）· 内容版本 v1.0（r9 · 2026-11-20） · 公开资料核对截止 2026-11。</p>
+        <p><strong>推荐引用</strong>：SnowyLumiere. 《DiT 推理加速：原理与工程实践（源码解析与合成实验）》, v1.0 (Reader Edition r9), 2026.</p>
+        <p><strong>权限与勘误</strong>：原创文稿、图与示例保留全部权利，仅供阅读参考（见 COPYRIGHT.md）；勘误与反馈请通过 GitHub 主页提交。</p>
+      </div>
+    </div>
+
+<nav id="global-contents" class="contents"><h1>总目录</h1><a href="#reading-guide">阅读说明</a><div class="contents-grid">
+<section><h2><a href="#part-1">第一篇：计算、硬件与测量基础</a></h2>
+<ul><li><a href="#chapter-docs-manuscript-01-paradigms-md">第1章 生成范式与模型地图</a></li><li><a href="#chapter-docs-manuscript-02-execution-graph-md">第2章 从输入到输出的执行图与工作量</a></li><li><a href="#chapter-docs-manuscript-03-gpu-execution-md">第3章 GPU 执行与性能约束</a></li><li><a href="#chapter-docs-manuscript-04-memory-and-state-md">第4章 状态、显存与数据生命周期</a></li><li><a href="#chapter-docs-manuscript-05-measurement-md">第5章 性能分析与可复现实验</a></li></ul></section>
+<section><h2><a href="#part-2">第二篇：加速方法与模型实践</a></h2>
+<ul><li><a href="#chapter-docs-manuscript-06-evaluations-and-distillation-md">第6章 减少网络求值：求解器、少步、CFG 与蒸馏</a></li><li><a href="#chapter-docs-manuscript-07-feature-cache-md">第7章 跨步特征复用与自适应缓存</a></li><li><a href="#chapter-docs-manuscript-08-attention-kernels-md">第8章 Dense Attention Kernel 与低精度 Attention</a></li><li><a href="#chapter-docs-manuscript-09-sparsity-and-tokens-md">第9章 稀疏、Token 压缩与替代 Attention</a></li><li><a href="#chapter-docs-manuscript-10-gemm-and-quantization-md">第10章 Linear/GEMM 与低精度计算</a></li><li><a href="#chapter-docs-manuscript-11-fusion-and-graphs-md">第11章 算子融合、预计算、编译与 CUDA Graph</a></li><li><a href="#chapter-docs-manuscript-12-ar-state-md">第12章 AR 历史 KV 与状态管理</a></li><li><a href="#chapter-docs-manuscript-13-residency-and-transfer-md">第13章 驻留、Offload 与数据搬运</a></li><li><a href="#chapter-docs-manuscript-14-parallelism-md">第14章 多 GPU 并行与通信</a></li><li><a href="#chapter-docs-manuscript-15-decoding-and-streaming-md">第15章 VAE、流式执行与端到端交付</a></li><li><a href="#chapter-docs-manuscript-16-composition-and-validation-md">第16章 组合优化与回归验收</a></li></ul></section>
+</div><section class="contents-backmatter"><h2>延伸与附录</h2><ul><li><a href="#chapter-docs-manuscript-extension-omni-md">延伸阅读指引</a></li><li><a href="#chapter-docs-manuscript-appendix-a-model-contracts-md">附录 A 模型与实验配置</a></li><li><a href="#chapter-docs-manuscript-appendix-b-reproduction-md">附录 B 复现入口与操作步骤</a></li><li><a href="#chapter-docs-manuscript-appendix-c-evidence-md">附录 C 来源与实验数据</a></li></ul></section></nav>
+
+        <nav id="part-1" class="part-banner">
+          <div class="part-title">第一篇：计算、硬件与测量基础</div>
+          <p>本篇目录</p>
+          <p>先确认生成单位与执行图，再建立显存、计算和测量的统一记号。这一篇解释如何找出值得优化的工作；第二篇按方法讨论具体修改。</p>
+<ul>
+<li><a href="#chapter-docs-manuscript-01-paradigms-md">第1章 生成范式与模型地图</a></li>
+<li><a href="#chapter-docs-manuscript-02-execution-graph-md">第2章 从输入到输出的执行图与工作量</a></li>
+<li><a href="#chapter-docs-manuscript-03-gpu-execution-md">第3章 GPU 执行与性能约束</a></li>
+<li><a href="#chapter-docs-manuscript-04-memory-and-state-md">第4章 状态、显存与数据生命周期</a></li>
+<li><a href="#chapter-docs-manuscript-05-measurement-md">第5章 性能分析与可复现实验</a></li>
+</ul>
+          <a href="#global-contents">返回总目录</a>
+        </nav>
+
+<div id="chapter-docs-manuscript-01-paradigms-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/01-paradigms.md --><h1 id="chapter-docs-manuscript-01-paradigms-md--第1章-生成范式与模型地图">第1章 生成范式与模型地图</h1>
+<p>拿到视频或世界模型做推理优化，第一步是确认每次前向更新哪些生成位置。整段视频共同去噪、离散码逐个追加、连续 latent 按 chunk 生成，对应不同的 Query 长度、历史状态和并行机会。同一个模型系列下，不同 checkpoint 和任务入口走的计算图也可能不同，分析需要落到具体推理路径上。</p>
+<h2 id="chapter-docs-manuscript-01-paradigms-md--三种生成方式">三种生成方式</h2>
+<div class="mermaid">
+flowchart TD
+    R["每次前向更新什么生成单位？"]
+    R --> A["全序列扩散<br/>整段latent共同去噪"]
+    R --> B["离散Token-AR<br/>逐Token或逐尺度追加"]
+    R --> C["连续AR-chunk<br/>当前块多步去噪"]
+    A --> A1["动态Q/K/V随步更新"]
+    B --> B1["缓存已确定前缀的KV"]
+    C --> C1["读历史KV<br/>按模型协议提交当前块状态"]
+
+</div>
+
+<h3 id="chapter-docs-manuscript-01-paradigms-md--全序列扩散双向-attention">全序列扩散（双向 Attention）</h3>
+<p>FLUX.1、Wan2.1、HunyuanVideo、CogVideoX 等模型的常规生成路径在每个去噪步更新整段 latent。对没有 padding 或其他限制的 dense self-attention，“全部位置可见”指布尔连接 mask 全 true，或加性 mask 全 0；Attention 权重仍由 $\operatorname{softmax}(QK^\top/\sqrt d)$ 决定。</p>
+<p>常规实现会随当前 latent 重新计算其 KV，不直接复用上一去噪步的动态 KV；条件编码、scheduler 的多步历史和特征缓存各自独立维护。只有当各步的张量形状、分支和执行路径都一致时，总工作量才可近似为调用次数乘以单次 FLOPs。长序列能提供充足的并行工作，但是否跑满 Tensor Core 还取决于矩阵几何、内存布局和所选 Kernel。</p>
+<h3 id="chapter-docs-manuscript-01-paradigms-md--离散-token-自回归discrete-token-ar">离散 Token 自回归（Discrete Token-AR）</h3>
+<p>LlamaGen 按 token 顺序生成离散码；VAR 则按尺度生成网格，尺度之间因果、同尺度内并行。Mask 与单次 query 长度随生成单位而变化。<a href="https://github.com/FoundationVision/VAR/blob/a5cf0a16624d27b4c687b08f2a0ab006438452cc/models/var.py">VAR 原生实现</a>按 scale ID 构造训练 mask，并在推理时逐尺度更新 KV。TiTok 是一种 tokenizer，其<a href="https://arxiv.org/abs/2406.07550v1">原始工作</a>搭配 MaskGIT 式生成，不归入普通因果 AR。</p>
+<p>Prefill 并行处理给定前缀，前缀长度由输入决定。采用 KV cache 时，Decode 只计算当前生成单位：batch 很小、每次 query 为 1 时，线性投影退化为 GEMV 形状，attention 也容易受限于 KV 读取带宽与并行度不足；VAR 的 query 数随尺度增长，后期大尺度网格更接近矩阵乘几何。离散码预测通常输出 logits 并采样，不在每个 token 上执行迭代去噪。</p>
+<h3 id="chapter-docs-manuscript-01-paradigms-md--连续因果分块扩散continuous-causal-chunk-diffusion">连续因果分块扩散（Continuous Causal Chunk Diffusion）</h3>
+<p>SolarWM-H3、CausVid 和 Self Forcing 等路线按时间块生成连续 latent，当前块内部仍执行多步去噪求解。块内可采用双向 attention，跨块依赖已经生成的历史；块大小、历史噪声水平、可见窗口与 KV 保存位置由各自训练和实现规定。</p>
+<p>在“先去噪、再提交 clean 上下文”的实现中，两类前向承担不同职责：最后一次去噪使用的是更新前的带噪 latent，提交历史则使用最终预测的 clean latent。<a href="https://github.com/guandeh17/Self-Forcing/blob/7b27679bb0a30603a9a6520030474b6ef62d86dd/pipeline/causal_inference.py">Self Forcing 官方推理</a>同样包含去噪后的 context 更新。两类调用的计数与成本拆解见<a href="#chapter-docs-manuscript-06-evaluations-and-distillation-md">第6章</a>。</p>
+<h2 id="chapter-docs-manuscript-01-paradigms-md--模型地图需要多个分类轴">模型地图需要多个分类轴</h2>
+<table>
+<thead>
+<tr>
+<th>分类轴</th>
+<th>需要记录的内容</th>
+<th>对推理分析的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成单位</td>
+<td>全序列、chunk、token 或 scale</td>
+<td>决定当前 Q 长度、并行度与状态提交频率</td>
+</tr>
+<tr>
+<td>条件入口</td>
+<td>cross-attention、joint attention、modulation、位置或相机变换</td>
+<td>决定哪些计算随 latent 变化，哪些只依赖条件</td>
+</tr>
+<tr>
+<td>主干组织</td>
+<td>Dense、按噪声阶段选 expert、按 token 路由的 MoE</td>
+<td>激活参数、常驻权重与通信开销各不相同</td>
+</tr>
+<tr>
+<td>预测与训练</td>
+<td>epsilon/v/data 预测、Flow Matching、少步或 CFG 蒸馏</td>
+<td>scheduler、时间坐标和可用步数受配套协议约束</td>
+</tr>
+<tr>
+<td>交付方式</td>
+<td>离线视频、逐块流式、联合音视频</td>
+<td>总延迟、首包与持续播放对应不同的验收指标</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">Wan2.2 T2V 入口</a>加载 high-noise 和 low-noise 两份主干，按时间步与 boundary 切换当前模型。这里的 expert 选择发生在噪声阶段，单次前向只激活其中一份网络；但两份权重是否同时常驻显存，决定了设备的静态容量基线。</p>
+<p><a href="https://github.com/MiniMax-AI/MiniMax-H3/blob/d21241f0a4b3acbb34c97dae47fa417b7065e438/README.md">公开 H3 说明</a>与 SolarWM 的 H3 派生路径在历史读写、窗口和位置接口上各有约定。<a href="https://arxiv.org/abs/2607.19191v1">ABot-World 论文</a>则提供了双向 teacher 与因果 student 训练流程的对照。</p>
+<h2 id="chapter-docs-manuscript-01-paradigms-md--两条实践主线及阅读方式">两条实践主线及阅读方式</h2>
+<p>第二篇以 Wan2.2 的公开入口说明双向模型的计算路径，以 SolarWM、CausVid 和 Self Forcing 说明连续 AR 的状态与训练差异。源码分析用于定位修改位置，合成实验用于隔离验证算子与数据搬运机制；H3 与 ABot-World 在架构或训练差异影响优化策略时展开。</p>
+<p>这些公开论文与仓库按生成范式、源码可读性和状态协议选取，用来把不同优化接入点串成完整脉络。离散 Token-AR 用于对照 KV 状态与投机接受机制；Omni 多阶段服务调度单独放入<a href="docs/omni/inference-frameworks.md">配套文档</a>。</p></div>
+<div id="chapter-docs-manuscript-02-execution-graph-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/02-execution-graph.md --><h1 id="chapter-docs-manuscript-02-execution-graph-md--第2章-从输入到输出的执行图与工作量">第2章 从输入到输出的执行图与工作量</h1>
+<p>一次请求不仅是若干次 Attention。条件编码、patch 投影、每层 QKV/MLP、归一化、采样更新、状态刷新和解码构成完整执行图。本章先把几何和工作量列清，后续各章再决定改变哪一项。</p>
+<h2 id="chapter-docs-manuscript-02-execution-graph-md--从-latent-到时空-token">从 latent 到时空 Token</h2>
+<h3 id="chapter-docs-manuscript-02-execution-graph-md--patchify-后有多少-token">Patchify 后有多少 Token</h3>
+<p>视频生成模型通常在 3D-VAE 的低维潜空间（Latent Space）中进行特征变换。
+设潜空间输入张量为 $Z \in \mathbb{R}^{B \times C \times T \times H \times W}$，其中：</p>
+<ul>
+<li>$B$ 为 Batch Size；</li>
+<li>$C$ 为潜变量通道数，由具体 codec 定义；</li>
+<li>$T$ 为经 VAE 时间压缩后的时序长度；</li>
+<li>$H, W$ 为经 VAE 空间压缩后的高度和宽度。</li>
+</ul>
+<p>采用无重叠的切块尺寸 $(p_t,p_h,p_w)$，且三个维度均可整除时：
+$$N_{\text{video}} = \frac{T}{p_t} \times \frac{H}{p_h} \times \frac{W}{p_w}$$
+尺寸无法整除时，查看实现采用 padding、裁剪还是拒绝输入。无 padding、stride 等于 kernel 的卷积会向下取整，边缘覆盖范围也随之变化。像素帧数到 latent 帧数也要查 codec，因果 codec 可能有首帧偏置。
+映射后的张量形状为 $X_{\text{video}} \in \mathbb{R}^{B \times N_{\text{video}} \times D}$，其中 $D$ 为 Transformer 隐藏层维度（Hidden Dimension）。</p>
+<h3 id="chapter-docs-manuscript-02-execution-graph-md--条件接入方式与-packed-布局">条件接入方式与 Packed 布局</h3>
+<p>“模型同时接收文本与视频”不表示它们共享同一个 self-attention 序列。joint attention 会拼接参与交互的 token；cross-attention 则以视频为 query、文本等条件为 KV。例如<a href="https://github.com/Wan-Video/Wan2.1/blob/76e9427657c74f7d063f6c50fce9529900c59e28/wan/modules/model.py">Wan2.1 的 <code>WanT2VCrossAttention</code></a>分别投影 <code>x</code> 与 <code>context</code>。时间、类别或相机条件还可能通过 modulation 或位置变换接入，不一定占用额外 token。</p>
+<p>对于确实使用 joint attention 的实现，一个样本的逻辑序列可以写为：
+$$X_{\text{total}} = [X_{\text{text}} \,\|\, X_{\text{ref}} \,\|\, X_{\text{video}} \,\|\, X_{\text{audio}}] \in \mathbb{R}^{1 \times N_{\text{total}} \times D}$$
+其中 $N_{\text{total}}=\sum_m N_m$。这里仅示意逻辑布局，具体模态顺序由模型定义。逻辑拼接与跨样本 packing 也要分开：后者才是在支持变长的 kernel 中省去样本间 padding 的一种方式。</p>
+<p>变长 Attention（varlen）接口中的 <code>cu_seqlens</code> 标记独立样本的序列边界。同一样本内需要相互注意的模态应放在同一序列中，模态边界另行记录，允许的交互关系由 Attention Mask 指定：</p>
+<pre class="codehilite"><code class="language-text">单个多模态样本: cu_seqlens = [0, N_total]
+两个独立样本:   cu_seqlens = [0, N_sample0, N_sample0 + N_sample1]
+</code></pre>
+
+<p>若将 text/ref/video 各段作为 <code>cu_seqlens</code> 中的独立序列，这些段之间就不再计算 Attention。跨样本 packing 可以减少 padding 开销，仍需核验所选 Kernel 对数据布局和 Mask 的支持。</p>
+<h3 id="chapter-docs-manuscript-02-execution-graph-md--序列长度对注意力的影响">序列长度对注意力的影响</h3>
+<p>考虑一个几何算例，假设输入 1920×1080、120 帧，codec 恰按时间 4 倍、空间 8 倍缩小，得到 $30\times135\times240$ latent。若 patch 为 $1\times2\times2$，高度 135 不能整除 2。假设实现允许将 latent 高度补到 136，则：
+$$N_{\text{video}}=30\times68\times120=244,800$$
+在 batch 为 1、32 个 head、每元素 2 bytes 时，仅一份完整 score 矩阵就需要：
+$$B H_{\text{heads}}N^2b=1\times32\times244,800^2\times2\approx3.84\text{ TB}$$
+其中 $1\text{ TB}=10^{12}\text{ bytes}$（全文约定十进制单位 MB、GB、TB 分别表示 $10^6,10^9,10^{12}\text{ bytes}$，二进制单位 KiB、MiB、GiB 分别表示 $2^{10},2^{20},2^{30}\text{ bytes}$），容量未计其他张量。这个几何算例不对应某个模型的原生输入配置，但足以说明保存完整注意力分数矩阵的显存成本。采用分块 Attention 可以避免这份完整中间矩阵，无须为此强制引入多卡序列切分；Dense Attention 的二次方计算量仍然存在。</p>
+<h2 id="chapter-docs-manuscript-02-execution-graph-md--dit-block-中的主要路径">DiT Block 中的主要路径</h2>
+<div class="mermaid">
+flowchart TD
+    X["hidden states [B,N,D]"] --> N["Norm与时间/条件调制"]
+    N --> Q["QKV投影与QK Norm / RoPE"]
+    Q --> A["Attention Core"]
+    A --> O["输出投影与残差"]
+    O --> M["Norm / 调制 / MLP / 残差"]
+    M --> Y["下一层 [B,N,D]"]
+
+</div>
+
+<p>这是常见路径示意，具体模型可增加 cross-attention 或多模态分支。实际 Kernel Launch 数要沿 trace 统计：view 可能只改元数据，一次库调用也可能发射多个 Kernel。残差、Norm 与位置变换的 FLOPs 较少，但中间张量和 launch 仍可能进入关键路径。</p>
+<h2 id="chapter-docs-manuscript-02-execution-graph-md--单层工作量与显存流量">单层工作量与显存流量</h2>
+<h3 id="chapter-docs-manuscript-02-execution-graph-md--投影attention-与-mlp-的工作量">投影、Attention 与 MLP 的工作量</h3>
+<p>以一个标准 DiT Block 为例，设定隐藏层维度为 $D$、序列长度为 $N$、注意力头数为 $H$、每个 Head 维度为 $d = D/H$：</p>
+<h4 id="chapter-docs-manuscript-02-execution-graph-md--浮点运算量flops按单-batch-计">浮点运算量（FLOPs，按单 Batch 计）</h4>
+<ul>
+<li><strong>QKV 投影</strong>：$W_{qkv} \in \mathbb{R}^{D \times 3D}$，计算量为 $2 \times N \times D \times 3D = 6 N D^2$；</li>
+<li><strong>Attention Core</strong>：<ul>
+<li>$QK^T$ 矩阵乘：$2 \times N \times N \times D = 2 N^2 D$；</li>
+<li>$\text{Softmax}(S) \cdot V$ 矩阵乘：$2 \times N \times N \times D = 2 N^2 D$；</li>
+<li>Attention Core 合计：$4 N^2 D$；</li>
+</ul>
+</li>
+<li><strong>输出投影 Out Linear</strong>：$W_o \in \mathbb{R}^{D \times D}$，计算量为 $2 \times N \times D \times D = 2 N D^2$；</li>
+<li>
+<p><strong>前馈网络（MLP）</strong>：</p>
+<ul>
+<li>
+<p><strong>标准 GELU MLP</strong>（2 层 Linear，隐层维度 $4D$）：
+$$\text{FLOPs}_{\text{GELU}} = 2 \times (2 \times N \times D \times 4D) = 16 N D^2$$</p>
+</li>
+<li>
+<p><strong>SwiGLU MLP</strong>（3 层 Linear，隐层维度通常取 $\frac{8}{3}D$）：
+$$\text{FLOPs}_{\text{SwiGLU}} = 3 \times \left(2 \times N \times D \times \frac{8}{3}D\right) = 16 N D^2$$</p>
+</li>
+<li>
+<p>若 SwiGLU 隐层维度按 $4D$ 配置，则计算量扩展为 $24 N D^2$。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>单 Block 总运算量（以 $16ND^2$ MLP 计）：
+$$\text{FLOPs}_{\text{block}} = 24 N D^2 + 4 N^2 D$$</p>
+<p>AR-chunk 中应将 query 长度与 KV 长度分开。设当前块有 $M$ 个 query、可见 KV 共 $L_{\text{KV}}$ 个 token，在上述 MHA 宽度假设下，attention core 为 $4BM L_{\text{KV}}D$ FLOPs。当前块的 QKV 投影、输出投影与 MLP 约为 $24BM D^2$；已缓存的历史 KV 不重复投影，新增条件分支另算。连续 AR 的一个 chunk 通常包含千余至数千个 query；此时投影仍是矩阵乘，应代入实际 $M$，而不是按单 Token Decode 的 GEMV 估算。</p>
+<h4 id="chapter-docs-manuscript-02-execution-graph-md--设备显存流量device-memory-traffic">设备显存流量（Device-memory traffic）</h4>
+<p>显存流量取决于 Attention 的具体底层实现方式：</p>
+<ul>
+<li>
+<p><strong>实现方式 A：显式保存注意力矩阵</strong>。注意力分数（score）是 $QK^\top/\sqrt d$，概率矩阵（probability）是其逐行 softmax 的结果；每个 head 的两种矩阵形状均为 <code>[N,N]</code>。若将其中任一种完整写入显存，设 head 数为 $H$、每元素占 $b$ bytes，中间矩阵相关流量随 $HN^2b$ 增长；具体读写次数取决于 softmax 和算子融合方式。前述 MLP 假设下，投影与 MLP 共含 $12D^2$ 个权重元素；一次权重读取或一次注意力矩阵读写都不代表完整 Block 的实际流量。</p>
+</li>
+<li>
+<p><strong>实现方式 B：FlashAttention 分块计算</strong>。分块与 online softmax 避免将完整的 $N\times N$ 分数或概率矩阵写入显存，辅助存储随序列长度线性增长，但 KV 可能被不同 query tile 重复读取。HBM 流量还要结合 tile 和 KV 重读次数分析。</p>
+</li>
+</ul>
+<p>在两级存储分析中，令 $d=D/H$ 为单 head 维度、$M$ 为可用快存容量（以元素计），单 head attention 的 IO 含 $Nd+N^2d^2/M$ 量级项；实际 L2 复用、tile 和 kernel 还会改变流量。见<a href="https://arxiv.org/abs/2205.14135">FlashAttention 原论文</a>与<a href="https://arxiv.org/abs/2402.07443">IO 复杂度分析</a>。算术强度需按实际流量计算，再用硬件计数器判断限制来自计算还是带宽。</p>
+<h2 id="chapter-docs-manuscript-02-execution-graph-md--wan22沿原生入口核对一次请求">Wan2.2：沿原生入口核对一次请求</h2>
+<p><a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">固定源码</a>依次编码正、负文本条件，准备噪声和 scheduler 时间表，选择当前噪声阶段的主干，再分别执行 conditional 与 unconditional 前向，组合预测后调用 scheduler 更新 latent。最后在输出 rank 执行 VAE decode。只改变 guidance 数值时，这两次主干调用仍会执行；省去分支需要修改路径或采用匹配的蒸馏模型。</p>
+<p>设 scheduler 实际迭代 $S$ 次，且每次都走上述两次 model 调用，则源码路径的主干调用数为 $2S$。两份 expert 各承担多少次取决于时间表与 boundary；每步只执行被选中的一份 expert。这个源码计数用于明确工作量，实际延迟再测。改变 scheduler、分支合批或蒸馏入口后应重新计数。</p>
+<h2 id="chapter-docs-manuscript-02-execution-graph-md--ar每块去噪与状态提交分开">AR：每块去噪与状态提交分开</h2>
+<p>设一个 chunk 有 $C$ 个 latent 时间片，每片经 patchify 后有 $P$ 个视频 Token，则当前视频 query 长度为 $M=CP$。历史窗口如果保留 $K$ 个完整 chunk，视频历史长度为 $KCP$；reference、音频和其他条件是否进入同一 Attention 序列，需按模型分别计数。</p>
+<p>每块执行 $S$ 次去噪、$R$ 次上下文更新时，主干调用数为 $S+R$。上下文更新还包含状态写入，成本未必与去噪相同。先在日志中区分 denoise 与 commit，再统计每层调用及其 Shape；<a href="#chapter-docs-manuscript-12-ar-state-md">第12章</a>沿状态生命周期解释为什么两者需要分开。</p></div>
+<div id="chapter-docs-manuscript-03-gpu-execution-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/03-gpu-execution.md --><h1 id="chapter-docs-manuscript-03-gpu-execution-md--第3章-gpu-执行与性能约束">第3章 GPU 执行与性能约束</h1>
+<p>把 GPU 简化为一个峰值 TFLOPS 数字，会掩盖大部分工程瓶颈。同一 DiT 层既有大 GEMM，也有归约、重排、短 Kernel 和数据拷贝；它们对 SM、存储层次和调度的需求截然不同。定位性能问题时，先区分受限于算力、带宽还是调度空档，再决定是增加并行度还是减少数据搬运。</p>
+<h2 id="chapter-docs-manuscript-03-gpu-execution-md--从线程到-tile">从线程到 Tile</h2>
+<p>CUDA Kernel 把工作划分成 thread blocks；block 内线程以 Warp 为执行单位。一个 SM 能同时驻留多少 block/Warp 受线程数、寄存器、shared memory 及架构上限共同限制。Occupancy 反映活跃 Warp 相对架构上限的比例；更多 Warp 有助于掩盖访存等待，但也可能因寄存器压力限制单个 block 的 tile 规模。</p>
+<p>GEMM 和 Attention Kernel 通常按 Tile 消费张量。假设输出矩阵为 $[M,N]$、输出 Tile 为 $[B_M,B_N]$，未考虑 split-K 时输出任务块数为：</p>
+<p>$$\mathrm{tiles}_M=\left\lceil\frac{M}{B_M}\right\rceil,\qquad
+\mathrm{tiles}_N=\left\lceil\frac{N}{B_N}\right\rceil,\qquad
+\mathrm{output\_tiles}=\mathrm{tiles}_M\times\mathrm{tiles}_N$$</p>
+<p>当 $M$ 很小，即使 $K$ 和 $N$ 很大，输出 Tile 数也可能不足以铺满整卡 SM。相反，增大 Tile 能提高片上数据复用，却会消耗更多寄存器和 shared memory；在长视频序列上高效的 Tile 未必适合短 chunk。分析时还需兼顾末尾不足一个 Tile 的边界浪费与 Wave 量化效应。</p>
+<p>Tensor Core 执行的是满足特定指令与布局约束的矩阵运算。FP8 张量必须由匹配的 Kernel 消费才能走 FP8 Tensor Core；若 Shape、对齐或架构不匹配，底层可能回退到高精度路径。核对性能规格时，需区分 Dense 峰值与 2:4 结构化稀疏峰值，常规稠密算子以非稀疏峰值为参照。</p>
+<h2 id="chapter-docs-manuscript-03-gpu-execution-md--存储层次与布局">存储层次与布局</h2>
+<p>权重和激活主要驻留设备显存（HBM/GDDR），数据经 L2/L1 cache 进入 SM，Kernel 可利用 shared memory 在 block 内复用数据，再送入寄存器做矩阵乘。L2 命中率直接决定落到显存颗粒上的真实流量；理论最小读写字节数给出下界，实际带宽消耗以硬件计数器为准。</p>
+<p>例如 Q 的逻辑 Shape 同为 <code>[B,H,N,d]</code>，连续的 $d$ 维和连续的 $N$ 维对应不同的物理地址步幅（stride）。<code>transpose</code> 通常只创建带新 stride 的 view；若下游算子要求连续布局，隐式或显式的 <code>contiguous()</code> 就会触发真实内存拷贝。为了省一次转置而让主计算 Kernel 以低效 stride 访存，往往得不偿失，因此布局选择需要把生产者、转换和消费者放在同一段区间内衡量。</p>
+<p>Coalesced access 关注同一个 Warp 的访存地址能否合并为尽量少的内存事务。逐 token 随机 gather、非连续 head 排列和细碎拷贝都会拉低有效带宽；按整块组织的稀疏模式更容易保持连续读取。执行和访存细节可参见<a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html">CUDA Best Practices</a>。</p>
+<h2 id="chapter-docs-manuscript-03-gpu-execution-md--roofline-提供约束不直接诊断整模型">Roofline 提供约束，不直接诊断整模型</h2>
+<p>设一个算子包含 $F$ 次浮点操作、实际穿过目标存储层的字节数为 $B$，硬件在对应精度下的有效计算吞吐为 $P$、有效带宽为 $\mathrm{BW}$，则理想重叠下的耗时下界为：</p>
+<p>$$I=\frac{F}{B}\quad(\mathrm{FLOP/byte}),\qquad
+T_{\mathrm{compute}}\ge\frac{F}{P},\qquad
+T_{\mathrm{memory}}\ge\frac{B}{\mathrm{BW}}$$
+$$T_{\mathrm{kernel}}\ge\max(T_{\mathrm{compute}},T_{\mathrm{memory}})$$</p>
+<p>这个下界不包含 Kernel Launch、依赖等待、Tile 尾部浪费和非矩阵指令瓶颈。DiT 主干不总是 Compute-bound，AR Decode 也不总是 Memory-bound：batch、query/KV 长度、dtype 和布局都会改变算术强度。</p>
+<p>以矩阵乘 <code>X[M,K] × W[K,N]</code> 为例，乘加按 2 FLOPs 计，输入输出每元素占 $b$ bytes 且理想情况下只读写一次：</p>
+<p>$$F=2MKN,\qquad
+B_{\min}=b(MK+KN+MN),\qquad
+I_{\mathrm{ideal}}=\frac{2MKN}{b(MK+KN+MN)}$$</p>
+<p>$M=1$ 时，读取权重 $W$ 的字节无法在多个 token 间摊销；$M$ 增大后权重复用率随之提升。连续 AR-chunk 的单块 token 数 $M$ 往往在千余至数千量级，其线性投影完全属于矩阵乘几何，而不是单 token Decode 的 GEMV。矩阵乘分块与带宽背景见 <a href="https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html">NVIDIA GEMM 指南</a>。</p>
+<h2 id="chapter-docs-manuscript-03-gpu-execution-md--kernel-launch-与依赖">Kernel Launch 与依赖</h2>
+<p>CPU 可以异步向 GPU 队列提交工作。短 Kernel 密集串联时，Host 发射、Python 分支或隐式同步容易让 GPU 出现断流等待；而当单个大 Kernel 已经吃满设备时，单纯削减 launch 次数带来的收益就很有限。CUDA Graph 主要省去重复发射的 Host 开销，算子融合则重在省去中间结果的显存读写。</p>
+<p>多 Stream 允许表达无依赖的并发工作，但不会凭空增加 SM、显存带宽或 DMA 引擎。如果两个大 Kernel 争抢同一硬件资源，并发执行反而可能拉长各自耗时。只有结合时间线（trace）观察实际重叠区间与关键路径变化，才能确认多流并发是否真正奏效。</p>
+<h2 id="chapter-docs-manuscript-03-gpu-execution-md--架构差异如何进入实验">架构差异如何进入实验</h2>
+<p>Hopper 与不同 Blackwell 产品的算子支持路径存在显著差异。面向 SM90（如 H100/H800）调优的 Kernel 不会自动适配 SM120（如 RTX 5090），同一架构代号下的不同芯片在共享内存配额、互联带宽和可用指令上也有区别。从“编译通过、算子可调、数值正确”到“单算子提速、整模质量达标”，每一步都是独立的工程门槛，实验记录需注明物理 GPU 型号、Compute Capability、工具链版本与输入几何。</p></div>
+<div id="chapter-docs-manuscript-04-memory-and-state-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/04-memory-and-state.md --><h1 id="chapter-docs-manuscript-04-memory-and-state-md--第4章-状态显存与数据生命周期">第4章 状态、显存与数据生命周期</h1>
+<p>显存溢出（OOM）往往发生在某个短暂的张量共存窗口。静态模型权重大小、单次前向结束后的 <code>allocated</code> 读数，或者各模块单独测得的峰值，都不能直接相加当作完整请求的显存需求。排查显存问题，需要建立一张覆盖张量身份、存活区间与设备放置的生命周期账本。</p>
+<h2 id="chapter-docs-manuscript-04-memory-and-state-md--一个按生命周期组织的账本">一个按生命周期组织的账本</h2>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>常见存活范围</th>
+<th>优化时容易漏算什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权重与 adapter</td>
+<td>模型加载到卸载</td>
+<td>多 expert、低精度 scale、未量化层、合并临时副本</td>
+</tr>
+<tr>
+<td>activation 与 residual</td>
+<td>一层或一段前向</td>
+<td>旧缓存和新计算结果同时存活、view 持有较大 storage</td>
+</tr>
+<tr>
+<td>Kernel workspace</td>
+<td>调用或后端缓存范围</td>
+<td>autotune、算法选择、packing 及反量化缓冲</td>
+</tr>
+<tr>
+<td>AR 历史 KV</td>
+<td>多个 chunk</td>
+<td>K/V 表示、有效长度、淘汰与当前 refresh 写入重叠</td>
+</tr>
+<tr>
+<td>Graph 私有池</td>
+<td>Graph 及相关 tensor 有效期间</td>
+<td>多 Shape 捕获、输出仍被消费者持有</td>
+</tr>
+<tr>
+<td>解码及交付缓冲</td>
+<td>decoder 上下文到消费完成</td>
+<td>overlap 帧、拼接结果、在途队列、慢 reader</td>
+</tr>
+</tbody>
+</table>
+<p>对设备 $d$，用 $L_d(t)$ 表示时刻 $t$ 仍存活并占用该设备底层存储（storage）的对象集合，则实时活跃字节数与请求峰值为：</p>
+<p>$$\mathrm{live\_bytes}_d(t)=\sum_{x\in L_d(t)}\mathrm{storage\_bytes}(x),\qquad
+\mathrm{peak\_live}_d=\max_t\,\mathrm{live\_bytes}_d(t)$$</p>
+<p>共享同一底层 <code>storage</code> 的多个 <code>view</code> 只计一次。PyTorch 的 <code>allocated</code>、<code>reserved</code> 与驱动级显存统计的口径差异见<a href="#chapter-docs-manuscript-05-measurement-md">第5章</a>；缓存分配器与 CUDA Graph 私有池机制可参考<a href="https://docs.pytorch.org/docs/2.8/notes/cuda.html#memory-management">CUDA 内存管理说明</a>。</p>
+<h2 id="chapter-docs-manuscript-04-memory-and-state-md--四类缓存有不同的有效性条件">四类缓存有不同的有效性条件</h2>
+<p>推理系统里常见的四类缓存具有截然不同的失效边界：跨步特征缓存复用近似的网络输出或残差，依赖采样轨迹、时间步与误差阈值；AR 历史 KV 保存已生成上下文，受提交时机、位置编码与滑动窗口协议约束；条件侧缓存保存固定文本等条件投影，随层和 expert 权重区分；跨请求前缀复用则要求模型权重、输入条件与位置语义完全一致。当前 chunk 在去噪迭代中动态更新的 Q/K/V 与已经提交归档的历史 KV 属于不同生命周期，不能混用同一块缓冲。</p>
+<table>
+<thead>
+<tr>
+<th>复用对象</th>
+<th>首要检查</th>
+<th>典型失效事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>条件编码/条件 K/V</td>
+<td>条件与投影权重是否相同</td>
+<td>prompt、encoder、层或 expert 改变</td>
+</tr>
+<tr>
+<td>跨步残差</td>
+<td>缓存子图与近似策略是否适配</td>
+<td>新轨迹、步序变化、CFG/Shape 改变</td>
+</tr>
+<tr>
+<td>AR 历史 raw KV</td>
+<td>提交内容与位置协议是否一致</td>
+<td>reset、窗口淘汰、历史被替换</td>
+</tr>
+<tr>
+<td>跨请求前缀</td>
+<td>可共享部分是否只读且同语义</td>
+<td>adapter/权重、位置、相机或前缀内容改变</td>
+</tr>
+</tbody>
+</table>
+<p>除了比对逻辑缓存 key，还要防范底层张量被原地修改（in-place mutation）导致 key 未变而内容已脏。数据身份、版本号（<code>_version</code>）、逻辑位置与存活期共同决定缓存是否安全可用。</p>
+<h2 id="chapter-docs-manuscript-04-memory-and-state-md--读完成与可回收之间的间隔">读完成与可回收之间的间隔</h2>
+<p>发起异步拷贝后，源 buffer 必须保留到传输真正完成；消费者则在收到 ready 事件后才能读取目标 buffer。即便上层逻辑请求已经超时或取消，只要底层 DMA 或 GPU Kernel 仍在执行，相关内存就不能立刻归还重用。</p>
+<div class="mermaid">
+flowchart LR
+    A["生产完成"] --> B["传输中<br/>保留源buffer"]
+    B --> C["传输完成<br/>ready"]
+    C --> D["消费者使用"]
+    D --> E["工作完成且引用释放<br/>槽位可复用"]
+
+</div>
+
+<p>有界环形池（ring buffer）或分页池（paged pool）用来管理固定槽位的分配与回收。若下游消费者过慢，在途引用会拉长缓冲区的实际占用时间。第 12 章讨论 AR 状态组织，第 13 章讨论跨设备搬运，第 15 章讨论流式交付中的队列背压。</p>
+<h2 id="chapter-docs-manuscript-04-memory-and-state-md--kv-容量先按表示形式计算">KV 容量先按表示形式计算</h2>
+<p>设历史窗口保留 $K$ 个等长 chunk，每个 chunk 的 K 和 V 形状均为 <code>[B, N, H_kv, d]</code>，共 $L$ 层，每元素占 $b$ bytes。仅计未压缩 K/V 张量本身的载荷：</p>
+<p>$$M_{\mathrm{chunk,layer}}=2BNH_{\mathrm{kv}}d\,b,\qquad
+M_{\mathrm{history}}=KLM_{\mathrm{chunk,layer}}=2KLBNH_{\mathrm{kv}}d\,b$$</p>
+<p>其中 $H_{\mathrm{kv}}$ 为 KV head 数（采用 GQA 时需与 query head 数区分）。若采用量化缓存，还需计入 scale、对齐 padding 与页表索引；若采用静态分页池，则需按预分配的总页槽位数核算常驻显存。</p>
+<p>以一组独立的示意参数为例：$B=1$、$N=4096$、$H_{\mathrm{kv}}=32$、$d=128$、BF16（$b=2$），保留 $K=5$ 个历史 chunk、共 $L=32$ 层：</p>
+<table>
+<thead>
+<tr>
+<th>统计粒度</th>
+<th>计算式</th>
+<th style="text-align: right;">字节数</th>
+<th style="text-align: right;">容量换算</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单块单层（1 chunk, 1 layer）</td>
+<td>$2\times1\times4096\times32\times128\times2$</td>
+<td style="text-align: right;">67,108,864 B</td>
+<td style="text-align: right;">64 MiB（67.11 MB）</td>
+</tr>
+<tr>
+<td>五块单层（5 chunks, 1 layer）</td>
+<td>$5\times67{,}108{,}864$</td>
+<td style="text-align: right;">335,544,320 B</td>
+<td style="text-align: right;">320 MiB（335.54 MB）</td>
+</tr>
+<tr>
+<td>五块全模型（5 chunks, 32 layers）</td>
+<td>$32\times335{,}544{,}320$</td>
+<td style="text-align: right;">10,737,418,240 B</td>
+<td style="text-align: right;">10 GiB（10.74 GB）</td>
+</tr>
+</tbody>
+</table>
+<p>把不活跃或窗口外的历史 KV 卸载到 CPU 主存，可以显著压低 GPU 常驻显存，但会引入逐层回传的 PCIe 带宽开销，具体搬运实验见<a href="#chapter-docs-manuscript-13-residency-and-transfer-md">第13章</a>。</p>
+<h2 id="chapter-docs-manuscript-04-memory-and-state-md--如何排查增长与碎片">如何排查增长与碎片</h2>
+<p>在固定窗口配置下连续运行多轮填窗、淘汰和 reset，在相同代码位置采样 <code>allocated</code>、<code>reserved</code>、活跃 Python 对象与在途缓冲字节数。未清理的输出列表、因 Shape 变化触发的 CUDA Graph 重复捕获、残留闭包引用以及下游消费队列积压，都会表现为显存随轮次单调爬升。若 <code>reserved</code> 远高于 <code>allocated</code> 且剩余空闲显存充足却仍报分配失败，则可借助分配器快照（memory snapshot）定位块碎片。</p></div>
+<div id="chapter-docs-manuscript-05-measurement-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/05-measurement.md --><h1 id="chapter-docs-manuscript-05-measurement-md--第5章-性能分析与可复现实验">第5章 性能分析与可复现实验</h1>
+<p>离线单视频延迟、多请求吞吐、首帧与稳态 chunk 间隔会导向不同方案。先确定目标和交付终点，用不插桩的原生入口建立参考，再用短 profile 解释成本。本章集中定义计时、容量和质量原则；各章的合成实验按附录 A、C 给出的硬件、Shape、样本完整性和范围阅读。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--计时边界">计时边界</h2>
+<p>Wall time 覆盖约定的 Host 和设备完成边界。CUDA Event 测量指定 Stream 的时间跨度，可能包含等待；Profiler 累计 device 时间可以跨 Stream、跨 GPU 重叠。报告中应分别命名。完整 E2E 还要写明终点是 latent、首份可播放帧、编码文件，还是客户端消费完成。</p>
+<pre class="codehilite"><code class="language-python"># 单设备同步 wall 示例；多设备应等待全部相关完成事件。
+import time
+import torch
+torch.cuda.synchronize()
+start = time.perf_counter()
+output = run_request()
+torch.cuda.synchronize()
+elapsed = time.perf_counter() - start
+</code></pre>
+
+<p>请求前后同步用于测完成时间；逐层同步会改变执行路径，适合诊断。CPU tensor 复制、逐层 hooks、哈希和 finite 检查也可能引入同步，应移出热计时，或明确计入了哪些成本。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--从请求缩小到一个成本项">从请求缩小到一个成本项</h2>
+<p>先按条件编码、DiT、历史更新与搬运、decoder、编码及交付划分阶段。DiT 内再查看 Linear、Attention、Norm/调制、布局转换和通信。记录 Shape、stride、dtype、调用数和实际 backend，再只改变一个因素。</p>
+<p>例如，trace 中出现大量 H2D copy 时，先检查搬的是权重还是每步重读的活跃 KV；若是后者，就测载荷、读取次数、源内存类型和等待。第13章的合成搬运实验展示这一控制变量过程。GPU 利用率只能帮助定位空闲区间，具体优化仍需要调用路径和时间线解释。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--配对基准与环境漂移">配对基准与环境漂移</h2>
+<p>A/B/A 依次运行参考 A1、候选 B、参考 A2。固定权重、输入、初始噪声、采样配置、硬件和计时范围，保留各臂的 warmup 与全部热样本。参考复测可以暴露背景负载、频率和温度变化，但三臂顺序本身不消除这些干扰。</p>
+<p>以首轮基线 $T_{A1}$ 为分母计算前后漂移。结果为正，说明末轮基线 $T_{A2}$ 变慢，可能出现了降频或背景干扰：</p>
+<p>$$\mathrm{Drift}_{A2/A1}=\left(\frac{T_{A2}}{T_{A1}}-1\right)\times100\%$$</p>
+<p>$$\mathrm{Speedup}=\frac{(T_{A1}+T_{A2})/2}{T_B}$$</p>
+<p>局部倍率以两次参考均值的平均为分子，候选均值为分母。漂移与收益一起报告，并按预先确定的误差预算决定是否增加独立重复。连续 30 个 chunk 是一条相关序列；服务 P99 和跨场景稳定性需要独立请求与适当样本量。</p>
+<p>加载、编译、准备、rollout、VAE 和编码分别计时。阶段严格串行且覆盖同一请求时才可相加；流式系统直接测输入到交付的关键路径、首包和稳态间隔。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--三种显存统计">三种显存统计</h2>
+<div class="mermaid">
+flowchart LR
+    M1["PyTorch allocated<br/>当前张量分配量"]
+    M2["PyTorch reserved<br/>缓存分配器保留量"]
+    M3["Driver usage<br/>指定设备或进程采样量"]
+    M1 -->|同一分配器内统计| M2
+    M2 -.->|另查context与外部分配| M3
+
+</div>
+
+<p><code>torch.cuda.memory_allocated()</code> 反映当前张量分配量；<code>memory_reserved()</code> 反映 PyTorch 缓存分配器保留量，可能包括 Graph 私有池。驱动统计还可能包含 context、第三方分配和其他进程，取决于采样范围。<a href="https://docs.pytorch.org/docs/2.8/generated/torch.cuda.memory.memory_allocated.html">PyTorch allocated</a>、<a href="https://docs.pytorch.org/docs/2.8/generated/torch.cuda.memory.memory_reserved.html">reserved</a>分别给出了接口定义。</p>
+<p>每张卡报告 allocated、reserved 与驱动采样峰值，注明重置和采样区间。三项峰值可能发生在不同时间；分析碎片需要分配快照、失败尺寸或池状态，而不是简单相减。Host RSS 另行记录。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--按方法选择质量检查">按方法选择质量检查</h2>
+<p>性能比较需要质量约束，但不同方法不适合经过同一条串行阈值链。</p>
+<div class="mermaid">
+flowchart TD
+    Method["优化改变了什么？"] --> Exact["预期保持参考计算语义<br/>布局、精确预计算、Graph等"]
+    Method --> Approx["有意近似或改变模型<br/>缓存、稀疏、量化、蒸馏等"]
+    Exact --> Num["逐层/latent数值对照<br/>检查状态、有限性与容差"]
+    Num --> Render["解码与任务质量回归"]
+    Approx --> Quality["感知、条件保持、运动与时序<br/>在代表性输入集上比较"]
+    Approx --> Diagnose["数值误差辅助定位<br/>按方法解释差异"]
+    Quality --> Decision["在预设质量约束下比较性能"]
+    Render --> Decision
+
+</div>
+
+<h3 id="chapter-docs-manuscript-05-measurement-md--数值等价与近似误差">数值等价与近似误差</h3>
+<p>对预期保持语义的修改，检查 dtype、比较位置、max absolute error、Relative L2、有限性与状态更新。浮点归约次序变化也可能产生微小差异，因此容差要按实现预设。只有逐位相同才记 bitwise。</p>
+<p>$$\text{Rel-L2}=\frac{\|Z_{\mathrm{candidate}}-Z_{\mathrm{reference}}\|_2}{\|Z_{\mathrm{reference}}\|_2}$$</p>
+<p>零范数分母单独处理。对蒸馏学生、跨步缓存或量化等近似方法，这个量可定位误差从何处开始增长，阈值需与方法和任务一起校准。它不应成为感知评估之前的一道通用淘汰线：模型改变、轨迹分叉后，较大的 latent 距离可能仍对应可接受的视频。</p>
+<p>PSNR、SSIM 和逐帧 LPIPS 适合有空间对应关系的配对输出。蒸馏学生生成的运动或构图可以与 teacher 不同，此时逐像素比较会惩罚有效的生成差异。应同时采用提示词/条件保持、细节、运动幅度、时序一致性及人工配对评估；在固定输入集上报告质量分布和失败比例。</p>
+<h3 id="chapter-docs-manuscript-05-measurement-md--时序重投影误差">时序重投影误差</h3>
+<p>令 $p=(x,y)$ 为第 $t+1$ 帧的位置，后向光流 $F_{t+1\to t}(p)$ 指向第 $t$ 帧的对应位置，以双线性采样重建：</p>
+<p>$$\hat I_{t+1}(p)=I_t\!\left(p+F_{t+1\to t}(p)\right)$$</p>
+<p>令 $m(p)\in\{0,1\}$ 保留可见且采样有效的位置，$C$ 为颜色通道数，有效区域的平均绝对误差为：</p>
+<p>$$E_{\mathrm{temp}}=\frac{\sum_p m(p)\,\|I_{t+1}(p)-\hat I_{t+1}(p)\|_1}{C\sum_p m(p)}$$</p>
+<p>固定光流估计器、像素值范围、遮挡规则和聚合方式；空 mask 单独报告。使用 <code>grid_sample</code> 时将源像素坐标转成归一化网格，并固定 <code>align_corners</code>。<a href="https://docs.pytorch.org/docs/2.8/generated/torch.nn.functional.grid_sample.html">接口定义</a>采用输出位置到输入坐标的映射。</p>
+<p>这个残差用于诊断运动补偿后的不一致。过度静止或模糊也会得到小残差，因此还要观察实际运动和细节。AR 应按 chunk 位置统计，并覆盖窗口填满、多次淘汰和长期运行；基线自身的退化也作为质量问题记录。</p>
+<p>联合 AV 任务另外测音频内容、音质、PTS 连续性和语义同步；纯视频将音频项记 N/A。时间戳连续、媒体可解码和感知质量分别验收。</p>
+<h2 id="chapter-docs-manuscript-05-measurement-md--让结果支持相应结论">让结果支持相应结论</h2>
+<table>
+<thead>
+<tr>
+<th>材料</th>
+<th>直接支持的判断</th>
+<th>下一步验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>代数与源码</td>
+<td>工作量、执行路径、修改位置</td>
+<td>实际 dispatch、耗时和质量</td>
+</tr>
+<tr>
+<td>合成 Kernel 实验</td>
+<td>指定 Shape 的局部数值与时间</td>
+<td>模型内转换、系统成本与输出</td>
+</tr>
+<tr>
+<td>整模配对</td>
+<td>指定输入的执行、状态和计时</td>
+<td>代表性场景的感知质量与交付</td>
+</tr>
+<tr>
+<td>E2E 与质量评估</td>
+<td>指定任务集的交付表现</td>
+<td>其他硬件、分辨率和服务负载</td>
+</tr>
+</tbody>
+</table>
+<p>保存负结果有助于下一次决策：记录哪里变慢、哪项质量下降、哪些范围尚未测量。合成 ring 略慢就保留这项结果；需要改变历史提交协议的候选，则作为算法变化重新验证，而不是归入精确系统优化。</p></div>
+
+        <nav id="part-2" class="part-banner">
+          <div class="part-title">第二篇：加速方法与模型实践</div>
+          <p>本篇目录</p>
+          <p>各章围绕一种方法组织：先解释减少了什么工作，再对照双向模型与 AR 的输入、状态和接入条件。读完单项方法后，第 16 章将它们组合成一套可重复的实施与回归流程。</p>
+<ul>
+<li><a href="#chapter-docs-manuscript-06-evaluations-and-distillation-md">第6章 减少网络求值：求解器、少步、CFG 与蒸馏</a></li>
+<li><a href="#chapter-docs-manuscript-07-feature-cache-md">第7章 跨步特征复用与自适应缓存</a></li>
+<li><a href="#chapter-docs-manuscript-08-attention-kernels-md">第8章 Dense Attention Kernel 与低精度 Attention</a></li>
+<li><a href="#chapter-docs-manuscript-09-sparsity-and-tokens-md">第9章 稀疏、Token 压缩与替代 Attention</a></li>
+<li><a href="#chapter-docs-manuscript-10-gemm-and-quantization-md">第10章 Linear/GEMM 与低精度计算</a></li>
+<li><a href="#chapter-docs-manuscript-11-fusion-and-graphs-md">第11章 算子融合、预计算、编译与 CUDA Graph</a></li>
+<li><a href="#chapter-docs-manuscript-12-ar-state-md">第12章 AR 历史 KV 与状态管理</a></li>
+<li><a href="#chapter-docs-manuscript-13-residency-and-transfer-md">第13章 驻留、Offload 与数据搬运</a></li>
+<li><a href="#chapter-docs-manuscript-14-parallelism-md">第14章 多 GPU 并行与通信</a></li>
+<li><a href="#chapter-docs-manuscript-15-decoding-and-streaming-md">第15章 VAE、流式执行与端到端交付</a></li>
+<li><a href="#chapter-docs-manuscript-16-composition-and-validation-md">第16章 组合优化与回归验收</a></li>
+</ul>
+<p>连续 AR 可以按问题串读：用<a href="#chapter-docs-manuscript-06-evaluations-and-distillation-md">第6章</a>确定每块的去噪与提交次数，用<a href="#chapter-docs-manuscript-12-ar-state-md">第12章</a>设计历史读写，再沿<a href="#chapter-docs-manuscript-13-residency-and-transfer-md">第13章</a>和<a href="#chapter-docs-manuscript-15-decoding-and-streaming-md">第15章</a>处理驻留、搬运与交付。随后回到 Attention、量化和 Graph 各章，检查这些方法是否保留了相同的状态语义。这样可把 AR 的完整路径连起来，也便于在同一方法下直接比较双向与 AR 的差异。</p>
+          <a href="#global-contents">返回总目录</a>
+        </nav>
+
+<div id="chapter-docs-manuscript-06-evaluations-and-distillation-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/06-evaluations-and-distillation.md --><h1 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--第6章-减少网络求值求解器少步cfg-与蒸馏">第6章 减少网络求值：求解器、少步、CFG 与蒸馏</h1>
+<p>NFE（Number of Function Evaluations）统计被计数函数的求值次数。论文可能计 ODE 右端函数，工程日志则可能计实际 model call；有 CFG 时两者未必相等。把正负分支拼成 $2B$ 批大小后，虽然只发起一次 <code>model()</code> 调用，仍要执行两份分支工作。因此实验应同时报告 scheduler 更新数、denoise model calls、每次调用的 batch/CFG 分支和额外 refresh；统计工作量时，分支倍数只计一次。</p>
+<p>在相同积分区间减少步数，会增大部分步长 $\Delta t$。截断误差、网络预测误差与引导强度共同影响采样结果；更少的步数并不自动保留质量。本章分别讨论高阶求解器、时间网格重映射和少步蒸馏。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--求解器怎样减少求值">求解器怎样减少求值</h2>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--概率流-ode-与截断误差">概率流 ODE 与截断误差</h3>
+<p><a href="https://arxiv.org/abs/2011.13456v2">Song 等人的 SDE 框架</a>在相应正则和 score 假设下，构造与扩散 SDE 具有相同时间边缘分布的概率流 ODE。对漂移 $f(x_t,t)$ 与仅依赖时间的标量扩散系数 $g(t)$，其形式为：
+$$\mathrm{d}x_t = \left[ f(x_t, t) - \frac{1}{2} g(t)^2 \nabla_{x_t} \log p_t(x_t) \right] \mathrm{d}t$$
+对满足相应光滑性条件的确定性 ODE，一阶 Euler 法的局部截断误差为 $\mathcal{O}(\Delta t^2)$，全局误差为 $\mathcal{O}(\Delta t)$。随机 SDE 的 Euler-Maruyama 需另行分析；采样步数取决于速度场、调度器与质量目标。</p>
+<p><a href="https://arxiv.org/abs/2211.01095v1">DPM-Solver++</a>利用扩散 ODE 的半线性结构，解析处理线性项，对数据预测网络对应的积分项构造高阶近似。<a href="https://arxiv.org/abs/2302.04867v1">UniPC</a>将 predictor 与 corrector 统一起来，并利用已有预测提高阶数；其 corrector 不要求额外的模型求值。多步法复用历史预测，因此应沿实际算法统计求值次数；启动阶段、历史长度和最后一步处理仍要看实现。</p>
+<p>在相应光滑性、稳定性和启动条件下，二阶法的局部误差可为 $\mathcal{O}(\Delta t^3)$、全局误差为 $\mathcal{O}(\Delta t^2)$。误差阶数不直接保证生成质量，仍须在同一模型与调度设置下配对验证。</p>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--流匹配flow-matching与速度场">流匹配（Flow Matching）与速度场</h3>
+<p>Flow Matching 通过回归给定概率路径的速度场来训练生成模型，允许多种路径，也包含 diffusion 路径。本节以 FLUX.1、Wan2.1、SD3 等模型常用的直线条件路径为例，说明速度场与采样方向。<a href="https://arxiv.org/html/2210.02747v2#S4">原论文§4</a></p>
+<h4 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--速度场定义">速度场定义</h4>
+<p>取噪声先验 $p_1 = \mathcal{N}(0, I)$ 与真实数据分布 $p_0$，直线条件路径写作：
+$$x_t = (1 - t) x_0 + t x_1, \quad t \in [0, 1]$$
+对一对固定端点，其条件速度目标为：
+$$u_t(x_t\mid x_0,x_1)=\frac{\mathrm{d}x_t}{\mathrm{d}t}=x_1-x_0$$
+但网络只看到 $x_t,t,c$，并不知道这对端点。在平方误差目标下，它拟合的是条件期望：
+$$v_t(x,c)=\mathbb{E}[x_1-x_0\mid x_t=x,c]$$
+不同样本路径可能经过同一位置。条件路径是直线，不代表边缘速度场的积分轨迹也是直线。本节取 $t=1$ 为噪声端，采样从 1 向 0 积分；若模型用相反时间方向，速度符号也要随之变换。依据见<a href="https://arxiv.org/html/2210.02747v2#S3">Flow Matching 原论文§3</a>。</p>
+<h4 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--时间网格的-shift">时间网格的 Shift</h4>
+<p>固定求值预算时，时间网格决定把计算花在哪些噪声区间。下面的 shift 映射可见于<a href="https://github.com/Wan-Video/Wan2.1/blob/76e9427657c74f7d063f6c50fce9529900c59e28/wan/utils/fm_solvers_unipc.py">Wan2.1 的 Flow UniPC 实现</a>，但不是所有 scheduler 共用的公式：
+$$t_{\text{shifted}} = \frac{s \cdot t}{1 + (s - 1) \cdot t}$$
+当 $s&gt;1$ 时，内部网格点被映射到更大的 $t$，端点 0 和 1 不变。在本节噪声端为 1 的约定下，时间点更偏向高噪声区域。位移并未减少 model calls，也不保证轨迹更直。参数与分辨率之间没有可通用套用的缩放律，应沿用 checkpoint 的训练/验证配置；改变 shift 属于需要配对质量验证的采样改动。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--少步训练一致性分布匹配与-reflow">少步训练：一致性、分布匹配与 Reflow</h2>
+<p>当生成步数压低至 1~8 步时，直接放大步长可能无法维持质量。蒸馏与轨迹重训是常用路线，具体支持步数以 checkpoint 的验证配置为准。</p>
+<div class="mermaid">
+flowchart TD
+    Teacher["多步生成模型<br/>求解配置决定前向次数"] --> Methods
+
+    subgraph Methods ["一致性、分布匹配与轨迹重训"]
+        direction LR
+        M1["一致性模型 (sCM)<br/>同一轨迹上的状态映射到同一数据端点"]
+        M2["分布匹配蒸馏 (DMD2)<br/>得分估计梯度 + 判别器损失"]
+        M3["Reflow<br/>用模型生成的端点对重训速度场"]
+    end
+
+    Methods --> Student["少步模型<br/>步数以验证配置为准"]
+
+</div>
+
+<p><a href="https://arxiv.org/abs/2209.03003">Reflow</a>用现有模型生成的端点对重训速度场，目标是逐轮减小轨迹弯曲，使粗时间网格更易近似。它改变训练数据配对与速度场，不是仅更换推理求解器；是否还需进一步蒸馏取决于目标步数和质量。</p>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--连续时间一致性模型scm">连续时间一致性模型（sCM）</h3>
+<p>一致性映射的理想目标是让同一概率流轨迹上的状态指向同一数据端点。省略条件，并用本节的 0/1 端点记号，可示意为：
+$$f_\theta(x_t, t) = f_\theta(x_{t'}, t') = x_0$$</p>
+<p>实际模型通过训练近似这个目标，不会对任意样本严格满足等式。一步推理直接从噪声预测数据，多步采样则按匹配的加噪与预测协议校正。sCM 使用自己的 TrigFlow 参数化，上式仅示意一致性约束，完整时间坐标和损失见<a href="https://arxiv.org/html/2410.11081v1">sCM 原论文</a>。</p>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--分布匹配蒸馏">分布匹配蒸馏</h3>
+<p><a href="https://arxiv.org/abs/2405.14867v2">原始 DMD2 论文</a>提出改进分布匹配蒸馏的训练方法，并支持经匹配训练的多步采样；具体视频 checkpoint 的目标、任务和调度以对应模型卡及源码为准。</p>
+<p>DMD2 用 teacher 的 real score 与学习到的 fake score 估计分布匹配梯度，采用双时间尺度更新改善 fake critic 估计，同时用真实数据的 GAN 监督补充 teacher score，并移除先前 DMD 所需的配对回归损失。</p>
+<p>部署时，学生的时间表、shift、引导及步数应匹配其训练和验证配置。支持多步的 checkpoint 按已验证入口运行，调整步数后重新评估质量。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--cfg-单分支蒸馏与动态引导">CFG 单分支蒸馏与动态引导</h2>
+<p>Classifier-Free Guidance（CFG）通过显式组合有条件预测与无条件预测强化提示词相关性：
+$$v_{\text{guided}} = v(x_t, t, \emptyset) + w \cdot \left[ v(x_t, t, c) - v(x_t, t, \emptyset) \right]$$
+其中 $w$ 为引导系数。实际执行双分支时，可以分开前向或打包 batch；相对等成本单分支的求值工作增加，具体调用数、wall time 与峰值显存按原生实现记录。</p>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--引导蒸馏guided-distillation">引导蒸馏（Guided Distillation）</h3>
+<p>一种实现是把 $w$ 编码为 guidance condition，再让学生拟合 teacher 的组合预测。下面只是回归目标示意；guidance 如何注入、是否支持可变 $w$，按具体 checkpoint 的接口核对：
+$$\mathcal{L}_{\text{CFG}} = \mathbb{E} \left\| v_{\text{student}}(x_t, t, c, w) - v_{\text{guided}}^{\text{teacher}}(x_t, t, c, \emptyset, w) \right\|_2^2$$</p>
+<ul>
+<li><strong>推理收益</strong>：若 checkpoint 已将引导行为蒸馏进单分支，并按其接口传入所需的 guidance 条件，可省去外部双分支组合。等成本分支求值数可减半；wall time 与峰值显存不保证减半；</li>
+<li><strong>接入时检查</strong>：检查权重、guidance embedding 与原生调用协议。直接在未蒸馏模型上设 <code>cfg_scale=1.0</code> 会改变引导行为，需要重新评估提示词保持和画质。</li>
+</ul>
+<h3 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--单分支动态早退候选negative-early-exit">单分支动态早退候选（Negative Early-Exit）</h3>
+<p>可以研究在部分去噪步关闭无条件分支，但这改变 CFG 计算，属于需质量验收的近似候选；APG 等方法则需要按各自的引导公式分析。</p>
+<ul>
+<li><strong>示例前 6 步</strong>：保留双分支，共 12 次分支求值；</li>
+<li><strong>示例后 14 步</strong>：令 $w=1$，只计算条件分支，共 14 次求值。</li>
+</ul>
+<p>20 步合计 $12+14=26$ 次分支求值，而全程双分支为 40 次，分支求值工作少 35%。这只是<strong>等成本分支的算术示例，非实际 model call 数、系统耗时或 PSNR/CLIP 实测</strong>；分支打包、调度开销与质量差异应另测。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--wan22把步数还原为实际工作">Wan2.2：把步数还原为实际工作</h2>
+<p>在<a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">固定 T2V 入口</a>中，UniPC 和 DPM++ 分别构造自己的时间表；循环中每个时间点选一个 expert，并执行两次条件分支前向。令高噪声区间有 $S_h$ 个时间点、低噪声区间有 $S_l$ 个时间点，则该路径调用数为 $2(S_h+S_l)$，由两个 expert 承担 $2S_h$ 和 $2S_l$ 次。</p>
+<p>改变 shift 还可能改变各时间点落在哪一 expert 一侧。减少总步数后，应同时记录两个 expert 各自的执行数、驻留/切换和质量，将实际调用数和各阶段耗时一起比较。这项源码计数确定 benchmark 的工作量分母；对应延迟需要在所选权重和硬件上测量。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--从双向-teacher-到少步-arcausvid-与-self-forcing">从双向 teacher 到少步 AR：CausVid 与 Self Forcing</h2>
+<p>CausVid 同时改变信息可见范围和采样步数。学生使用 block-causal Attention，同一 chunk 内可并行，后面的 chunk 只依赖已生成历史。训练先用 teacher 的 ODE 轨迹初始化学生，再用分布匹配蒸馏微调；teacher 保持双向上下文，为因果学生提供视频级监督。因此“换成因果 Mask”和“把步数改成 4”都不足以复现该模型，需要配套训练权重。<a href="https://arxiv.org/html/2412.07772v4">CausVid 论文§4</a></p>
+<p>Self Forcing 进一步针对训练与推理的历史分布差异：训练时按 AR 顺序生成视频，并让后续 chunk 读取模型自己生成的历史 KV。视频级分布匹配损失作用于这些生成序列；少步主干和随机梯度截断控制训练成本。训练时始终读取真实历史的模型，在推理中会遇到自身错误积累，单块重建误差很小也可能逐块漂移。<a href="https://arxiv.org/html/2506.08009v2#S3">Self Forcing 论文§3</a></p>
+<p>部署时可沿三条线检查。首先是实际去噪时间表与 CFG，二者决定每块求值预算。其次是历史提交：固定的 <a href="https://github.com/guandeh17/Self-Forcing/blob/7b27679bb0a30603a9a6520030474b6ef62d86dd/pipeline/causal_inference.py">Self Forcing 推理代码</a>在去噪后还以指定的 context noise 更新 KV。最后是长程窗口：其 <a href="https://github.com/guandeh17/Self-Forcing/blob/7b27679bb0a30603a9a6520030474b6ef62d86dd/wan/modules/causal_model.py">causal Attention 实现</a>区分全局与局部索引，并支持保留 sink、滚动淘汰较早的其他历史。配置中的 sink 大小、窗口、位置编码与所用权重一起验证；环形淘汰可以限制历史存储量，长视频中的角色与场景能否持续保持，还取决于模型训练时见过的历史分布。</p>
+<p>把这些工作分清，才容易判断剩余成本。假设某个协议每块 4 次去噪、1 次上下文更新，且五次等成本，后者就占主干调用的 20%。这是独立算术例。真实上下文更新还写历史，耗时需要单独测。若想省去它，先证明最后一次去噪所用状态与应提交状态相同，或使用专门为其他上下文协议训练的模型。<a href="#chapter-docs-manuscript-12-ar-state-md">第12章</a>继续讨论状态读写。</p>
+<p>比较 student 与 teacher 时，按第 5 章的近似方法路径评估质量，重点观察条件保持、运动和长程漂移。</p>
+<h2 id="chapter-docs-manuscript-06-evaluations-and-distillation-md--如何验证采样改动">如何验证采样改动</h2>
+<p>固定权重、任务、分辨率、帧数、seed 和初始噪声，先保存原生时间表与分支日志，再改变一种采样因素。比较实际网络调用、每次 batch、可见历史、总 DiT 耗时、完整交付和质量。更换蒸馏 checkpoint 时明确记录权重变化；不要把 teacher 与 student 的差值都归因于 solver。</p>
+<p>少步后 Kernel Launch、位置准备、历史搬运和 VAE 占比可能上升。新的瓶颈需要重新 profile，而不是继续按原有主干比例外推。步数、缓存和精度组合的最终结果在<a href="#chapter-docs-manuscript-16-composition-and-validation-md">第16章</a>按配对实验判断。</p></div>
+<div id="chapter-docs-manuscript-07-feature-cache-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/07-feature-cache.md --><h1 id="chapter-docs-manuscript-07-feature-cache-md--第7章-跨步特征复用与自适应缓存">第7章 跨步特征复用与自适应缓存</h1>
+<p>跨步特征复用利用相邻去噪状态的相似性，近似跳过某段网络。收益来自减少实际执行的 block 或子图，不一定减少 scheduler 更新数或外层 model API 调用。将它与原生去噪路径比较，同时检查缓存误差、历史状态和最终视频。</p>
+<h2 id="chapter-docs-manuscript-07-feature-cache-md--跨步相似性经验依据与误差边界">跨步相似性：经验依据与误差边界</h2>
+<p><a href="https://arxiv.org/html/2411.19108v2">TeaCache 论文</a>观察到其测试模型的输出变化随去噪阶段而变，并用输入侧代理估计是否复用。可缓存的子图、需要保留的计算与有效阈值仍由模型适配决定。</p>
+<div class="mermaid">
+flowchart TD
+    In["当前 latent、时间步与条件"] --> Prep["每步准备输入与模型特定 proxy"]
+    Prep --> Gate{"校准后的复用判定"}
+    Gate -->|重新计算| Region["执行选定子图并刷新残差"]
+    Gate -->|复用| Cache["当前输入 + 上次缓存残差"]
+    Region --> Tail["执行子图之外的必要计算"]
+    Cache --> Tail
+    Tail --> Out["当前步预测"]
+
+</div>
+
+<p>Taylor 展开可以帮助理解局部复用的条件。设 $h(t)$ 为沿某条去噪轨迹的特征，$\Delta t$ 为相邻时间步差：</p>
+<p>$$h(t-\Delta t)=h(t)-\Delta t\,h'(t)+R_2$$
+$$\sup_s\|h''(s)\|\le M\quad\Longrightarrow\quad
+\|R_2\|\le \frac{M\,\Delta t^2}{2}$$</p>
+<p>这个上界要求区间内的二阶导数约束；只看某一点的一阶变化还不足以确定 $M$。轨迹、调度器或条件变化后，局部误差还可能随后续迭代传播。</p>
+<h2 id="chapter-docs-manuscript-07-feature-cache-md--teacache模型特定代理与工程边界">TeaCache：模型特定代理与工程边界</h2>
+<h3 id="chapter-docs-manuscript-07-feature-cache-md--判定指标与校准">判定指标与校准</h3>
+<p>TeaCache 用低于完整主干成本的输入侧代理，估计输出变化并累计决策量，而不是先得到本步真实输出。论文包含 timestep modulation 和 rescaling，具体 proxy 的 Shape 和提取路径要沿模型适配检查。官方代码以下链接固定于 <code>7c10efc4702c6b619f47805f7abe4a7a08085aa0</code>：</p>
+<ul>
+<li><a href="https://github.com/ali-vilab/TeaCache/blob/7c10efc4702c6b619f47805f7abe4a7a08085aa0/TeaCache4HunyuanVideo/teacache_sample_video.py">HunyuanVideo 适配</a>：对图像 token 输入做首个 double block 对应的 norm/modulation，比较该特征张量，随后使用多项式 rescaling；命中时复用图像残差并绕过其实现中的 double/single block 计算，跳过范围由该适配路径确定；</li>
+<li><a href="https://github.com/ali-vilab/TeaCache/blob/7c10efc4702c6b619f47805f7abe4a7a08085aa0/TeaCache4Wan2.1/teacache_generate.py">Wan2.1 适配</a>：根据配置采用时间嵌入 e 或投影后的 e0，使用匹配型号/任务的系数，并分别维护 conditional/unconditional 状态；保留步与截止步也由适配决定。</li>
+</ul>
+<p>抽象地，$p$ 为适配器选定的 proxy tensor，$g$ 为模型特定的重标定函数，$\epsilon$ 为分母保护值，$\tau$ 为待校准阈值：</p>
+<p>$$p_t=P_{\mathrm{model}}(x_t,t,c)$$
+$$d_t=\frac{\operatorname{mean}|p_t-p_{\mathrm{prev}}|}
+{\max(\operatorname{mean}|p_{\mathrm{prev}}|,\epsilon)}$$
+$$S_t=S_{\mathrm{prev}}+g_{\mathrm{model}}(d_t)$$</p>
+<p>$c$ 为条件。缓存有效且 $S_t&lt;\tau$ 时才考虑复用，否则重新计算并重置累计量。</p>
+<p>分母保护是这里建议的数值防护，不声称所有官方版本均已实现。$g$、$\tau$、强制重算步和跳过范围需要与模型、权重、分辨率、调度器及步数一起核验；新模型应重新校准阈值。proxy、归约、读写和 host 决策开销也须计入，特别是低 NFE 配置可能几乎没有可复用步。</p>
+<h3 id="chapter-docs-manuscript-07-feature-cache-md--残差缓存的显存账本">残差缓存的显存账本</h3>
+<p>只作算术例：batch $B=1$、序列 $N=50,000$、宽度 $D=4096$、BF16 每元素 2 bytes：</p>
+<p>残差 Shape 为 <code>[B,N,D]</code>，其载荷为：</p>
+<p>$$M_{\mathrm{residual}}=BND\times2
+=409{,}600{,}000\ \mathrm{B}=409.6\ \mathrm{MB}\ (390.625\ \mathrm{MiB})$$</p>
+<p>40 份同形状张量合计 16.384 GB（15.259 GiB），未计其余开销。</p>
+<p>完整容量账本的计算方法见<a href="#chapter-docs-manuscript-04-memory-and-state-md">第4章</a>，量化表示见<a href="#chapter-docs-manuscript-10-gemm-and-quantization-md">第10章</a>。即使一个单输入/单输出子图可缓存为 <code>residual = output - input</code>，这份残差的载荷之外还要计入其他活跃对象。</p>
+<p>完整账本还包括上一 proxy、输入快照、额外条件/CFG 分支、权重、活跃激活、输出与临时 workspace；峰值可能同时持有旧缓存和新结果。双流或有副作用的子图还需处理其他输出与状态，按生产者和消费者实际访问的张量逐项核算。</p>
+<h3 id="chapter-docs-manuscript-07-feature-cache-md--一个残差缓存骨架">一个残差缓存骨架</h3>
+<p>下面用接口伪代码说明缓存状态的组织。假设 adapter 提供 <code>prepare/proxy/region/finish/rescale</code>，<code>rescale</code> 返回单元素 tensor，其中 region 是<strong>无额外状态副作用、输入输出同形状</strong>的单张量子图；多流、历史 KV 写入、条件更新等需要专用适配。<code>rescale</code> 的负值或非有限结果在此示例中保守触发重算，该策略也需校准。</p>
+<pre class="codehilite"><code class="language-python">import math
+import torch
+
+@torch.no_grad()
+def concept_step(adapter, x, t, cond, state, key, *, threshold,
+                 max_skip, force_compute=False, eps=1e-6):
+    # key变化即reset；同一个state只服务一条有序去噪轨迹/一个CFG分支。
+    if &quot;key&quot; not in state or state[&quot;key&quot;] != key:
+        state.clear()
+        state.update(key=key, prev_mod=None, residual=None, accum=0.0, skips=0)
+    h = adapter.prepare(x, t, cond)
+    mod = adapter.proxy(h, t, cond).detach().float()
+    prev = state[&quot;prev_mod&quot;]
+    score = math.inf
+    if prev is not None and prev.shape == mod.shape and prev.device == mod.device:
+        denom = prev.abs().mean().clamp_min(eps)
+        delta = (mod - prev).abs().mean() / denom
+        score = float(adapter.rescale(delta).item())  # GPU-&gt;host决策可能同步
+    candidate = state[&quot;accum&quot;] + score
+    residual = state[&quot;residual&quot;]
+    compatible = (residual is not None and residual.shape == h.shape
+                  and residual.dtype == h.dtype and residual.device == h.device)
+    reuse = (not force_compute and compatible and math.isfinite(candidate)
+             and score &gt;= 0 and candidate &lt; threshold and state[&quot;skips&quot;] &lt; max_skip)
+    state[&quot;prev_mod&quot;] = mod.clone()  # 每步更新，而不是只在重算时更新
+    if reuse:
+        h = h + residual
+        state[&quot;accum&quot;], state[&quot;skips&quot;] = candidate, state[&quot;skips&quot;] + 1
+    else:
+        h_in = h.detach().clone()  # region可能原地更新h，不能只保存别名
+        h = adapter.region(h, t, cond)
+        new_residual = (h - h_in).detach().clone()
+        if not torch.isfinite(new_residual).all().item():
+            raise FloatingPointError(&quot;non-finite cache residual&quot;)
+        state[&quot;residual&quot;] = new_residual
+        state[&quot;accum&quot;], state[&quot;skips&quot;] = 0.0, 0
+    return adapter.finish(h, t, cond)
+</code></pre>
+
+<p>该骨架的阈值、最大连续跳步与强制重算策略均由调用者提供，不构成误差上界。部署前还需补齐：</p>
+<ul>
+<li><strong>身份与生命周期</strong>：key 覆盖模型/adapter 版本、请求与条件、CFG 分支/强度、shape、dtype、device、调度配置；换请求/权重/条件须 reset，首步、末步和步序跳转按适配策略重算。AR chunk、相机或历史 KV 版本变化时，按模型协议失效缓存；</li>
+<li><strong>数值与性能</strong>：ε、非有限值及输出检查需要明确定义；<code>.item()</code>、Python 分支、FP32 proxy、clone 和缓存加法都有成本，静态 CUDA Graph 需要另行改写这些 Host 决策；</li>
+<li><strong>状态正确性</strong>：验证 batch/CFG 布局、mask、位置编码、额外输出和 clean refresh；记录命中、重算次数、峰值与质量。<code>max_skip</code> 限制连续复用长度，由质量评估确定。</li>
+</ul>
+<h2 id="chapter-docs-manuscript-07-feature-cache-md--wan22区分-expert-与-cfg-状态">Wan2.2：区分 expert 与 CFG 状态</h2>
+<p>固定 T2V 入口具有两份 expert 与两个 CFG 分支。缓存身份至少要包含当前 expert、条件分支、权重/adapter、Shape 和采样配置。跨 boundary 后网络权重改变，即使 latent 形状相同，也应使用对应 expert 的缓存状态。<a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">expert 选择源码</a></p>
+<p>将 TeaCache 的 Wan2.1 适配迁到 Wan2.2 时，应核验 proxy、重标定系数、强制重算区间和跳过范围，统计两个 expert 的实际 block 执行数。接入前先完成该配置的校准，再对照未缓存路径测整模延迟和质量。</p>
+<h2 id="chapter-docs-manuscript-07-feature-cache-md--archunk-边界也是输入变化">AR：chunk 边界也是输入变化</h2>
+<p>连续 AR 每推进一块，会更新历史、局部位置和相机条件。相邻 chunk 不是同一条去噪轨迹的相邻时间点；默认应重置跨步缓存，只有专门验证过的跨 chunk 算法才允许其他策略。clean refresh 还承担状态写入，应放在无副作用残差缓存之外。</p>
+<p>在 4 步去噪中，首尾保留和强制重算后可能只剩很少复用机会。应计算 proxy、归约、host 决策、缓存读写与峰值的完整成本，再决定是否值得整模接入。低 NFE 的 AR 应优先筛选剩余复用机会是否足以覆盖这些固定成本。</p>
+<h2 id="chapter-docs-manuscript-07-feature-cache-md--同时测执行次数延迟和质量">同时测执行次数、延迟和质量</h2>
+<p>至少记录每步的复用/重算决策、实际执行 block 数、缓存有效期和额外内存。对齐未缓存参考，检查细节、运动、条件保持及后续误差；AR 还要跨多次历史淘汰运行。命中率用于解释实际少执行了多少工作；采用判断以延迟和质量为准。</p>
+<p>固定条件侧的精确预计算见<a href="#chapter-docs-manuscript-11-fusion-and-graphs-md">第11章</a>，历史 raw KV 见<a href="#chapter-docs-manuscript-12-ar-state-md">第12章</a>。</p></div>
+<div id="chapter-docs-manuscript-08-attention-kernels-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/08-attention-kernels.md --><h1 id="chapter-docs-manuscript-08-attention-kernels-md--第8章-dense-attention-kernel-与低精度-attention">第8章 Dense Attention Kernel 与低精度 Attention</h1>
+<p>Flash 式 Kernel 通过分块和 online softmax 避免保存完整的 Attention 矩阵；低精度 Attention 还会改变操作数表示和舍入误差。比较两条路径时，保持 mask、Q/K/V 语义、dtype 与布局一致，并用 profiler 确认实际 dispatch。</p>
+<h2 id="chapter-docs-manuscript-08-attention-kernels-md--dense-attention-与低精度变体">Dense Attention 与低精度变体</h2>
+<div class="mermaid">
+flowchart LR
+    FA2["FlashAttention-2<br/>分块与 online softmax<br/>无须保存完整注意力矩阵"]
+    FA3["FlashAttention-3<br/>Hopper TMA与异步MMA流水线"]
+    Sage["SageAttention3<br/>Blackwell microscaling FP4；另验数值与质量"]
+
+    FA2 --> FA3
+    FA2 --> Sage
+
+</div>
+
+<h3 id="chapter-docs-manuscript-08-attention-kernels-md--flashattention-3-的流水线">FlashAttention-3 的流水线</h3>
+<p><a href="https://tridao.me/blog/2024/flash3/">FA3 作者说明</a>讨论 Hopper 上的 TMA、异步 Tensor Core 与调度。下面的 RTX 小例使用 PyTorch 2.8.0+cu128 内置的 SDPA flash backend，profiler 中对应 <code>aten::_scaled_dot_product_flash_attention</code>；它没有调用单独安装的 <code>flash-attn</code> Python 包。部署 FA3 或 Blackwell 专用实现时，另行检查该 Kernel 的硬件目标和版本。</p>
+<h4 id="chapter-docs-manuscript-08-attention-kernels-md--tma-与数据搬运">TMA 与数据搬运</h4>
+<p>分块加载的地址生成、寄存器和 shared memory 用量会影响 occupancy。Ampere 已有异步 copy；Hopper 的 TMA 进一步使用 tensor descriptor 描述多维搬运，由专用引擎把数据送入 shared memory，减少部分地址生成与寄存器占用。线程仍负责发射指令、管理 buffer 和同步。</p>
+<h4 id="chapter-docs-manuscript-08-attention-kernels-md--warp-specialization-与-gemmsoftmax-交叠">Warp Specialization 与 GEMM/softmax 交叠</h4>
+<p>Producer 提交 TMA 搬运，consumer warpgroup 执行异步 GEMM、softmax 与归一化。一个 warpgroup 包含 4 个 warp、128 个 thread。WGMMA 的 A 操作数可来自寄存器或 shared memory，B 通过 shared-memory descriptor 读取，累加器保存在寄存器中。</p>
+<p>TMA 加载与 WGMMA 计算各有完成依赖，分别通过 barrier 和相应的 fence、commit/wait 协议管理。consumer 先等数据可读，再在使用累加结果前等待矩阵乘完成。FA3 还在 consumer 之间及 consumer 内部交叠 GEMM 与 softmax，减少非矩阵计算暴露的等待。tile 越大可能提高复用，也会增加寄存器/shared memory 压力，最终要看 occupancy 与时间线。<a href="https://tridao.me/blog/2024/flash3/#asynchrony-overlapping-gemm-and-softmax">作者的流水线说明</a>、<a href="https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#asynchronous-warpgroup-level-matrix-instructions">PTX WGMMA 协议</a></p>
+<h4 id="chapter-docs-manuscript-08-attention-kernels-md--分块结果为何仍能形成全局-softmax">分块结果为何仍能形成全局 softmax</h4>
+<p>对一个 query 行，把 KV 分块。块 $j$ 的 score 为 $s_j$，记录局部最大值 $m_j$、指数和 $\ell_j$ 与未归一化输出 $u_j$：
+$$m_j=\max(s_j),\qquad \ell_j=\sum\exp(s_j-m_j),\qquad u_j=\exp(s_j-m_j)V_j$$
+合并两块时，先统一指数基准，再相加：
+$$m=\max(m_a,m_b)$$
+$$\ell=e^{m_a-m}\ell_a+e^{m_b-m}\ell_b$$
+$$u=e^{m_a-m}u_a+e^{m_b-m}u_b,\qquad O=u/\ell$$
+这就是 online softmax 需要保留的统计量。直接相加两个局部 softmax 输出会丢失各块的相对归一化权重。FlashAttention、split-KV 与 Ring Attention 都需要等价的合并逻辑；mask、全遮蔽行及数值精度仍由具体 kernel 处理。<a href="https://arxiv.org/abs/2205.14135v2">FlashAttention 原论文</a></p>
+<h3 id="chapter-docs-manuscript-08-attention-kernels-md--flashdecoding沿-kv-增加并行度">FlashDecoding：沿 KV 增加并行度</h3>
+<p>当 query 很短、KV 很长，且 batch、head、query tile 提供的 CTA 不足时，可以沿 KV 增加并行度。逐 Token Decode 常有这种形状；AR-chunk 则通常一次生成千余至数千个 query token，已经具备较多 query tile。此时 split-KV 增加的并行度是否值得额外规约，要按实际 shape 测量。</p>
+<h4 id="chapter-docs-manuscript-08-attention-kernels-md--线程块如何划分">线程块如何划分</h4>
+<ul>
+<li><strong>单 query 的简化映射</strong>：若每个 batch/head 仅一个 CTA，batch1/32heads 只有 32 个 CTA，需与整卡 SM 数量及执行波次比较。长 query 的 FlashAttention 还沿 query tile 并行，可调度 CTA 数随之增加；</li>
+<li><strong>FlashDecoding 机制</strong>：将 KV 序列切为 $S$ 个子块，各子块并行计算局部 attention 及 log-sum-exp，再按归一化权重归约。它增加可调度的线程块，也引入中间结果与规约成本；是否改善总延迟取决于 query/KV 长度、head 数、切分与硬件。<a href="https://pytorch.org/blog/flash-decoding/">原始实现说明</a></li>
+</ul>
+<h3 id="chapter-docs-manuscript-08-attention-kernels-md--sageattention量化粒度补偿与实际-dispatch">SageAttention：量化粒度、补偿与实际 dispatch</h3>
+<p>Sage 系列把两次矩阵乘中的部分操作数转成低比特格式，以使用更高吞吐的 Tensor Core。输入接口为 FP16/BF16，不代表内部按该精度计算。下表描述论文路线，实际安装包可能提供不同变体：</p>
+<table>
+<thead>
+<tr>
+<th>路线</th>
+<th>$QK^\top$</th>
+<th>$\widetilde P V$ 与精度处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://arxiv.org/html/2410.02367v3#S4">Sage1</a></td>
+<td>INT8，比较 per-token/per-block 粒度</td>
+<td>准确路径保留 FP16，可采用 FP16 accumulator；另有全 INT8 变体</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2411.10958v2#S3">Sage2</a></td>
+<td>per-thread INT4，并平滑 Q/K</td>
+<td>E4M3 FP8（含 V 平滑）；用局部 MMA 结果与外部 FP32 buffer 缓解累加误差</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2505.11594v3#S3">Sage3</a></td>
+<td>Blackwell NVFP4 microscaling</td>
+<td>同样使用 NVFP4；$\widetilde P$ 另做逐行放大与微块缩放</td>
+</tr>
+</tbody>
+</table>
+<p>$\widetilde P$ 指分块 softmax 内部尚未完成全局归一化的指数权重。Sage3 的微块包含 16 个 E2M1 值及 E4M3 scale；若很小的权重直接生成很小的 scale，scale 自身也会丢精度，因此还要逐行缩放。它与“把所有浮点张量 cast 成 FP4”不同。Sage2 的 per-thread 粒度则让 scale 安排匹配线程持有的 MMA 片段，减少更细粒度反量化带来的处理成本。</p>
+<p>平滑的等价性可以直接检查。令 $\mu_K$ 为沿 token 轴的均值、$K_c=K-\mathbf1\mu_K$，则 $Q\mu_K^\top$ 对每个 query 行都是常数，因此：
+$$\operatorname{softmax}(QK^\top/\sqrt d)=\operatorname{softmax}(QK_c^\top/\sqrt d)$$
+若还令 $Q_c=Q-\mathbf1\mu_Q$，就必须补回随 key 变化的项：
+$$\Delta S=\mathbf1(\mu_Q K_c^\top)$$
+$$\operatorname{softmax}(QK^\top/\sqrt d)=\operatorname{softmax}((Q_cK_c^\top+\Delta S)/\sqrt d)$$
+上述等式在实数运算中成立；随后量化仍有误差。$\mu_Q$ 是沿 token 轴求得的逐通道均值向量，不能照抄成全 tensor 共用一个标量均值。<a href="https://arxiv.org/html/2411.10958v2#S3.SS2">Sage2 v2 的算法描述</a>在分块前对整张 $Q$ 求逐通道 token 均值，<a href="https://arxiv.org/html/2505.11594v3#S3">Sage3 v3</a> 则按每个 query block（query tile）计算 $\mu_{Q_i}$；实际部署应按所选版本与 Kernel 核对平滑范围及补偿项布局。V 若减去 token 均值，则归一化输出还要加回该均值。</p>
+<p>收益来自更快的矩阵指令，代价包括统计 scale、打包、布局转换和补偿。预处理工作量约随 $(M+N)d$ 增长，矩阵乘约随 $MNd$ 增长；长 query 更容易摊薄前处理，短 query 反复重新量化长 KV 则可能更慢。因此应同时测量前处理、Attention Kernel 与两者合计时间。</p>
+<p>部署时应记录实际函数、GPU、layout、mask、head dimension 与累加配置。例如<a href="https://github.com/thu-ml/SageAttention/blob/d1a57a546c3d395b1ffcbeecc66d81db76f3b4b5/README.md">固定官方 API 清单</a>仍有 <code>qk_int8_pv_fp16</code>、<code>qk_int8_pv_fp8</code> 变体，不能由“Sage2”名称断定该实验执行 INT4。Benchmark 应包含格式转换与 attention 总时间，另报纯 kernel 时间，并在相同输入上验数值与长片段质量。Sage3 的数值与性能仍需在目标模型上单独测量。</p>
+<h2 id="chapter-docs-manuscript-08-attention-kernels-md--attention同-bf16-输入改变实际-backend">Attention：同 BF16 输入，改变实际 backend</h2>
+<p><a href="examples/rtx_dit_lab.py">执行脚本</a>固定 Q/K/V 为 BF16 <code>[1,8,512,64]</code>、seed 42、无 mask、dropout=0。单独计算 FP32 显式 softmax 参考；性能对照为 BF16 输入的 SDPA MATH→FLASH_ATTENTION→MATH。通过计时外 CPU operator profiler 确认真实 dispatch，禁用隐式 backend 回退。</p>
+<p>每组 5 个 warmup、30 个 hot 观测，每个观测 10 次调用；以下为每次调用均值，A 为两侧 A1/A2 均值的平均。</p>
+<h3 id="chapter-docs-manuscript-08-attention-kernels-md--单卡-rtx-5090-结果">单卡 RTX 5090 结果</h3>
+<table>
+<thead>
+<tr>
+<th>计时范围</th>
+<th style="text-align: right;">A1 math</th>
+<th style="text-align: right;">B flash</th>
+<th style="text-align: right;">A2 math</th>
+<th style="text-align: right;">A/B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>含最终同步 wall，ms/call</td>
+<td style="text-align: right;">0.109920</td>
+<td style="text-align: right;">0.026737</td>
+<td style="text-align: right;">0.111824</td>
+<td style="text-align: right;">4.14670×</td>
+</tr>
+<tr>
+<td>CUDA stream event span，ms/call</td>
+<td style="text-align: right;">0.109083</td>
+<td style="text-align: right;">0.025846</td>
+<td style="text-align: right;">0.110901</td>
+<td style="text-align: right;">4.25565×</td>
+</tr>
+</tbody>
+</table>
+<p>wall 首尾漂移 +1.733%，统计保留全部样本。A1/A2 逐位相同；B 对 A1 最大绝对差为 0.001953125，relative L2 为 0.002374836（约 0.23748%）。FP32 仅作数值参考，倍率分母始终使用 BF16 MATH。CUDA allocated 峰值为 36,835,840 B；驱动和 context 等额外内存另计。</p>
+<h3 id="chapter-docs-manuscript-08-attention-kernels-md--数据中心-sm90-gpu-单卡结果">数据中心 SM90 GPU 单卡结果</h3>
+<p>同一脚本与输入几何在数据中心 SM90 GPU（80 GB）上运行，使用单张卡 <code>cuda:0</code>；记录的 PyTorch 为 2.10.0、CUDA runtime 为 13.1：</p>
+<table>
+<thead>
+<tr>
+<th>计时范围</th>
+<th style="text-align: right;">A1 math</th>
+<th style="text-align: right;">B flash</th>
+<th style="text-align: right;">A2 math</th>
+<th style="text-align: right;">A/B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>含最终同步 wall，ms/call</td>
+<td style="text-align: right;">0.138482</td>
+<td style="text-align: right;">0.033238</td>
+<td style="text-align: right;">0.138798</td>
+<td style="text-align: right;">4.17112×</td>
+</tr>
+<tr>
+<td>CUDA stream event span，ms/call</td>
+<td style="text-align: right;">0.137431</td>
+<td style="text-align: right;">0.032268</td>
+<td style="text-align: right;">0.137772</td>
+<td style="text-align: right;">4.26431×</td>
+</tr>
+</tbody>
+</table>
+<p>wall 首尾漂移 +0.228%，CUDA event 漂移 +0.249%。A1/A2 逐位相同；B 对 A1 最大绝对差同样为 0.001953125，relative L2 为 0.002374836。在这个小 Shape 上，两套环境的 wall 倍率均约为 4.1×。两组观测均为历史样本，采集所用脚本与随包脚本的差异见<a href="#chapter-docs-manuscript-appendix-b-reproduction-md--历史观测与随包脚本版本">附录 B</a>。长序列、矩形 Attention 及模型内准备成本需要各自的对照，原始样本见 <a href="docs/manuscript/evidence/measurements.json">measurements.json</a> 与 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a>。</p>
+<h2 id="chapter-docs-manuscript-08-attention-kernels-md--从方阵到-ar-矩形-attention">从方阵到 AR 矩形 Attention</h2>
+<p>双向 self-attention 常比较 Q 和 K 长度接近的长序列，cross-attention 的文本 K 长度则另计。AR-chunk 在稳定窗口中可能是 $N_q$ 个当前 query 对 $N_k$ 个历史加当前 key；当 $N_k$ 明显更长时，Tile 覆盖、并行任务数及 KV 读取都与方阵不同。对 MHA 的乘法主项为 $4BN_qN_kHd$，softmax、变换、mask 和转换额外计算。</p>
+<p>例如设当前块有 $N_q=4096$ 个 query，四块历史加当前块提供 $N_k=5\times4096$ 个 key；这是自包含的矩形 shape 示例。相比同样 query 长度的方阵，KV 读取量和 score 计算量都增加，query tile 数却相同。实际多模态模型还需按 reference token 和可见性重新展开布局。</p>
+<h2 id="chapter-docs-manuscript-08-attention-kernels-md--两条主线的接入点">两条主线的接入点</h2>
+<p><a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/modules/model.py">Wan2.2 的 Self/Cross Attention</a>分别准备视频 QKV 和条件 K/V；先检查 head reshape、QK norm、RoPE 和实际 backend 的边界，再替换 Kernel。分别统计条件 cross-attention 与视频 self-attention，保留各自的调用次数和时间。</p>
+<p>SolarWM 历史保存的是位置变换前的 raw K/V，读取时重建局部位置与相机变换。测量 Attention Core 时若排除这些变换，应同时报告包含准备成本的层级或主干计时。低精度 Kernel 的测量还包括量化粒度、scale 布局、padding、转换与临时存储，并按<a href="#chapter-docs-manuscript-05-measurement-md">第 5 章的比较类型</a>选择数值或感知质量评估。</p>
+<p>接入时从一个真实层的 Q/K/V 回放开始，再扩大到完整采样：层回放定位 Kernel 和转换成本，完整采样检验误差在去噪步及未来 chunk 中的传播。</p></div>
+<div id="chapter-docs-manuscript-09-sparsity-and-tokens-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/09-sparsity-and-tokens.md --><h1 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--第9章-稀疏token-压缩与替代-attention">第9章 稀疏、Token 压缩与替代 Attention</h1>
+<p>稀疏和 Token 压缩减少的工作不同：前者通常删去部分交互，后者还可能减少后续投影和 MLP 的 token 数。替代 Attention 进一步改变计算形式。选择时应看完整 block 节省了什么、额外做了什么，以及模型是否为该路径训练。</p>
+<h2 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--结构化稀疏与近似注意力">结构化稀疏与近似注意力</h2>
+<h3 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--sliding-tile-attention让局部窗口对齐计算-tile">Sliding Tile Attention：让局部窗口对齐计算 Tile</h3>
+<p>逐 Token 滑窗在二维或三维展平后，往往产生既有有效位置又有被遮蔽位置的 mixed tile。Kernel 仍要计算这些 tile，再对部分元素施加 Mask，位置稀疏率就难以转成等比例计算节省。STA 把视频重新排列成连续的时空 tile，让同一个 query tile 共享局部 key 窗口；窗口内按完整 dense tile 计算，窗口外整块跳过。这样局部性和 Tensor Core 的计算单位能够对齐。<a href="https://arxiv.org/html/2502.04507v1">STA 论文§2–3</a></p>
+<p>窗口大小决定质量与工作量。论文分别讨论 training-free 的 Mask 搜索和微调配置；部署时将窗口、head/layer 配置和对应权重一起保存。更大的空间运动或跨场景依赖可能需要窗口外信息，移植到矩形 AR Attention 时还要处理历史边界。</p>
+<h3 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--sparse-videogen按-head-选择空间或时间模式">Sparse VideoGen：按 head 选择空间或时间模式</h3>
+<p>SVG 观察到一些 head 偏重同帧空间区域，另一些偏重跨帧时间关联。它用少量 query 的在线采样比较候选稀疏模式与 dense 输出，选择误差较小的模式，再以相应布局和 Kernel 执行。空间、时间访问在原始展平布局中具有不同 stride，重排的作用是让保留的 KV 尽量连续，减少低效访存。<a href="https://arxiv.org/html/2502.01776v1">SVG 论文§4</a>、<a href="https://github.com/svg-project/Sparse-VideoGen">官方实现</a></p>
+<p>模式识别、采样参考、重排和还原都是实际成本。序列较短时，这些逐步开销更难由 Attention 计算节省覆盖。减少 NFE 后，编译和初始化等一次性成本的占比可能上升；逐步开销则按实际调用次数统计。SVG 的 training-free 路径、STA 的窗口设计与下面需要匹配训练的 VSA 是不同路线，选择时先确认自己的质量与训练预算。</p>
+<h3 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--video-sparse-attention粗粒度路由与细粒度计算">Video Sparse Attention：粗粒度路由与细粒度计算</h3>
+<p>VSA 按内容选择 block，而不是固定保留空间邻居或运动轨迹。<a href="https://arxiv.org/html/2505.13389v1#S2.SS2">原论文§2.2 与 Appendix A</a>把视频 token 按时空 cube 重排，默认一个 $4\times4\times4$ cube 包含 64 个 token。query cube 与 key cube 形成的 score tile 才是 $64\times64$；两种尺寸不能混用。</p>
+<p>粗阶段对每块 Q/K/V 取均值，计算 cube 之间的 attention，并逐行 Top-K 选出细阶段要计算的块。细阶段在选中块内部执行 token-level attention。粗输出也参与最终结果，不是仅生成 mask：</p>
+<p>$$Q_c,K_c,V_c=\operatorname{MeanPoolTiles}(Q,K,V)$$
+$$A_c=\operatorname{softmax}(Q_cK_c^\top/\sqrt d)$$
+$$m=\operatorname{ExpandTileMask}(\operatorname{RowTopK}(A_c))$$
+$$O_f=\operatorname{softmax}(QK^\top/\sqrt d+\operatorname{mask}(m))V$$
+$$O_c=\operatorname{BroadcastTiles}(A_cV_c),\qquad
+O=G_c\odot O_c+G_f\odot O_f$$</p>
+<p>$\operatorname{mask}(m)$ 将保留连接映射为 0，其余连接映射为 $-\infty$。</p>
+<p>门控与主干需要匹配训练；适配预训练模型时，论文将 fine gate 固定为 1，coarse gate 从 0 开始学习。时空重排让一个 cube 的 token 连续存放，细阶段可以按整块消费，避免逐 token 不规则 gather；粗路由、Top-K、重排与融合仍有成本，稀疏率不能直接换算成整层加速。论文中的训练收益和配套权重也不能替代在 AR-chunk 矩形 attention、相机位置协议上的适配验证。</p>
+<h3 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--稀疏与线性混合注意力sla-sparse-linear-attention">稀疏与线性混合注意力：SLA (Sparse-Linear Attention)</h3>
+<p>SLA 用稀疏 softmax 与经过训练的线性分支互补。<a href="https://arxiv.org/html/2509.24006v2#S4">论文 v2 Eq.5–6</a>的输出还包含可学习投影：
+$$Y_{\text{SLA}}=Y_{\text{sparse}}+\operatorname{Proj}(Y_{\text{linear}})$$
+论文用压缩 mask 聚合 marginal blocks；<a href="https://github.com/thu-ml/SLA/blob/7db4039111a9002f900be537c2b2061d26d73744/sparse_linear_attention/core.py">SLA 固定源码</a>则先对全 KV 计算线性分支，再投影相加。两种版本的线性分支都依赖匹配训练、配套权重和原生位置/条件协议。</p>
+<h2 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--稀疏率之外的成本与误差">稀疏率之外的成本与误差</h2>
+<p>动态路由、Top-K 和 packing 可能抵消少做的 Attention 乘法。逐 Token 索引容易产生不规则 gather，整块选择则更便于保持连续读取。记录 <code>router → packing → attention → restore</code> 的完整时间，同时保留各阶段 trace，才能判断改进应落在哪一处。</p>
+<p>被删位置的概率质量比位置比例更接近误差来源。若被删位置的累积注意力概率质量为 $p_{\mathrm{drop}}\in[0,1)$，保留和删除部分各自归一化后的输出为 $O_{\mathrm{keep}}$、$O_{\mathrm{drop}}$，则：</p>
+<p>$$O_{\mathrm{dense}}=(1-p_{\mathrm{drop}})O_{\mathrm{keep}}+p_{\mathrm{drop}}O_{\mathrm{drop}}$$
+$$O_{\mathrm{keep}}-O_{\mathrm{dense}}=p_{\mathrm{drop}}(O_{\mathrm{keep}}-O_{\mathrm{drop}})$$</p>
+<p>同样删除 90% 的位置，$p_{\mathrm{drop}}$ 可以很小，也可以很大。路由需要找到对当前 query 有用的连接；剩余连接重新归一化后，误差还会受 V 的幅值与方向影响。先检查 Mask、位置和历史可见性，再按第 5 章的近似方法路径评估视频质量。</p>
+<h2 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--token-pruning-与-merging-改变整个子图的几何">Token pruning 与 merging 改变整个子图的几何</h2>
+<p>设原序列长度为 $N$、处理后的有效长度为 $rN$，$0&lt;r\leq1$。若压缩发生在整个 block 之前、且后续都使用缩短序列，理想 GEMM 主项随 $r$ 缩小，dense attention 主项随 $r^2$ 缩小；若只在 Attention Core 内压缩 K/V，QKV 投影或 MLP 可能完全未减少。需要明确插入位置，才能解释 token 保留率带来了多少计算节省。</p>
+<p>merging 还要计算相似度、选配对、聚合和 unmerge；pruning 要定义删去位置如何影响后续空间重建。保留 Shape 恢复路径不表示内容精确恢复，跨模态和运动边界也可能被错误合并。<a href="https://github.com/dbolya/tomesd">ToMe for Stable Diffusion</a>是可查的图像扩散示例，不是现成的 Wan2.2 或 SolarWM 视频适配。</p>
+<p>$$T_{\mathrm{candidate}}=T_{\mathrm{select}}+T_{\mathrm{pack}}
++T_{\mathrm{reduced}}+T_{\mathrm{restore}}$$
+$$\Delta T=T_{\mathrm{original}}-T_{\mathrm{candidate}}$$</p>
+<p>只有 $\Delta T&gt;0$ 且质量通过才有采用依据。上述 $r$ 和 $r^2$ 描述理想计算量，延迟还包含选择、重排与恢复的成本。</p>
+<h2 id="chapter-docs-manuscript-09-sparsity-and-tokens-md--双向与-ar-的验证差异">双向与 AR 的验证差异</h2>
+<p>Wan2.2 需要检查时空邻域、运动位置和 cross-attention 条件保持；两份 expert 可能需要分别校准。一个匹配某个 expert 的 mask 或门控权重不能直接用于另一份网络。若稀疏只改 Attention Core，量化、QKV、MLP 及 expert 切换仍按原路径计时。</p>
+<p>连续 AR 还需要保证当前 query 可见正确历史、局部位置和相机对应一致。动态选择不能从未来块读取信息，也不能把物理 ring 槽号当时间位置。逐块差异可能经过未来生成放大，因此短 chunk 数值接近只是一项筛选，不能替代多次淘汰后的质量。</p>
+<p>路由、packing、转换与 attention 分开诊断后，回到无插桩完整路径计时。若候选变慢，保留同 dtype/backend 的分因子对照，定位增加的成本来自路由、布局还是主 Kernel。</p></div>
+<div id="chapter-docs-manuscript-10-gemm-and-quantization-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/10-gemm-and-quantization.md --><h1 id="chapter-docs-manuscript-10-gemm-and-quantization-md--第10章-lineargemm-与低精度计算">第10章 Linear/GEMM 与低精度计算</h1>
+<p>Linear 的耗时由 GEMM 的 $M/N/K$、布局和执行精度共同决定。Attention 融合或稀疏化以后，QKV 投影与 MLP 可能成为新的瓶颈。低精度路径要节省矩阵计算或读取时间，并覆盖量化和布局转换成本。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--把-dit-linear-展开成-gemm">把 DiT Linear 展开成 GEMM</h2>
+<p>设 hidden states 为 $[B,N,D]$，将 batch 和序列展为 $M=B\times N$。以 Q/K/V 同宽的 MHA 为例，QKV 投影为 $[M,D]$ 乘 $[D,3D]$，输出投影为 $[M,D]$ 乘 $[D,D]$；MLP 再按原生 <code>ffn_dim</code> 展开。GQA/MQA 需按实际 KV 头数重算投影宽度，不同层的隐藏宽度与门控形式也应从配置读取。</p>
+<p>第 3 章给出了理想算术强度。实际选型还需要确认 weight layout、transpose、bias/activation epilogue、batch 组织和 padding。小 $M$ 时压缩权重可能减少读取量，大 $M$ 时低精度 Tensor Core 可能改变计算预算；AR-chunk 的 $M$ 是当前块的有效 Token 数（常在千余至数千量级），远大于逐 Token LLM Decode 的 $M=1$，应按真实 Shape 选 Kernel。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--浮点数据格式与硬件指令对齐">浮点数据格式与硬件指令对齐</h2>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--常见数值格式的编码与动态范围">常见数值格式的编码与动态范围</h3>
+<p>符号位、指数位与尾数位的分配决定数值精度与表示范围：</p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>符号/指数/尾数</th>
+<th>最小正数（正规 / 次正规）</th>
+<th>最大绝对值</th>
+<th>典型硬件支持</th>
+<th>DiT 推理适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FP16</strong></td>
+<td>1 / 5 / 10</td>
+<td>$2^{-14}$ / $2^{-24}$</td>
+<td>65504</td>
+<td>Volta 及后续架构</td>
+<td>存储与矩阵乘法；累加 dtype 由算子决定</td>
+</tr>
+<tr>
+<td><strong>BF16</strong></td>
+<td>1 / 8 / 7</td>
+<td>$2^{-126}$ / $2^{-133}$</td>
+<td>$3.39 \times 10^{38}$</td>
+<td>Ampere 及后续架构</td>
+<td>基准训练与浮点推理参考</td>
+</tr>
+<tr>
+<td><strong>FP8 (E4M3FN)</strong></td>
+<td>1 / 4 / 3</td>
+<td>$2^{-6}$ / $2^{-9}$</td>
+<td>448</td>
+<td>Ada / Hopper / Blackwell</td>
+<td>Linear 权重与激活矩阵乘法</td>
+</tr>
+<tr>
+<td><strong>FP8 (E5M2)</strong></td>
+<td>1 / 5 / 2</td>
+<td>$2^{-14}$ / $2^{-16}$</td>
+<td>57344</td>
+<td>Ada / Hopper / Blackwell</td>
+<td>梯度反向传播，推理中较少使用</td>
+</tr>
+<tr>
+<td><strong>NVFP4 (E2M1)</strong></td>
+<td>1 / 2 / 1</td>
+<td>1 / 0.5（未计 scale）</td>
+<td>6.0（未计 scale）</td>
+<td>Blackwell（如 RTX 5090 / B200）</td>
+<td>低比特权重与激活；需对应 scale 布局和 Kernel</td>
+</tr>
+</tbody>
+</table>
+<p>正规数包含隐含的前导 1，次正规数用更低的有效精度延伸到零附近。<a href="https://www.opencompute.org/documents/ocp-8-bit-floating-point-specification-ofp8-revision-1-0-2023-06-20-pdf">OCP OFP8 规格表 1–2</a>给出的 E4M3 最小正正规数为 $2^{-6}=0.015625$，最小正次正规数为 $2^{-9}\approx1.95\times10^{-3}$；E5M2 对应为 $2^{-14}\approx6.10\times10^{-5}$ 与 $2^{-16}\approx1.53\times10^{-5}$。<code>torch.finfo(dtype).tiny</code> 返回最小正正规数，较小的次正规数应按编码或转换结果核对，二者使用不同口径。<a href="https://docs.pytorch.org/docs/2.8/type_info.html">PyTorch 类型信息</a></p>
+<p>表中 E4M3 指有限值编码 E4M3FN，不覆盖其他同名变体。NVFP4 也不只是把数值 cast 成 E2M1：<a href="https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/">NVIDIA 的格式说明</a>使用每 16 个值一个 E4M3 scale，再配 tensor 级 FP32 scale。因此 4-bit 载荷之外还要计算 scale 与 padding，RTX 5090 与 B200 的 Kernel 应分别按 SM120 和 SM100 编译。</p>
+<p>还要分清存储格式与计算格式。W4A16 通常把压缩权重反量化后参与 16-bit 矩阵计算，主要可能节省权重容量与读取；W4A4、W8A8 则有机会使用对应低比特 Tensor Core，同时增加 activation 量化成本。具体路径仍以 kernel 为准。因此，报告权重位宽时也应给出实际 MMA 精度。</p>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--硬件-tensor-core-的对齐与访存约束">硬件 Tensor Core 的对齐与访存约束</h3>
+<p>Hopper 有原生 FP8 路径；原生 FP4 还需 Blackwell 对应硬件与 kernel。使用低精度 Tensor Core 时要核对所选指令的几何与布局约束：</p>
+<ul>
+<li><strong>矩阵维度对齐</strong>：对于 $C = A \cdot B$，应核对具体 MMA 指令和 kernel 对 $M,N,K$、打包及 scale 粒度的要求，按所用 Kernel 列出支持条件；</li>
+<li><strong>内存布局要求</strong>：Shared Memory 的 swizzle、padding 与重排由具体实现决定。部署时记录实际 kernel、支持形状及不支持输入的处理路径。</li>
+</ul>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--hopper--blackwell算子迁移核对表">Hopper → Blackwell：算子迁移核对表</h3>
+<p>SM90、SM100 和 SM120 的指令与资源预算不同，迁移时应分别选 Kernel：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>Hopper SM90</th>
+<th>Blackwell SM100（如 B200）</th>
+<th>Blackwell SM120（如 RTX 5090）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMA 与累加位置</td>
+<td>常见优化路径为<code>wgmma.mma_async</code>，累加器占 register</td>
+<td><code>tcgen05.mma</code>与 TMEM 改变累加器和流水布局</td>
+<td>窄精度走 warp 级<code>mma.sync</code>系列；不沿用 SM100 的 TMEM 路径</td>
+</tr>
+<tr>
+<td>TMA 与异步搬运</td>
+<td>引入 tensor descriptor 与<code>mbarrier</code>，支持 global/shared 异步搬运</td>
+<td>扩展搬运模式；按具体 PTX 指令及 target 核对</td>
+<td>支持 TMA；扩展模式按具体指令与 target 核对</td>
+</tr>
+<tr>
+<td>Microscaling</td>
+<td>FP8 与软件 scale 处理；无 Blackwell 原生 block-scaled FP4 路径</td>
+<td>支持对应 block-scaled FP4/FP8 指令</td>
+<td>同样有原生 block-scaled 窄精度能力，MMA 和 scale 布局需匹配 SM120 实现</td>
+</tr>
+<tr>
+<td>统一 L1/SMEM 池</td>
+<td>每 SM 256 KiB</td>
+<td>每 SM 256 KiB</td>
+<td>每 SM 128 KiB</td>
+</tr>
+<tr>
+<td>可配置 Shared Memory 上限</td>
+<td>每 SM 228 KiB、每 Block 上限 227 KiB</td>
+<td>每 SM 228 KiB、每 Block 上限 227 KiB</td>
+<td>每 SM 100 KiB、每 Block 上限 99 KiB；同一 Tile 与 stage 数可能装不下</td>
+</tr>
+<tr>
+<td>Triton 版本边界</td>
+<td>检查所用 Kernel 的 WGMMA/TMA lowering</td>
+<td>检查<code>dot_scaled</code>、TMEM 与流水实现</td>
+<td>3.6.0 发布说明明确新增原生 FP4/MXFP8 scaled dot 及 TMA Gather4；需使用包含对应支持的版本</td>
+</tr>
+</tbody>
+</table>
+<p>TMA 负责搬运，TMEM 保存矩阵运算的中间结果；迁移时记录具体指令、编译 target 和 CUDA/Triton 版本，比“TMA 2.0”这样的概称更有用。关于 SM120 的 Shared Memory 口径，Blackwell Tuning Guide 曾笼统提及每 SM 128 KiB（统一数据缓存池总容量），而 CUDA Programming Guide 的 Compute Capabilities 表进一步区分了 128 KiB 统一池、每 SM 100 KiB 可配置 Shared Memory carveout 上限以及单 Block 99 KiB 上限（每 Block 另有 1 KiB 系统保留）；实际估算 tile 与 pipeline stage 空间时，应以目标设备的 <code>cudaDeviceGetAttribute</code> 查询结果和 Kernel 编译资源报告为准。NVFP4 的每 16 值 E4M3 scale 与 MX 格式的每 32 值 E8M0 scale 也需分开处理。表中 Triton 3.6.0 说明新功能的版本边界；<a href="requirements/rtx-lab-py310-cu128.lock.txt">RTX 教学环境锁文件</a>固定的是 PyTorch 2.8.0+cu128 与 Triton 3.4.0。升级工具链后，重新检查 PTX/SASS、转换成本、资源占用与配对误差。<a href="https://docs.nvidia.com/cuda/archive/13.0.2/hopper-tuning-guide/index.html">Hopper 指南</a>、<a href="https://docs.nvidia.com/cuda/archive/13.0.2/blackwell-tuning-guide/index.html">Blackwell 指南</a>、<a href="https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/compute-capabilities.html">CUDA Compute Capabilities</a>、<a href="https://docs.nvidia.com/cutlass/latest/media/docs/cpp/blackwell_functionality.html">CUTLASS SM100/SM120 实现</a>、<a href="https://github.com/triton-lang/triton/releases/tag/v3.6.0">Triton 3.6.0 发布说明</a></p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--激活离群点如何损失量化分辨率">激活离群点如何损失量化分辨率</h2>
+<p>粗粒度量化可能无法同时覆盖离群值和普通值。离群通道是需要检查的一种误差来源；若出现偏色、噪点或结构变化，还需分别检查权重量化、累加精度和校准分布。</p>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--离群点的时空与通道分布">离群点的时空与通道分布</h3>
+<p>应按模型、层、输入与时间步采样激活，检查普通通道与离群通道的幅度差异，以及离群位置是否稳定。下图用合成的 4096 维数据解释 per-tensor scale 的风险；实际离群通道的比例与位置由逐层采样确定。</p>
+<div class="mermaid mermaid-chart">
+xychart-beta
+    title "激活通道幅值合成示例（非实测，采样通道柱状对比）"
+    x-axis "采样通道索引 Channel Index" [0, 512, 1024, 1536, 2048, 2560, 3072, 3584, 4095]
+    y-axis "激活值绝对值峰值 Max Absolute" 0 --> 140
+    bar [1.1, 1.3, 118.4, 0.9, 1.4, 132.1, 0.8, 1.2, 1.0]
+
+</div>
+
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--一个-per-tensor-量化算例">一个 Per-Tensor 量化算例</h3>
+<p>在 Per-Tensor 量化中，整个矩阵共享唯一的缩放因子（Scale Factor）$S$：
+$$S = \frac{\max(|X|)}{q_{\max}}$$
+以有符号 4-bit 量化为例（$q_{\max} = 7$），若矩阵中存在一个离群值 $\max(|X|) = 112$：
+$$S = \frac{112}{7} = 16$$
+量化公式为：
+$$Q(x) = \text{clamp}\left( \left\lfloor \frac{x}{S} \right\rceil, -8, 7 \right)$$
+对于占绝对多数的平常特征（$x \in [-1.5, 1.5]$）：
+$$\frac{x}{S} \in \left[ -\frac{1.5}{16}, \frac{1.5}{16} \right] \approx [-0.09375, 0.09375]$$
+这些值舍入后都变成 0，反量化也无法恢复其差异。这里的误差发生在舍入阶段：共享 scale 太大，小幅值信息落入同一个量化区间。实际质量影响取决于这些通道及后续计算，可用逐层回放定位敏感层。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--分块量化与低秩补偿">分块量化与低秩补偿</h2>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--细粒度-block-wise-fp8-量化">细粒度 Block-wise FP8 量化</h3>
+<p>分块量化将全局 scale 拆成局部 scale，使一个区域的离群值不再决定其他区域的量化分辨率：</p>
+<ul>
+<li><strong>分块规格</strong>：128 元素是一种候选粒度；一维分组与二维 tile 的 scale 布局不同，须与所选 kernel 配套；</li>
+<li>
+<p><strong>计算流（E4M3 示意）</strong>：
+  $$X_{\text{FP8}} = \text{cast}_{\text{FP8}}\!\left(\text{clamp}\left(\frac{X}{S_{\text{block}}},-448,448\right)\right), \quad \hat X = S_{\text{block}} X_{\text{FP8}}$$
+  scale 计算需处理全零块；cast 包含舍入，单纯 clamp 并未完成 FP8 编码。</p>
+</li>
+<li>
+<p><strong>布局与实际成本</strong>：128 个 FP8 元素的载荷为 128 字节；另计 scale、对齐和重排，并检查 warp 实际发出的访存事务；</p>
+</li>
+<li><strong>校准范围</strong>：覆盖目标分辨率、提示词及去噪区间；按模型和输出任务制定精度阈值。</li>
+</ul>
+<h3 id="chapter-docs-manuscript-10-gemm-and-quantization-md--svdquant4-bit-奇异值低秩分解">SVDQuant：4-bit 奇异值低秩分解</h3>
+<p>SVDQuant 先把 activation 的离群幅度转移到 weight，再用高精度低秩分支吸收 weight 中的大奇异分量；分解对象是平滑后的权重。以下按列向量记号重写<a href="https://arxiv.org/html/2411.05007v3#S4.SS2">原论文§4.2</a>，省略 bias。</p>
+<p>设 $X\in\mathbb R^{D_{\text{in}}\times N}$、$W\in\mathbb R^{D_{\text{out}}\times D_{\text{in}}}$，选择正对角平滑矩阵 $S$：
+$$\widetilde X=S^{-1}X,\qquad \widetilde W=WS,\qquad WX=\widetilde W\widetilde X$$
+增大离群 activation 对应的 scale 会缩小该输入通道，同时放大对应 weight 列。对 $\widetilde W$ 做截断 SVD，取 rank 为 $r$ 的 $L_1L_2^\top$，再定义剩余权重：
+$$R=\widetilde W-L_1L_2^\top$$
+其中 $L_1\in\mathbb R^{D_{\text{out}}\times r}$、$L_2\in\mathbb R^{D_{\text{in}}\times r}$。低比特路径处理 $R$ 与 $\widetilde X$，高精度路径保留低秩项。用 $\mathcal D_4(A)$ 表示 4-bit 量化再反量化后的数值，得到：
+$$\widehat Y=\mathcal D_4(R)\mathcal D_4(\widetilde X)+L_1(L_2^\top\widetilde X)\approx WX$$
+这是数值分解，不要求 kernel 实际物化反量化矩阵。rank、平滑与分组会共同影响误差、参数量和延迟，应作为配方的一部分记录。</p>
+<div class="mermaid">
+flowchart TD
+    X["平滑后输入 X_tilde [D_in, N]"] --> DownQuant["activation量化 + 低秩down projection<br/>共读输入"]
+    DownQuant --> QX["4-bit activation"]
+    DownQuant --> Low["低秩中间张量 [r, N]"]
+    QX --> UpGemm["4-bit GEMM + 低秩up projection<br/>合并输出写回"]
+    Low --> UpGemm
+    UpGemm --> Y["输出 Y [D_out, N]"]
+
+</div>
+
+<p>独立执行低秩分支会再次读输入、产生中间张量并写回输出。<a href="https://arxiv.org/html/2411.05007v3#S4.SS3">Nunchaku 的两处融合</a>分别让 down projection 与 activation 量化共读输入，让 up projection 与低比特 GEMM 合并输出写回。融合节省重复访存和部分 launch。移植到新的视频模型时，固定 checkpoint 与 shape，计入平滑/量化、低秩分支和完整层延迟，再观察长视频质量。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--量化发生在哪里决定成本归谁">量化发生在哪里，决定成本归谁</h2>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>可减少的载荷或计算</th>
+<th>需要补计的工作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只压缩权重</td>
+<td>权重存储与读取</td>
+<td>解包/反量化、未覆盖模块、scale</td>
+</tr>
+<tr>
+<td>权重与 activation 共同量化</td>
+<td>可能使用低精度矩阵指令</td>
+<td>动态 amax、量化、padding、累加与输出转换</td>
+</tr>
+<tr>
+<td>离线平滑/低秩补偿</td>
+<td>改善可量化性</td>
+<td>校准、额外分支、融合覆盖与工作区</td>
+</tr>
+<tr>
+<td>KV 量化</td>
+<td>历史存储与传输</td>
+<td>回传精度、位置前后顺序、每次读取的重建</td>
+</tr>
+</tbody>
+</table>
+<p>scale 若按每行、每通道或 block 保存，布局与访问方式不同；总存储按载荷加 scale、padding 与元数据计算。输入用 FP8、累加用 FP32、输出用 BF16 时，三种精度都应记录。各条路径分别确认 Kernel 支持与误差。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--fp8-工具链从模块替换到部署后端">FP8 工具链：从模块替换到部署后端</h2>
+<p>选择工具时，先确定保留 PyTorch 执行图，还是导出到另一套 runtime。两种路线处理动态 shape、控制流和自定义位置变换的方式不同。</p>
+<table>
+<thead>
+<tr>
+<th>路线</th>
+<th>修改或生成的对象</th>
+<th>接入时要检查的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>torchao</td>
+<td>通过 <code>quantize_</code> 选择并替换受支持模块的权重表示和计算路径</td>
+<td><code>Float8DynamicActivationFloat8WeightConfig</code> 使用动态激活量化；<code>Float8WeightOnlyConfig</code> 则主要压缩权重、矩阵乘保持原始精度。检查粒度、支持硬件及实际 GEMM dispatch</td>
+</tr>
+<tr>
+<td>ModelOpt</td>
+<td>校准、量化配置与量化 checkpoint</td>
+<td>按官方 Diffusers 支持矩阵选择模型和格式，采集多个去噪区间的激活；核对导出 checkpoint 所需的配套 backend</td>
+</tr>
+<tr>
+<td>TensorRT</td>
+<td>导入带显式 Q/DQ 的网络并构建 engine</td>
+<td>FP8 的格式、scale、Q/DQ 位置和算子支持由具体版本决定；动态 profile、自定义算子和未覆盖层决定能否完整部署</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://docs.pytorch.org/ao/stable/workflows/inference.html">torchao 的推理工作流</a>将 FP8 weight-only 与 FP8 activation/weight 路径分开。选择配置后，用真实层的 M/N/K 回放，比较“激活准备 + GEMM + 输出转换”的合计时间；若动态 amax 与 cast 未融合，单独很快的 FP8 GEMM 仍可能被前处理抵消。</p>
+<p><a href="https://github.com/NVIDIA/Model-Optimizer/blob/234776625aac1ecfd5e08ad8e371a7714302af32/examples/diffusers/README.md">ModelOpt 的 Diffusers 示例</a>在该固定版本 README 中明确：示例原有的 Diffusers ONNX 导出与 TensorRT engine 部署流程自 0.48.0 起弃用，改为导出统一 HF checkpoint，交给兼容的 diffusion backend 部署；Diffusers 量化、HF 导出和 PyTorch 路径仍受支持。这项变更针对该示例的部署流程。使用旧教程前先核对版本，并确认目标 runtime 能消费所导出的量化表示。直接使用 TensorRT 时，<a href="https://docs.nvidia.com/deeplearning/tensorrt/11.4.0/inference-library/quantized-types-explicit-quantization.html">显式量化文档</a>给出了 Q/DQ 语义及 FP8 导入要求。</p>
+<p>对视频 DiT，先覆盖一个 Attention 投影或 FFN 层，再扩展到主干。保留 Norm、调制及输出头的参考精度作为初始方案；按层记录未覆盖路径与回退。校准集覆盖低/高噪声区间和各 expert，评估集再检查感知质量、运动、时序稳定与 AR 误差传播。这些工具的支持范围是接入起点，具体模型收益由配对实验给出。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--wan22先核对两份-expert-的覆盖">Wan2.2：先核对两份 expert 的覆盖</h2>
+<p><a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/modules/model.py">Block 源码</a>可以定位 QKV、输出和 FFN 投影，以及 Norm、调制与 cross-attention。量化适配应列出被替换的模块与保留精度；逐个确认大 GEMM 是否执行低精度 Kernel。两份 expert 的 activation 分布和采样区间也可能不同，应分别覆盖校准与误差观测。</p>
+<p>若 Offload 让权重反复移动，还要核对搬的是量化表示还是重建后的 BF16。常驻容量按设备对象统计，链路流量则按实际传输表示统计。</p>
+<h2 id="chapter-docs-manuscript-10-gemm-and-quantization-md--ar误差要观察到未来块">AR：误差要观察到未来块</h2>
+<p>SolarWM 的 raw 历史 KV、QK norm 和位置/相机变换构成一条独立路径。主干 Linear、Attention 与 KV 精度分别做消融。逐层误差、当前块 latent 和后续轨迹都要保留，避免短程看似接近而长程漂移。</p>
+<p>实际实验比较 dense 参考、仅 Linear 量化、仅 Attention 低精度和通过筛选后的组合，用 scale、舍入、饱和及 dispatch 记录解释差异。组合验收见第 16 章，历史状态的表示见<a href="#chapter-docs-manuscript-12-ar-state-md">第 12 章</a>。</p></div>
+<div id="chapter-docs-manuscript-11-fusion-and-graphs-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/11-fusion-and-graphs.md --><h1 id="chapter-docs-manuscript-11-fusion-and-graphs-md--第11章-算子融合预计算编译与-cuda-graph">第11章 算子融合、预计算、编译与 CUDA Graph</h1>
+<p>融合、预计算、图编译和 CUDA Graph 分别针对不同层面的开销：算子融合减少子图内部对显存的中间读写，预计算把跨步不变的工作移出热循环，图编译自动生成并优选融合 Kernel，而 CUDA Graph 则把一整段固定拓扑的多次发射合并为单次图重放。</p>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--图编译与算子自动融合torchcompile">图编译与算子自动融合（torch.compile）</h2>
+<p>未融合的 Eager 实现会依次调用多个小算子并物化中间张量。不过，一个 PyTorch API 调用并不总是一次 GPU Kernel Launch：<code>view</code> 仅修改张量元数据，而单个复杂算子也可能在底层发射多个 Kernel。<a href="https://docs.pytorch.org/docs/2.8/tensor_view.html">PyTorch Tensor Views</a></p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--adaln-调制的访存开销">AdaLN 调制的访存开销</h3>
+<p>以 DiT 核心的自适应层归一化（AdaLN-Zero）为例：
+$$\tilde{X} = \text{LayerNorm}(X) \cdot (1 + \gamma) + \beta$$
+假定调制参数 <code>scale=1+γ</code> 与偏置 $\beta$ 已就绪，在未融合的 Eager 路径下，归一化、逐元素乘法和加法各自独立执行：</p>
+<ol>
+<li><code>LayerNorm</code> 读取输入 $X$，计算均值与方差，将标准化结果写回显存；</li>
+<li>乘法重新从显存读取标准化结果与 scale，写回乘积；</li>
+<li>加法再次读取乘积与偏置 $\beta$，写回最终调制结果。</li>
+</ol>
+<p>这类逐元素与归约操作算术强度很低，耗时往往受限于显存带宽与密集的 Kernel 发射空档。</p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--融合与-graph-break">融合与 Graph Break</h3>
+<p><code>torch.compile</code> 默认的 TorchInductor 后端会自动融合相邻的逐元素与归约算子，省去中间张量落盘；若进一步指定 <code>mode="reduce-overhead"</code>，编译器还会尝试用 CUDA Graph 包装无图断裂的子图以削减 Host 发射开销（与下一节显式管理静态 CUDA Graph 互补）。若代码中包含无法静态追踪的控制流，编译器会发生图断裂（graph break），在 <code>fullgraph=True</code> 下则会直接报错。排查时可开启日志：</p>
+<pre class="codehilite"><code class="language-bash">TORCH_LOGS=&quot;graph_breaks&quot; python inference.py
+</code></pre>
+
+<p>常见触发点包括：</p>
+<ol>
+<li>标量提取与数据相关 Python 控制流：如在热路径中调用 <code>t.item()</code> 或 <code>if t &gt; 500:</code> 触发隐式设备同步；</li>
+<li>自定义算子缺失元数据推导：第三方 C++/CUDA 算子未注册 fake/meta 实现；</li>
+<li>热路径插桩：依赖 GPU 张量数值的日志、断言或 NaN 检查，应移出编译与计时区域。</li>
+</ol>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--cuda-graph-静态图捕获与显存池管理">CUDA Graph 静态图捕获与显存池管理</h2>
+<p>输入输出形状与执行拓扑固定的前向子图适合用 CUDA Graph 捕获。录制单次 block 前向还是整个去噪步，取决于 scheduler 更新、条件切换和跨卡通信如何组织；本章小例先隔离测量一个固定算子栈的发射收益。</p>
+<figure class="diagram-figure"><figcaption>图示：Eager 逐项提交与 Graph 重放的依赖关系，横向距离没有时间含义。</figcaption><div class="mermaid mermaid-sequence">
+sequenceDiagram
+    autonumber
+    participant Host as CPU线程
+    participant Driver as CUDA队列
+    participant Device as GPU
+
+    Note over Host,Device: Eager：Host逐Kernel提交
+    loop 各Kernel
+        Host->>Driver: Kernel launch
+        Driver->>Device: 执行
+        Note over Device: 提交跟不上时等待
+    end
+
+    Note over Host,Device: CUDA Graph：重放已捕获依赖
+    Host->>Driver: 更新输入后发起cudaGraphLaunch
+    Driver->>Device: 按依赖执行Kernel
+
+</div></figure>
+
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--录制前置条件与约束">录制前置条件与约束</h3>
+<p>捕获与 replay 需要满足三项基本约束：</p>
+<ol>
+<li><strong>replay 地址与生命周期稳定</strong>：静态输入、输出 buffer 及模型参数地址在重放期间必须保持有效。捕获区域内部的中间张量分配由 capture allocator 接管并保留在 graph 私有内存池中，<code>torch.empty</code>、<code>torch.zeros</code> 本身无需手工改写为外部预分配；</li>
+<li><strong>捕获区域内禁止主机同步</strong>：<code>.item()</code>、依赖 GPU 结果的 Python 分支和阻塞式 CPU 拷贝必须移出捕获范围；预热、同步计时与数值校验统一放在 graph 外部；</li>
+<li><strong>replay 拓扑与几何匹配</strong>：单个 graph 严格重放捕获时录下的算子序列与内存地址，动态变化的标量（如当前时间步 embedding）可通过向固定 device buffer 原地 <code>copy_</code> 来更新；不同分辨率或分支路径则需分别维护独立 graph。<a href="#chapter-docs-manuscript-11-fusion-and-graphs-md--cuda-graph固定输入权重和输出地址">Graph 实测案例</a></li>
+</ol>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--共享显存池mempool-sharing与生命周期">共享显存池（Mempool Sharing）与生命周期</h3>
+<ul>
+<li><strong>显存成本</strong>：每个 CUDA Graph 的私有池会在 graph 存续期间保留已分配显存。为多个 Shape 或 expert 分别捕获独立 graph 时，<code>reserved</code> 显存随之累加；</li>
+<li><strong>池复用方案</strong>：当多个 graph 按捕获顺序严格串行重放、且前一次重放的输出张量在被下一次重放覆盖前已消费完毕时，可通过 <code>graph_pool_handle()</code> 共享同一个显存池：</li>
+</ul>
+<pre class="codehilite"><code class="language-python"># 仅示意共享池接口；复用前核验重放顺序与输出生命周期
+mempool = torch.cuda.graphs.graph_pool_handle()
+with torch.cuda.graph(g, pool=mempool):
+    output = model(static_input, static_t, static_c)
+</code></pre>
+
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--用访存账本判断融合机会">用访存账本判断融合机会</h2>
+<p>仍以 $Y=\operatorname{Norm}(X)\times\mathrm{scale}+\mathrm{bias}$ 为例，令 $X$ 含 $E$ 个元素、每元素占 $b$ bytes，忽略较小的 scale/bias 广播与均值方差统计量时，分离执行与理想融合的激活读写下界对比如下：</p>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>激活读写</th>
+<th style="text-align: right;">载荷下界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Norm</td>
+<td>读 $X$，写 $U$</td>
+<td style="text-align: right;">$2Eb$</td>
+</tr>
+<tr>
+<td>Multiply</td>
+<td>读 $U$，写 $V$</td>
+<td style="text-align: right;">$2Eb$</td>
+</tr>
+<tr>
+<td>Add</td>
+<td>读 $V$，写 $Y$</td>
+<td style="text-align: right;">$2Eb$</td>
+</tr>
+<tr>
+<td>分离合计</td>
+<td>三阶段分别读写</td>
+<td style="text-align: right;">$6Eb$</td>
+</tr>
+<tr>
+<td>理想融合</td>
+<td>读 $X$，写 $Y$</td>
+<td style="text-align: right;">$2Eb$</td>
+</tr>
+<tr>
+<td>理想减少量</td>
+<td>中间激活读写</td>
+<td style="text-align: right;">$4Eb$</td>
+</tr>
+</tbody>
+</table>
+<p>账本给出了理想节省的中间激活流量；实际提速幅度还受 L2 cache 命中率与融合 Kernel 的寄存器压力影响。将 RoPE 融入 QK 准备、或将 bias/激活函数融入 GEMM epilogue 时，需确保融合不会迫使原本走高效库函数的 GEMM 退化为慢速自定义 Kernel。</p>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--只预计算真正的不变量">只预计算真正的不变量</h2>
+<p>在多步去噪循环中，固定文本 prompt 的 encoder 输出、跨步不变的 cross-attention 条件 K/V，以及固定窗口几何下的旋转位置编码表（RoPE cos/sin），都可以提到去噪循环之外预计算一次。相反，依赖当前噪声步 $t$ 或动态相机姿态的分支则必须按步更新。</p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--固定步序的-adaln-调制查找表">固定步序的 AdaLN 调制查找表</h3>
+<p>当采样时间步序列、输入条件和模型权重在单次请求内固定时，各去噪步的逐层 AdaLN 调制向量可以在进入去噪主循环前一次性批量算出，存为紧凑的查找表（LUT）。设网络共有 $L$ 层、每层包含 $M$ 组独立条件调制分支、输入条件宽度为 $D_{\mathrm{in}}$、隐藏层宽度为 $D$，每组输出 6 个调制向量（如 double block 的 shift/scale/gate），采样共 $S$ 步、每元素占 $b$ 字节，忽略 bias 时：</p>
+<p>$$P_{\mathrm{proj}}=6LMD_{\mathrm{in}}D,\qquad
+M_{\mathrm{LUT}}=6SLMD\,b$$</p>
+<p>其中 $P_{\mathrm{proj}}$ 是调制线性层的静态参数量，$M_{\mathrm{LUT}}$ 是预计算查找表的显存载荷。由于时间步数 $S$ 远小于 $D_{\mathrm{in}}$（例如 $S \in [4, 50]$，而 $D_{\mathrm{in}}$ 通常为数千），$M_{\mathrm{LUT}}$ 往往只有数十至上百 MiB。将步序固定的调制投影合并到循环外预计算，一方面能把多步小矩阵乘合并为一次批处理并省去循环内的重复发射，另一方面在支持权重 Offload 的部署中，若后续去噪步不再直接调用调制线性层权重，还可按需释放这部分投影权重的常驻占用。</p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--位置与相机变换的原地子向量操作">位置与相机变换的原地子向量操作</h3>
+<p>三维时空 RoPE（如 MM-RoPE）或相机射线旋转编码（PRoPE）常需将每个注意力 head 的通道维 $d$ 切分为多个子区间（例如仅对特定子向量施加平面正交旋转，其余维度保持不变）。朴素实现往往先沿最后一维 <code>split</code> 切片，分别计算旋转后再调用 <code>torch.cat</code> 重新拼接回 <code>[B, N, H, d]</code>。在长序列、数十层、多步去噪的累积调用下，反复 <code>split + cat</code> 不仅增加短 Kernel Launch，还会频繁触发完整 Q/K 张量大小的临时显存分配与拷贝。</p>
+<p>将这类变换改写为基于步幅（strided view）的原地子向量操作，或者直接融入 QK 归一化与位置编码的自定义 Triton/CUDA Kernel，可以直接在原张量的目标通道切片上完成二维旋转写入，省去跨步拼接产生的中间缓冲与带宽消耗。</p>
+<p>此外，推理阶段固定的 LoRA 分支也可以在加载时直接合并（merge）进主干权重副本，省去每次前向的额外低秩旁路计算。合并与权重量化的先后次序会影响舍入误差，上线前需在代表性提示词集上核对数值与画面一致性。</p>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--regional-compilation-与冷启动预算">Regional compilation 与冷启动预算</h2>
+<p>对结构完全重复的数十个 DiT Block，优先对单个标准 Block 启用区域编译（regional compilation），让编译器复用同一套生成代码，能够显著缩短首次编译的冷启动耗时。<a href="https://docs.pytorch.org/tutorials/recipes/regional_compilation.html">PyTorch 官方教程</a></p>
+<p>设编译带来的额外初始化耗时为 $C$ 秒，编译后每次请求净节省 $d$ 秒（$d&gt;0$），则摊平冷启动成本所需的最小请求数为 $\lceil C/d\rceil$。在多分辨率或多帧数规格并存的线上服务中，还需结合编译缓存命中率与重编译触发频率评估实际收益。</p>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--cuda-graph固定输入权重和输出地址">CUDA Graph：固定输入、权重和输出地址</h2>
+<p><a href="examples/rtx_dit_lab.py">合成实验</a>固定 BF16 输入 <code>[64,512]</code> 与 8 组串联的 <code>Linear(512,512)+SiLU</code>（seed 43），按 eager → graph replay → eager（A1/B/A2）顺序配对运行。两臂均将结果写入同一预分配输出 buffer；重放前先把输出填满 NaN 再执行 replay，验证 Graph 确实重算了全部输出而非残留旧值。捕获与 side-stream 预热耗时单独记录，不计入热态样本。</p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--单卡-rtx-5090-结果">单卡 RTX 5090 结果</h3>
+<table>
+<thead>
+<tr>
+<th>计时范围</th>
+<th style="text-align: right;">A1 eager</th>
+<th style="text-align: right;">B replay</th>
+<th style="text-align: right;">A2 eager</th>
+<th style="text-align: right;">A/B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>含最终同步 wall，ms/call</td>
+<td style="text-align: right;">0.186824</td>
+<td style="text-align: right;">0.040165</td>
+<td style="text-align: right;">0.189341</td>
+<td style="text-align: right;">4.68268×</td>
+</tr>
+<tr>
+<td>CUDA stream event span，ms/call</td>
+<td style="text-align: right;">0.185826</td>
+<td style="text-align: right;">0.039346</td>
+<td style="text-align: right;">0.188224</td>
+<td style="text-align: right;">4.75330×</td>
+</tr>
+</tbody>
+</table>
+<p>wall 首尾漂移 +1.347%；B、A2 及 NaN 覆盖检查均与 A1 逐位相同，参数和输入版本未变，输出地址保持固定。CUDA allocated 峰值 22,553,600 B。这种轻量算子栈的单次 Kernel 执行极短，Eager 模式主要受 Host 发射空档限制；进入完整 DiT 后，大尺寸 GEMM 与 Attention 会拉长设备执行时间，从而摊薄一部分 Host 发射开销。</p>
+<p>捕获与 side-stream 预热共耗时 48.1565 ms，按单次调用节省 0.147917 ms 计算，约需 $\lceil 48.1565 / 0.147917 \rceil = 326$ 次重放摊平建图成本。</p>
+<h3 id="chapter-docs-manuscript-11-fusion-and-graphs-md--数据中心-sm90-gpu-单卡结果">数据中心 SM90 GPU 单卡结果</h3>
+<p>在数据中心 SM90 GPU（80 GB、CUDA runtime 13.1）上，以单张卡运行相同算子栈：</p>
+<table>
+<thead>
+<tr>
+<th>计时范围</th>
+<th style="text-align: right;">A1 eager</th>
+<th style="text-align: right;">B replay</th>
+<th style="text-align: right;">A2 eager</th>
+<th style="text-align: right;">A/B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>含最终同步 wall，ms/call</td>
+<td style="text-align: right;">0.248602</td>
+<td style="text-align: right;">0.045280</td>
+<td style="text-align: right;">0.260822</td>
+<td style="text-align: right;">5.62522×</td>
+</tr>
+<tr>
+<td>CUDA stream event span，ms/call</td>
+<td style="text-align: right;">0.247341</td>
+<td style="text-align: right;">0.044233</td>
+<td style="text-align: right;">0.259149</td>
+<td style="text-align: right;">5.72524×</td>
+</tr>
+</tbody>
+</table>
+<p>wall 首尾漂移 +4.915%，CUDA event 漂移 +4.774%。虽然 A2 相对 A1 存在约 4.9% 的顺序执行漂移，但候选 B 相对基线的加速比达 5.62522×（耗时缩短约 82%），效应量远大于基线漂移，结论稳健；B、A2 与 NaN 覆盖检查均逐位通过。Capture 与 side-stream 预热合计 59.6761 ms，热态每次调用平均节省 0.209432 ms，摊平建图成本约需 $\lceil 59.6761 / 0.209432 \rceil = 285$ 次调用。两组观测均为历史样本，采集所用脚本与随包脚本的差异见<a href="#chapter-docs-manuscript-appendix-b-reproduction-md--历史观测与随包脚本版本">附录 B</a>，完整样本见 <a href="docs/manuscript/evidence/measurements.json">measurements.json</a> 与 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a>。</p>
+<h2 id="chapter-docs-manuscript-11-fusion-and-graphs-md--双向与-ar-的捕获范围">双向与 AR 的捕获范围</h2>
+<p>Wan2.2 包含高低噪声两份 expert，需按 expert 分别维护捕获图；去噪步的时间标量通过固定地址的 device buffer 原地更新，而外层的 expert 切换仍由 Python 调度。若开启了动态改变参数存储地址的权重 Offload，则需配合固定地址的 device staging buffer 才能与 CUDA Graph 兼容（详见第 16 章）。</p>
+<p>SolarWM 等连续 AR 模型还涉及滑动窗口填满前后的 KV 长度变化、环形淘汰以及 raw KV 写入。实践上宜先对形状固定的单层或主干无状态子图启用 CUDA Graph，将动态窗口管理留在图外或配合支持固定槽位地址的 Paged/Ring KV 缓冲。</p></div>
+<div id="chapter-docs-manuscript-12-ar-state-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/12-ar-state.md --><h1 id="chapter-docs-manuscript-12-ar-state-md--第12章-ar-历史-kv-与状态管理">第12章 AR 历史 KV 与状态管理</h1>
+<p>AR 历史 KV 保存已生成上下文的执行状态。优化对象除了 tensor 本身，还包括有效窗口、逻辑位置和提交时机：任何一项变化都会进入未来 chunk 的输入。本章用公开 SolarWM 源码解释状态生命周期，用合成 CPU 小例比较 list 与 ring，并结合 50 层 AR 规模的合成微基准分析活跃窗口与分页池的容量和提取开销；基础容量公式见<a href="#chapter-docs-manuscript-04-memory-and-state-md">第 4 章</a>。</p>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--从当前块到已提交历史">从当前块到已提交历史</h2>
+<div class="mermaid">
+flowchart LR
+    A["1. 读历史与逻辑位置"] --> B["2. 初始化当前块噪声"] --> C["3. 多步去噪（历史只读）"]
+    C --> D["4. 取得最终 latent"] --> E["5. clean refresh 生成 raw KV"] --> F["6. 提交、淘汰并推进块 ID"]
+    F --> A
+
+</div>
+
+<p><a href="https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/sgf_rollout.py">公开 SolarWM rollout</a>在当前块去噪结束后，以最终预测的 clean latent 再执行一次前向并提交 KV。去噪迭代期间只读已有历史，最后一步去噪输入仍是更新前的带噪 latent；只有紧随其后的 clean refresh 才以无噪 latent 生成可供后续块引用的历史 KV。</p>
+<p>这里的时间坐标方向与<a href="#chapter-docs-manuscript-06-evaluations-and-distillation-md">第 6 章</a>相反。第 6 章取 $t=0$ 为数据端、$t=1$ 为噪声端；<a href="https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/torch_flow.py">SolarWM 的 flow 实现</a>则使用 $u=1-t$：</p>
+<p>$$x_u=u\,x_{\mathrm{data}}+(1-u)\,\epsilon,\qquad u=1-t$$
+$$v_u=x_{\mathrm{data}}-\epsilon,\qquad \widehat x_{\mathrm{data}}=x_u+(1-u)\widehat v_u$$</p>
+<p>因此其 clean refresh 传入 <code>timestep</code> 参数 $u=1.0$（即第 6 章的 $t=0$，纯数据端）。不同代码库对 <code>timestep</code> 的正反向定义各异，对照采样日程时需先核对噪声系数的映射关系。</p>
+<p>是否需要单独的 refresh 前向，取决于训练与推理约定的上下文协议。例如 <a href="https://github.com/NVlabs/rcm/blob/ed3cb14dd936f92cdc9f9381af7369991509b41f/rcm/inference/wan2pt1_t2v_causal_infer.py">Causal-rCM</a>采用自身的 APPEND 路径。若想省去额外前向，前提是验证最后一步去噪状态与下一块训练时所见的历史分布兼容。</p>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--有界窗口与环形存储">有界窗口与环形存储</h2>
+<p>固定窗口模型在填满窗口后只保留规定数量的最近历史块，KV 显存随窗口大小封顶，而非随总视频时长无限增长。有界 <code>list</code> 即可限制保留块数；环形池（ring buffer）则进一步复用预分配的固定物理槽位，避免在滚动生成中频繁分配和释放大张量。</p>
+<p>沿用第 2、4 章记号，设窗口保留 $K$ 个历史 chunk（当前去噪块另计，代码中亦常记为 <code>W_history</code>），每层 K/V 缓冲池可组织为 <code>[B, K, N_chunk, H_KV, d]</code>。下面以 $K=5$ 槽位环形池示意覆盖写入：</p>
+<div class="mermaid">
+flowchart TD
+    subgraph RingMemory ["5 槽位历史池（示意）"]
+        direction LR
+        S0["Slot 0"]
+        S1["Slot 1"]
+        S2["Slot 2"]
+        S3["Slot 3"]
+        S4["Slot 4<br/>最旧历史／下一写入点"]
+    end
+    NewChunk["Chunk k<br/>clean KV"] -->|原地覆盖| S4
+
+</div>
+
+<p>生成块编号 $k$ 从 0 开始时，当前块的写入槽位为：</p>
+<p>$$s=k\bmod K$$</p>
+<p>若将槽位与块内 Token 轴展平，则对应连续切片 <code>[s*N_chunk:(s+1)*N_chunk]</code>，可通过 <code>copy_</code> 原地覆盖最旧槽位。当环形池发生环绕后（例如逻辑顺序对应物理槽位 <code>[3,4,0,1,2]</code>），若算子依赖时间顺序或局部相对位置，读取时仍需按逻辑块序重组或通过索引表映射，这部分准备开销应与 Attention Kernel 一并衡量。</p>
+<h3 id="chapter-docs-manuscript-12-ar-state-md--逻辑位置与物理槽位分开保存">逻辑位置与物理槽位分开保存</h3>
+<p>物理槽位循环复用，而数学上的时间与相机位置则随生成推进持续递增。因此状态管理器必须将<strong>物理存储槽号</strong>与<strong>逻辑 chunk/帧 ID 及相机外参</strong>分开记录。</p>
+<p><a href="https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/sgf_attention.py">公开 SolarWM Attention</a>在历史池中保存的是 QK Norm 之后、MM-RoPE/PRoPE 旋转之前的 <strong>raw K</strong> 与 V。每次前向读取时，先将当前块 query 与窗口内可见历史映射到当前窗口的局部相对位置，施加位置与相机旋转变换后送入 Attention，而池中的 raw KV 保持不变。这样当滑动窗口向前滚动时，历史块可以在新窗口坐标系下重新计算相对旋转；反之，若模型缓存的是绝对位置编码后的 post-RoPE K，则需配套相应的相对位移重标定策略。</p>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--kv-精度布局与量化开销">KV 精度、布局与量化开销</h2>
+<p>单层历史逻辑上为 <code>[B, N_history, H_KV, d]</code>，物理上可存为 chunk 列表、连续预分配池或分页池（paged cache）。若将历史 KV 压缩为 FP8，需明确量化作用在 raw K/V 还是 post-RoPE K/V 上，并计入缩放因子（scales）与对齐开销：</p>
+<p>$$M_{\mathrm{BF16}}=2BN_{\mathrm{history}}H_{\mathrm{KV}}d\times2\ \mathrm{B}$$
+$$M_{\mathrm{FP8,payload}}=2BN_{\mathrm{history}}H_{\mathrm{KV}}d\times1\ \mathrm{B}$$
+$$M_{\mathrm{FP8,total}}=M_{\mathrm{FP8,payload}}+
+M_{\mathrm{scales}}+M_{\mathrm{padding}}+M_{\mathrm{metadata}}$$</p>
+<p>式中前导因子 2 对应 K 与 V 两份张量。对于缓存 raw KV 的模型，读取反量化后的误差还会经过后续的 RoPE 与相机旋转变换，并在自回归生成中逐块传递。</p>
+<p>分页结构适合多请求并发服务中变长历史的动态拼装，能减少外部内存碎片；而在单请求、固定窗口长度的连续 AR 视频生成中，按块对齐的连续预分配池往往索引更简单、访存更连续。</p>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--cpu-小例两套环境中-ring-均稍慢">CPU 小例：两套环境中 ring 均稍慢</h2>
+<p><a href="examples/rtx_dit_lab.py">合成实验</a>在 CPU 上对比容量为 5 的 <code>list</code> 与 <code>ring</code> 容器：连续执行 12 次 raw K/V 的 <code>clone+detach</code> 提交、按时间序读取、滚动淘汰与末尾 <code>reset</code>。每份 K 或 V 形状为 <code>[1,2,8,16]</code>（FP32，1 KiB），读取时展平并用 <code>torch.cat</code> 拼接核对。A1/B/A2 三臂输出逐位相同，<code>reset</code> 后引用全部清空。</p>
+<p>在 RTX 5090 宿主机上，<code>list</code> 两侧均值约 0.221478 ms/epoch，<code>ring</code> 约 0.228329 ms/epoch，A/B 为 0.969995×（<code>list</code> 快约 3.0%），首尾漂移 −0.866%。在 SM90 GPU 宿主机上，<code>list</code> 均值约 0.236858 ms，<code>ring</code> 约 0.243837 ms，A/B 为 0.971377×（<code>list</code> 快约 2.9%），首尾漂移 +0.504%。由于张量仅 1 KiB，计时主要反映 Python 列表切片与自定义类取模索引的解释器开销。完整样本见 <a href="docs/manuscript/evidence/measurements.json">measurements.json</a> 与 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a>。该实验用于验证滑动窗口的读写顺序与引用清理契约，真实显存带宽表现需在全尺寸 GPU 张量上评估。</p>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--ar-规模合成-kv活跃窗口与预分配池">AR 规模合成 KV：活跃窗口与预分配池</h2>
+<p><a href="docs/manuscript/evidence/ar_microbench_sm90.json">AR 规模 KV 微基准</a>在单张数据中心 SM90 GPU（80 GB）上评估真实视频 AR 尺寸下的历史 KV 容量与提取开销：设定 $L=50$ 层、$H_{\mathrm{KV}}=56$ 头、$d=128$、每块 $1200$ 个 token、活跃滑动窗口保留 $K=5$ 块（共 $6000$ 个活跃 token）。</p>
+<blockquote>
+<p><strong>ℹ️ NOTE</strong> 证据等级说明：历史汇总观察（待补完整逐次样本与脚本）
+与其余四项保存了完整 warmup/hot 逐次样本和随包复现脚本的实验不同，该记录仅保存历史汇总结果（<code>summary_only: true</code>），不含逐次热样本、统计量口径（均值/中位数）、首尾漂移或独立采集脚本；随包的 <code>review_public_evidence.py</code> 可离线核验其池容量几何与耗时比例算术，但不能复核采集过程。</p>
+</blockquote>
+<p>按第 4 章公式，5 块活跃窗口的 BF16 K/V 净载荷（同时也是三条路径每次提取并还原出的目标 BF16 张量总大小）为：</p>
+<p>$$M_{\mathrm{active}}=2\times50\times6000\times56\times128\times2
+=8{,}601{,}600{,}000\ \mathrm{B}\approx8.60\ \mathrm{GB}\ (8.01\ \mathrm{GiB})$$</p>
+<p>当改用按页分配的 Paged Cache（页大小 $64$ token）时，单个 $1200$-token 块需要向上取整分配 $\lceil1200/64\rceil=19$ 页，即 $19\times64=1216$ 个 token 槽位（含页尾 padding 16 个槽位）。分页池静态预留 $7$ 块容量（含 5 块活跃历史与 2 块缓冲余量），总预分配槽位数为 $7\times1216=8512$，对应 50 层 BF16 K/V 池常驻载荷 $12{,}202{,}803{,}200\ \mathrm{B}$（约 $12.20\ \mathrm{GB}$ / $11.36\ \mathrm{GiB}$）。将该分页池存为单字节 FP8 E4M3 时，K/V 池常驻载荷严格减半为 $6{,}101{,}401{,}600\ \mathrm{B}$（约 $6.10\ \mathrm{GB}$ / $5.68\ \mathrm{GiB}$），另加每页每头 1 个 FP32 scale（$2\times50\times7\times19\times56\times4=2{,}979{,}200\ \mathrm{B}$），合计 $6{,}104{,}380{,}800\ \mathrm{B}$。</p>
+<p>下表将<strong>池常驻载荷</strong>与<strong>每次 Gather 实际输出的连续 BF16 载荷</strong>分开列出（十进制 $1\ \mathrm{GB}=10^9\ \mathrm{B}$）：</p>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th style="text-align: right;">50 层 Gather 汇总耗时（ms）</th>
+<th style="text-align: right;">Gather 输出 BF16（GB）</th>
+<th style="text-align: right;">池常驻 K/V 载荷（GB）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chunk List</td>
+<td style="text-align: right;">6.63</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">8.60（8.01 GiB）</td>
+</tr>
+<tr>
+<td>Paged BF16</td>
+<td style="text-align: right;">21.50</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">12.20（11.36 GiB）</td>
+</tr>
+<tr>
+<td>Paged FP8 E4M3</td>
+<td style="text-align: right;">64.21</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">6.10（5.68 GiB）</td>
+</tr>
+</tbody>
+</table>
+<p>三条路径的实现与容量口径：Chunk List 对 5 块活跃历史的连续张量直接执行 <code>torch.cat</code>（6,000 个活跃 token）；Paged BF16 使用 7 块预分配池（8,512 个槽位，含页尾 padding），在 Python 侧按页表逐页收集并还原为连续 BF16；Paged FP8 E4M3 使用同一 8,512 槽位池的 FP8 表示（另加 2.98 MB scales），在 Python 侧逐页收集并反量化为连续 BF16。</p>
+<p>阅读上表时需注意两条分页路径的计时范围（<code>latency_scope</code>）：</p>
+<ul>
+<li><strong>Python 侧逐页物化开销 vs 分页机制本身</strong>：表中的 <code>21.50 ms</code> 与 <code>64.21 ms</code> 测量的是<strong>在 Python 侧按页表逐页索引收集（并从 FP8 反量化）物化出 8.60 GB 连续 BF16 张量</strong>的耗时，而非融合 PagedAttention Kernel 的算子内部耗时。如果为了对接只接受连续 BF16 输入的步骤（如在 Attention 外先对全量历史 raw KV 做位置/相机旋转）而在每次前向执行 Python 侧逐页物化，这部分收集与反量化开销就会成为显著瓶颈。</li>
+<li><strong>算子选型建议</strong>：优先评估能够直接按页表读取、在线反量化或融合位置/相机变换的实现，并验证完整路径的容量与延迟。上表没有比较向量化 Gather、独立融合 Gather/反量化等替代方案，不能据此认定只有融合 PagedAttention 才能获益。在单请求固定窗口场景下，若仍需在 Attention 外对历史 K 做逐块重标定，按块连续存放的 Ring/Chunk Pool 也是避免 Python 逐页收集的候选；仍需计入后续拼接、重标定与物化成本。</li>
+</ul>
+<h2 id="chapter-docs-manuscript-12-ar-state-md--状态变更的验证顺序">状态变更的验证顺序</h2>
+<p>修改历史 KV 结构或精度时，依次在填窗前、刚填满窗口、首次触发淘汰和多次环绕四个节点核对每层 K/V、逻辑块序、有效长度及下一块输入；同时穿插请求 <code>reset</code> 与条件切换，确认旧张量未被容器或异步流残留引用。完成单步对齐后，再运行跨多次窗口淘汰的长序列生成，按<a href="#chapter-docs-manuscript-05-measurement-md">第 5 章</a>检验长程时序稳定性与画面质量。</p></div>
+<div id="chapter-docs-manuscript-13-residency-and-transfer-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/13-residency-and-transfer.md --><h1 id="chapter-docs-manuscript-13-residency-and-transfer-md--第13章-驻留offload-与数据搬运">第13章 驻留、Offload 与数据搬运</h1>
+<p>权重、条件 encoder、活跃 KV 和 decoder 的驻留周期不同。先确定哪些对象必须放在设备外、多久搬一次，再决定使用持久 pinned 池或异步预取。下面用单卡合成实验隔离 Host 内存类型与提交方式，再讨论如何组织预取依赖。</p>
+<h2 id="chapter-docs-manuscript-13-residency-and-transfer-md--权重切换与历史读取">权重切换与历史读取</h2>
+<p>Wan2.2 的固定 T2V 入口按噪声阶段选择 expert。两份主干是否同时驻留、切换时何时搬回以及是否清理，应沿实际 Offload 路径记录。单调时间表跨一次 boundary，与逐层频繁卸载的传输次数差别很大。<a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">公开入口</a></p>
+<p>AR 的活跃历史则可能在每次去噪和上下文更新时逐层读回。把已经淘汰的数据存到 CPU，与把下一步还要读取的历史放在 CPU，是两种策略。按每块新增字节、每次读取字节、读取次数和淘汰频率分别记账。KV 容量的通用计算见<a href="#chapter-docs-manuscript-04-memory-and-state-md">第4章</a>，这里只测一批固定数据的搬运。</p>
+<h2 id="chapter-docs-manuscript-13-residency-and-transfer-md--固定载荷的实验设置">固定载荷的实验设置</h2>
+<p><a href="examples/rtx_kv_transfer_lab.py">搬运示例</a>不加载权重，也不执行 Attention。保存数据使用合成 BF16 源张量：10 份 <code>[1,5040,56,128]</code> 连续 tensor，共 722,534,400 bytes；一个 epoch 按固定顺序将它们全部复制到预分配 GPU 目标。</p>
+<p>输入 seed、内容、dtype、目标地址和 copy 顺序在三种对照中保持相同。pageable 源、持久 pinned 源、GPU 目标各占约 0.673 GiB；完整进程还包含导入、准备和检查的内存。执行前应检查主存、锁页预算和设备余量。</p>
+<p>新版脚本默认使用独立的 <code>large</code> 教学 Shape；重放上述尺寸时使用 <code>--fixture explicit-shape --shape 1 5040 56 128</code>，并固定 tensor 数量为 10。下面是已保存的历史合成观测，采集所用脚本与随包脚本的差异见<a href="#chapter-docs-manuscript-appendix-b-reproduction-md--历史观测与随包脚本版本">附录 B</a>。</p>
+<h2 id="chapter-docs-manuscript-13-residency-and-transfer-md--三个对照各回答一个问题">三个对照各回答一个问题</h2>
+<table>
+<thead>
+<tr>
+<th>对照</th>
+<th>A1 / A2</th>
+<th>B</th>
+<th>检查什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pinning</td>
+<td>pageable 源，逐 tensor 阻塞 copy</td>
+<td>预先 pinned 的同内容源，仍阻塞 copy</td>
+<td>排除准备成本后的源内存影响</td>
+</tr>
+<tr>
+<td>submission</td>
+<td>持久 pinned 源，逐 tensor 阻塞 copy</td>
+<td>相同源与 Stream，nonblocking 提交、末尾同步</td>
+<td>逐 tensor 主机等待的成本</td>
+</tr>
+<tr>
+<td>pin_each_read_negative</td>
+<td>持久 pinned 源，阻塞 copy</td>
+<td>每次读取先 <code>pin_memory()</code>，再阻塞 copy</td>
+<td>在热路径执行 pin 与主存复制的成本</td>
+</tr>
+</tbody>
+</table>
+<p>所有策略写入相同 GPU 目标。第三组包含 <code>pin_memory()</code> 及其主存复制；pinned allocator 可能复用已分配内存。</p>
+<p>每臂 5 次 warmup、30 次热观测，一个观测包含全部 10 次 copy，按 A/B/A 顺序运行。Wall time 包含提交、Event 记录与最终同步；CUDA Event 是当前 Stream 的跨度，也可能包含等待 Host 提交或 pin 的空档。预先 pin、GPU 分配、NaN 覆盖及内容检查在热计时外单列。</p>
+<h3 id="chapter-docs-manuscript-13-residency-and-transfer-md--单卡-rtx-5090-结果">单卡 RTX 5090 结果</h3>
+<p>环境为 PyTorch 2.8.0+cu128、CUDA 12.8、CPU threads=8；一个 Stream、无并行模型计算。每个 epoch 的载荷为 722,534,400 bytes。</p>
+<table>
+<thead>
+<tr>
+<th>对照</th>
+<th style="text-align: right;">A1 wall ms</th>
+<th style="text-align: right;">B wall ms</th>
+<th style="text-align: right;">A2 wall ms</th>
+<th style="text-align: right;">A/B</th>
+<th style="text-align: right;">A2 相对 A1 漂移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预先 pin，仍阻塞 copy</td>
+<td style="text-align: right;">71.689772</td>
+<td style="text-align: right;">13.091678</td>
+<td style="text-align: right;">71.245154</td>
+<td style="text-align: right;">5.458999×</td>
+<td style="text-align: right;">−0.6202%</td>
+</tr>
+<tr>
+<td>pinned 源，改 nonblocking 提交</td>
+<td style="text-align: right;">13.094814</td>
+<td style="text-align: right;">13.020843</td>
+<td style="text-align: right;">13.100527</td>
+<td style="text-align: right;">1.005900×</td>
+<td style="text-align: right;">+0.0436%</td>
+</tr>
+<tr>
+<td>每次读取才 pin，相对持久 pin</td>
+<td style="text-align: right;">13.101602</td>
+<td style="text-align: right;">25.376453</td>
+<td style="text-align: right;">13.102055</td>
+<td style="text-align: right;">0.516299×</td>
+<td style="text-align: right;">+0.0035%</td>
+</tr>
+</tbody>
+</table>
+<p>按载荷除以 wall time 计算有效带宽，第一组 pageable 取 A1、A2 均值的平均：</p>
+<p>$$\mathrm{BW}_{\mathrm{effective}}=
+\frac{\mathrm{payload\ bytes}}{T_{\mathrm{wall}}\times10^9}\ \mathrm{GB/s}$$</p>
+<table>
+<thead>
+<tr>
+<th>源内存</th>
+<th style="text-align: right;">参考 wall（s）</th>
+<th style="text-align: right;">有效带宽（GB/s）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pageable</td>
+<td style="text-align: right;">0.071467463</td>
+<td style="text-align: right;">10.11</td>
+</tr>
+<tr>
+<td>持久 pinned</td>
+<td style="text-align: right;">0.013091678</td>
+<td style="text-align: right;">55.19</td>
+</tr>
+</tbody>
+</table>
+<p>这两个数包含相应路径的提交与同步开销，便于比较应用可获得的搬运速率；PCIe 纯 DMA 带宽需另测。第一组主要收益来自事先准备好的 pinned 源。第二组改提交方式只得到约 0.59% 的局部差异；在这一大 tensor、单 Stream 配置下，省去逐次 Host 等待的空间较小。第三组热路径每次临时 pin 的候选有效带宽为 28.47 GB/s，耗时约为持久 pinned 参考的 1.94 倍。</p>
+<h3 id="chapter-docs-manuscript-13-residency-and-transfer-md--数据中心-sm90-gpu-单卡结果">数据中心 SM90 GPU 单卡结果</h3>
+<p>同一搬运协议在单张数据中心 SM90 GPU（80 GB、PyTorch 2.10.0、CUDA runtime 13.1）上的结果如下，使用 <code>cuda:0</code>，未运行跨卡传输：</p>
+<table>
+<thead>
+<tr>
+<th>对照</th>
+<th style="text-align: right;">A1 wall ms</th>
+<th style="text-align: right;">B wall ms</th>
+<th style="text-align: right;">A2 wall ms</th>
+<th style="text-align: right;">A/B</th>
+<th style="text-align: right;">A2 相对 A1 漂移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预先 pin，仍阻塞 copy</td>
+<td style="text-align: right;">81.549543</td>
+<td style="text-align: right;">13.218359</td>
+<td style="text-align: right;">76.447441</td>
+<td style="text-align: right;">5.976422×</td>
+<td style="text-align: right;">−6.2564%</td>
+</tr>
+<tr>
+<td>pinned 源，改 nonblocking 提交</td>
+<td style="text-align: right;">13.307552</td>
+<td style="text-align: right;">13.103530</td>
+<td style="text-align: right;">13.193386</td>
+<td style="text-align: right;">1.011214×</td>
+<td style="text-align: right;">−0.8579%</td>
+</tr>
+<tr>
+<td>每次读取才 pin，相对持久 pin</td>
+<td style="text-align: right;">13.215309</td>
+<td style="text-align: right;">26.069837</td>
+<td style="text-align: right;">13.196618</td>
+<td style="text-align: right;">0.506561×</td>
+<td style="text-align: right;">−0.1414%</td>
+</tr>
+</tbody>
+</table>
+<p>按相同载荷和 wall 边界计算，pageable 有效带宽为 9.15 GB/s，持久 pinned 为 54.66 GB/s。热路径反复 pin 的候选为 27.72 GB/s，耗时约为持久 pinned 参考的 1.97 倍；它包含锁页准备与主存复制。在这个固定载荷实验中，预先准备 pinned 源比临时 pin 更快。第一组 pageable 基线的首尾漂移为 −6.26%（A2 略快于 A1），但持久 pinned 相对 pageable 的加速比达 5.98×（耗时从约 79 ms 降至 13.22 ms），效应量远大于基线漂移，结论稳健；全部样本与漂移一起保留在 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a>。</p>
+<h2 id="chapter-docs-manuscript-13-residency-and-transfer-md--准备成本与数据检查">准备成本与数据检查</h2>
+<p>RTX 5090 记录中，合成 pageable 数据花 7.988707 s，持久 pin 与源复制花 0.444554 s，GPU 目标分配及同步花 0.008139 s。GPU allocation 峰值 758,662,656 B，进程 Host RSS 高水位 3,190,480,896 B；二者都包含相应检查临时量。SM90 记录对应为 4.733067 s、0.624325 s、0.002155 s，GPU allocated 峰值 758,663,168 B、reserved 峰值 773,849,088 B，Host RSS 高水位 3,123,703,808 B。</p>
+<p>每臂先将全部目标填 NaN，首次搬运后检查 finite 与 bitwise，热样本结束后再次全量比较。源内容和 version counter 保持，目标地址稳定，目标 version 随 copy 增加。这些检查确认固定载荷按预期覆盖和传输；接入历史 KV 后，还要验证窗口淘汰、位置和下一 chunk 读到的状态。</p>
+<p>按第一组 wall 均值差 58.375785 ms，摊销 0.444554 s 的 pin 准备成本：</p>
+<p>$$N_{\mathrm{break\ even}}=
+\left\lceil\frac{T_{\mathrm{pin\ setup}}}
+{T_{\mathrm{pageable}}-T_{\mathrm{pinned}}}\right\rceil=8$$</p>
+<p>这是同一固定池重复读取的算术推导。实际 AR 每块还会新增与淘汰历史，需把池写入、提交阶段的 D2H、主存锁页和调度成本一起计入。</p>
+<h2 id="chapter-docs-manuscript-13-residency-and-transfer-md--从持久池到异步预取">从持久池到异步预取</h2>
+<p>如果层 $l+1$ 的历史读取不依赖层 $l$ 的输出，可提前搬运到另一组目标。消费者读取前等待 copy ready，目标复用前等待旧消费者完成；Host 源保留到 DMA 结束。双 buffer 会增加同时存活量，预取距离要与激活显存共同安排。</p>
+<p>$$T_{\mathrm{ideal}}\approx\max(T_{\mathrm{compute}},T_{\mathrm{copy}})
++T_{\mathrm{unhidden}}$$
+$$\Delta T=T_{\mathrm{original}}-T_{\mathrm{prefetch}}$$</p>
+<p>$T_{\mathrm{unhidden}}$ 为无法隐藏的准备与等待，$T_{\mathrm{prefetch}}$ 包含预取及同步。</p>
+<p>达到这个理想关系需要独立工作、足够 DMA/计算资源与正确依赖。上述实验只测同一 Stream 上的搬运，因此下一步是集成 copy/compute 两条时间线，测等待是否被隐藏，再回到无插桩整模对照。</p>
+<p>实现细节可查 <a href="https://docs.pytorch.org/docs/2.8/notes/cuda.html#use-pinned-memory-buffers">PyTorch CUDA 语义</a>和<a href="https://docs.pytorch.org/tutorials/intermediate/pinmem_nonblock.html">官方 pin/nonblocking 教程</a>。<code>non_blocking=True</code> 表达的是提交行为，重叠是否发生要从实际时间线确认。</p></div>
+<div id="chapter-docs-manuscript-14-parallelism-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/14-parallelism.md --><h1 id="chapter-docs-manuscript-14-parallelism-md--第14章-多-gpu-并行与通信">第14章 多 GPU 并行与通信</h1>
+<p>多 GPU 并行切分服务于三个不同目标：缩短单请求延迟、容纳单卡放不下的模型与激活、提升多请求并发吞吐。不同目标对应的切分维度与通信模式各异。本章基于公开实现推导张量并行（TP）、序列并行（SP）与分层放置的理论通信量；实际部署时需将集合通信、布局转换和流同步等待放在同一时间线上核验。</p>
+<h2 id="chapter-docs-manuscript-14-parallelism-md--张量并行的层内通信">张量并行的层内通信</h2>
+<p>标准 Megatron 风格的 TP 在 Transformer Block 内交替使用列并行（Column Parallel）和行并行（Row Parallel）：QKV 投影按列切分，各 rank 独立计算本地注意力头；输出投影按行切分，再通过 All-Reduce 合并各 rank 对残差分支的贡献；MLP 的升维与降维同样按列、行配对切分。</p>
+<div class="mermaid">
+flowchart LR
+    subgraph Block ["一个 Transformer Block 的 TP 布局"]
+        direction LR
+        QKV["QKV 投影<br/>列并行"] --> Attn["本地 Attention"] --> OutProj["Out 投影<br/>行并行"] --> AR1["All-Reduce"] --> MLP1["MLP Up/Gate<br/>列并行"] --> MLP2["MLP Down<br/>行并行"] --> AR2["All-Reduce"]
+    end
+
+</div>
+
+<p>在该布局下，每个 Block 单次前向包含两次逻辑 All-Reduce。若模型有 50 层、单次请求执行 40 次主干前向，则会触发 $2\times50\times40=4000$ 次集合通信。即便每次传输的张量不大，数千次高频通信的启动延迟与同步屏障也会直接进入关键路径，因此 TP 通常依赖高带宽、低延迟的片间互联（如 NVLink）。</p>
+<h3 id="chapter-docs-manuscript-14-parallelism-md--先确认-p2p再估计链路预算">先确认 P2P，再估计链路预算</h3>
+<p>PCIe 标称线速与显存带宽只代表硬件上限，跨卡通信预算必须基于目标消息大小下的实测有效带宽。以 GeForce RTX 5090 等消费级显卡为例，<a href="https://forums.developer.nvidia.com/t/p2p-issue-using-two-rtx-5090-gpus/326776/8">NVIDIA 在 2025 年 3 月的公开说明</a>明确其官方支持范围不包含跨卡 GPU P2P 直传；在此类拓扑上规划多卡并行，必须将经由 Host 内存转发（Host staging）的开销纳入考量。</p>
+<p>上机测试前，先记录 GPU 与驱动版本，执行 <code>nvidia-smi topo -m</code>、<code>nvidia-smi topo -p2p r</code> 与 <code>nvidia-smi topo -p2p w</code>，并用 <code>torch.cuda.can_device_access_peer</code> 逐对核实 P2P 可用性；随后在真实消息尺寸下运行 NCCL 基准并观察 profiler 中实际选中的传输通道。<a href="https://docs.nvidia.com/cuda/archive/12.8.1/cuda-c-programming-guide/index.html#peer-to-peer-memory-access">CUDA Peer Access 文档</a>给出了底层能力查询与启用规范。</p>
+<h2 id="chapter-docs-manuscript-14-parallelism-md--序列并行切序列还是切-head">序列并行：切序列还是切 head</h2>
+<p>当视频 Token 序列很长而 batch 较小时，序列并行（SP）将序列维度切分到 $P$ 张卡上协同计算。纯 SP 通常在每张卡保留完整权重副本，显存收益主要来自将长序列激活与中间张量均摊到各 rank。</p>
+<div class="mermaid">
+flowchart TD
+    Tokens["视频序列 [1, N, D]"] --> Split["每卡序列切片 [1, N/P, D]"]
+    Split --> Ulysses["Ulysses<br/>All-to-All 转置"]
+    Split --> Ring["Ring Attention<br/>分块传递 KV"]
+    Ulysses --> UlyssesOut["Attention 前后各一次转置"]
+    Ring --> RingOut["本地 query 固定<br/>逐块计算并合并 softmax"]
+
+</div>
+
+<h3 id="chapter-docs-manuscript-14-parallelism-md--ulysses-的两次转置">Ulysses 的两次转置</h3>
+<p><a href="https://arxiv.org/abs/2309.14509">DeepSpeed Ulysses</a>在 QKV 线性投影和 MLP 阶段让各卡独立处理本地的 $N/P$ 序列切片，进入 Attention Core 时切换为按注意力头（head）分工。设标准 MHA 的头数满足 $H\bmod P=0$（若为 GQA 则需按 KV 头数重算切分或复制策略）：</p>
+<ol>
+<li><strong>第一次 All-to-All</strong>：将 <code>[N/P, H, d]</code>（切序列、全 head）转置为 <code>[N, H/P, d]</code>（全序列、切 head），Q、K、V 一并跨卡重排；</li>
+<li><strong>本地 Attention</strong>：每张卡对分到的 $H/P$ 个 head 计算完整序列长度 $N$ 的注意力；</li>
+<li><strong>第二次 All-to-All</strong>：将输出从 <code>[N, H/P, d]</code> 转回 <code>[N/P, H, d]</code>，交由后续输出投影和 MLP 继续按序列切片处理。</li>
+</ol>
+<p>设并行度为 $P&gt;1$、序列长度为 $N$、隐藏维度为 $D$、每元素占 $b$ 字节，均匀切分下每张卡的 Attention Core 计算量与跨卡发送载荷为：</p>
+<p>$$F_{\mathrm{core,rank}}\approx\frac{4N^2D}{P},\qquad
+M_{\mathrm{send,rank}}\approx\frac{(3+1)NDb(P-1)}{P^2}$$
+$$\frac{F_{\mathrm{core,rank}}}{M_{\mathrm{send,rank}}}
+\approx\frac{NP}{(P-1)b}$$</p>
+<p>固定卡数 $P$ 时，稠密 Attention 的计算量随 $N^2$ 增长，而 All-to-All 通信量仅随 $N$ 线性增长，因此序列越长，计算越容易掩盖或摊薄通信占比。反之，当序列较短或卡数 $P$ 很大时，高频 All-to-All 的启动开销与转置重排就会凸显。</p>
+<h3 id="chapter-docs-manuscript-14-parallelism-md--ring-attention-的分块交换">Ring Attention 的分块交换</h3>
+<p><a href="https://arxiv.org/html/2310.01889v4#S3">Ring Attention</a>让每张卡始终持有本地的 $N/P$ 个 query，同时将各卡的 K/V 切片沿逻辑环逐跳传递。每一跳计算当前本地 query 对收到 K/V 分片的局部注意力，并按<a href="#chapter-docs-manuscript-08-attention-kernels-md">第 8 章</a>的 online softmax 递推公式更新全局最大值与归一化分母。</p>
+<p>工程实现上常借助 <code>dist.P2POp</code> 与 <code>dist.batch_isend_irecv</code> 在后台通信流上异步收发下一跳的 K/V 分片，同时在计算流上执行当前分片的 Attention。要实现理想的计算-通信重叠，单跳计算耗时（约 $4(N/P)^2D$ FLOPs）必须足以覆盖单跳 K/V 传输耗时（$2(N/P)Db$ 字节）；在经由 Host 内存转发或带宽受限的链路中，分片过细反而会放大每次收发的调度延迟。<a href="https://docs.pytorch.org/docs/2.8/distributed.html#torch.distributed.P2POp">PyTorch 2.8 通信 API</a></p>
+<h3 id="chapter-docs-manuscript-14-parallelism-md--xditusp在两个并行维度之间选组合">xDiT/USP：在两个并行维度之间选组合</h3>
+<p><a href="https://github.com/feifeibear/long-context-attention/blob/a5f8f600d435ced180a97c91c68e87ff3cfb8f89/README.md">USP（Unified Sequence Parallelism）</a>将 Ulysses 的按头切分与 Ring 的分块环传组合成二维网格：Ulysses 维度受限于注意力头数（如节点内走高带宽 NVLink 做 All-to-All），Ring 维度继续扩展并行卡数（如跨节点或跨组传递 K/V）。<a href="https://github.com/xdit-project/xDiT/blob/bf7a205658c55903a3d8c4146cafc2253a4f1757/README.md">xDiT</a>在此基础上集成了面向扩散主干的混合并行管线。选型时需结合模型真实 KV 头数、序列长度和机器互联拓扑扫描 (Ulysses, Ring) 组合，并计入转置 reshape、padding 及非并行模块的完整耗时。</p>
+<h2 id="chapter-docs-manuscript-14-parallelism-md--host-中转时优先减少通信频率">Host 中转时，优先减少通信频率</h2>
+<p>当硬件不支持 GPU P2P 直传、通信退化为 Host staging 时，每次跨卡传输都需经过两段 PCIe 链路与主存缓冲：</p>
+<p>$$\text{GPU 0}\xrightarrow{\text{PCIe}}\text{Host memory}\xrightarrow{\text{PCIe}}\text{GPU 1}$$</p>
+<p>在这样的拓扑上，每层触发数次 All-Reduce（TP）或 All-to-All（SP）很容易让 PCIe 与 CPU 内存控制器成为瓶颈，导致多卡比单卡更慢。若首要目标是解决单卡显存容量不足，采用<strong>粗粒度按层放置（Pipeline / Layer Placement）</strong>——例如将前一半 Block 放在 GPU 0、后一半放在 GPU 1，仅在层间交界处传递一次残差激活——能将每步主干前向的跨卡通信从上百次压缩到一两次。</p>
+<h2 id="chapter-docs-manuscript-14-parallelism-md--cfg权重切分与-dp">CFG、权重切分与 DP</h2>
+<p>对于包含正负双分支的 CFG 去噪，CFG Parallel 将 conditional 与 unconditional 分支分配给不同 GPU 并行执行，每步只需交换一次预测结果即可将单卡分支计算负载减半，理想情况下使分支计算阶段的关键路径接近减半；总计算量并未减少，实际收益还需计入通信同步、分支负载差异以及拆掉单卡双分支合批（<code>2B</code>）后的算子利用率变化。当单卡可驻留权重且互联开销可控时，它常是 2 卡配置的优先候选；若模型已做单分支 CFG 蒸馏，则优先转向 SP 或数据并行（DP）。</p>
+<p>当单卡放不下模型权重时，FSDP 风格的权重分片在每层前向时按需 All-Gather 权重，以通信换容量；而离线批量生成或多并发服务则可通过 DP 在各卡独立跑不同请求，获得近似线性的聚合吞吐扩展。</p>
+<h2 id="chapter-docs-manuscript-14-parallelism-md--双向视频与-ar-chunk-的选择顺序">双向视频与 AR-chunk 的选择顺序</h2>
+<p>Wan2.2 的全序列双向生成序列长、包含双分支 CFG，适合优先评估 CFG Parallel 与 Ulysses/Ring SP（参考 <a href="https://docs.sglang.io/docs/sglang-diffusion/ring_sp_performance">SGLang Diffusion 并行对比</a>）。而连续 AR-chunk 单次前向的当前块 query 相对全序列较短（常在千余至数千 token）、历史 KV 较长，单块计算量显著小于全序列扩散；优化决策应先评估单卡全量驻留与局部算子加速，避免把本可留在显存的活跃 KV 无故搬往 Host 引入额外传输开销。仅当单卡显存不足且确需外移历史时，再评估持久锁页 KV 卸载与异步预取；确实需要多卡扩展时，再结合互联带宽与 query/KV 长度比较低开销的 Ulysses 小度数切分或粗粒度分层放置，避免高频层内通信无法被短 query 计算摊平。</p></div>
+<div id="chapter-docs-manuscript-15-decoding-and-streaming-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/15-decoding-and-streaming.md --><h1 id="chapter-docs-manuscript-15-decoding-and-streaming-md--第15章-vae流式执行与端到端交付">第15章 VAE、流式执行与端到端交付</h1>
+<p>从 latent 到客户端可播放画面，还需经过 VAE 解码、重叠区融合、音视频混流编码与网络传输。当 DiT 主干通过少步蒸馏、缓存与低精度算子大幅提速后，外围解码与交付链路往往上升为新的端到端瓶颈。</p>
+<h2 id="chapter-docs-manuscript-15-decoding-and-streaming-md--主干加速后的耗时分布">主干加速后的耗时分布</h2>
+<p>仅当各阶段严格串行执行且无跨阶段重叠时，单次请求的端到端延迟可写为线性累加（其中 $N_{\text{call}}$ 为包含上下文 refresh 在内的实际主干调用次数）：
+$$T_{\text{E2E}} = T_{\text{TextEnc}} + \sum_{s=1}^{N_{\text{call}}} T_{\text{DiT}}(s) + T_{\text{VideoVAE}} + T_{\text{AudioVAE}} + T_{\text{Mux/IO}}$$</p>
+<p>下表给出一个串行算术示例：当 DiT 主干耗时从 17.50 秒压至 1.10 秒而其余模块不变时，各阶段占比发生显著转移：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>假设基准耗时</th>
+<th>耗时占比</th>
+<th>假设仅优化 DiT 后耗时</th>
+<th>耗时占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>文本与条件编码</strong></td>
+<td>0.50 s</td>
+<td>2.5%</td>
+<td>0.50 s</td>
+<td>13.9%</td>
+</tr>
+<tr>
+<td><strong>DiT 主干去噪循环</strong></td>
+<td>17.50 s</td>
+<td><strong>87.5%</strong></td>
+<td>1.10 s</td>
+<td>30.6%</td>
+</tr>
+<tr>
+<td><strong>3D-VideoVAE 像素解码</strong></td>
+<td>1.70 s</td>
+<td>8.5%</td>
+<td>1.70 s</td>
+<td><strong>47.2%</strong></td>
+</tr>
+<tr>
+<td><strong>AudioVAE 音频解码</strong></td>
+<td>0.08 s</td>
+<td>0.4%</td>
+<td>0.08 s</td>
+<td>2.2%</td>
+</tr>
+<tr>
+<td><strong>媒体混流与编码写盘</strong></td>
+<td>0.22 s</td>
+<td>1.1%</td>
+<td>0.22 s</td>
+<td>6.1%</td>
+</tr>
+<tr>
+<td><strong>端到端总时间 $T_{\text{E2E}}$</strong></td>
+<td><strong>20.00 s</strong></td>
+<td>100%</td>
+<td><strong>3.60 s</strong></td>
+<td>100%</td>
+</tr>
+</tbody>
+</table>
+<p>按 Amdahl 定律，若外围阶段完全不改动且保持串行，整条管线的理论加速上限受限于非 DiT 耗时之和：
+$$S_{\max} = \frac{20.00}{0.50 + 1.70 + 0.08 + 0.22} = 8.0 \times$$
+要突破这一串行上限，一方面需要直接优化 3D-VAE 解码本身，另一方面则在连续 AR-chunk 场景下将“当前块去噪”与“上一块解码/交付”流水化重叠。</p>
+<h2 id="chapter-docs-manuscript-15-decoding-and-streaming-md--vae先区分容量优化和计算优化">VAE：先区分容量优化和计算优化</h2>
+<p>3D 视频 VAE Decoder 包含大量高分辨率时空卷积与上采样层，特征图在空间和时间展开后往往比 DiT 主干占用更多瞬态显存。优化 VAE 时需先分清目标是压低显存峰值（防 OOM）还是缩短解码耗时。</p>
+<h3 id="chapter-docs-manuscript-15-decoding-and-streaming-md--tiling-降低峰值也会重复工作">Tiling 降低峰值，也会重复工作</h3>
+<p>空间分块解码（Spatial Tiling）将 latent 切分为带重叠边界（overlap）的局部瓦片逐块解码，从而大幅降低单次卷积激活的显存峰值。但重叠区域会被相邻 tile 重复计算；粗略按二维覆盖面积衡量，总解码面积相对整幅画面的倍数（覆盖面积比）为：</p>
+<p>$$r_{\mathrm{area}}\approx
+\frac{n_{\mathrm{tile}}h_{\mathrm{tile}}w_{\mathrm{tile}}}{A_{\mathrm{full}}}\ge 1$$</p>
+<p>其中 $n_{\mathrm{tile}}$ 为瓦片数，$h_{\mathrm{tile}},w_{\mathrm{tile}}$ 为单瓦片尺寸，$A_{\mathrm{full}}$ 为完整画面面积；因重叠而多出来的<strong>重复计算比例</strong>（冗余面积占比）则为 $r_{\mathrm{area}}-1$。瓦片切得越碎，重叠区重复计算和 Kernel Launch 越多，解码总延迟通常越长。因此实践中应在显存预算允许的范围内尽量选用较大的 tile 尺寸。</p>
+<p>为消除瓦片拼接处的亮度和纹理接缝，重叠区通常采用余弦窗（Hanning window）或线性渐变加权融合。设 $x\in[0,\delta]$ 为重叠区内的相对坐标，平滑过渡权重可取：</p>
+<p>$$w(x)=\frac{1}{2}\left[1-\cos\left(\frac{\pi x}{\delta}\right)\right]$$</p>
+<p>所有覆盖同一像素位置的瓦片输出按权重归一化相加。空间加权能消除静态接缝，但如果时序维度缺乏上下文，画面仍会出现跨帧闪烁。</p>
+<h3 id="chapter-docs-manuscript-15-decoding-and-streaming-md--时间状态跟着-codec而不是生成块大小">时间状态跟着 codec，而不是生成块大小</h3>
+<p>视频 VAE 的时序下采样/上采样层可能是因果卷积（依赖历史帧特征缓存）或非因果卷积（需要前后帧 lookahead）。在按 chunk 流式解码时，不能把每个生成 chunk 当作孤立短视频直接调一次无状态 <code>decode()</code>——那样会在每个 chunk 边界丢失前一帧的时序卷积状态，导致周期性跳帧或闪烁。</p>
+<p>例如 <a href="https://github.com/huggingface/diffusers/blob/v0.35.1/src/diffusers/models/autoencoders/autoencoder_kl_wan.py">Diffusers v0.35.1 的 Wan VAE</a>在时序卷积内部维护了跨步 <code>feat_cache</code>，流式调用时必须沿用 codec 原生的缓存传递与末尾冲刷（flush）协议。</p>
+<h3 id="chapter-docs-manuscript-15-decoding-and-streaming-md--轻量-decoder-改变质量预算">轻量 decoder 改变质量预算</h3>
+<p><a href="https://github.com/madebyollin/taehv/blob/011dfc2112197741c540e0bdd5b7b67bcc930771/README.md">TAEHV</a> 等轻量级近似自编码器通过大幅缩减通道与层数来换取数倍解码提速与更低显存占用，并针对不同模型的 latent 空间提供专用权重。由于轻量网络属于有损近似，适合交互式实时预览或低延迟草稿生成；最终高清成片导出则可切回原版 VAE。</p>
+<h2 id="chapter-docs-manuscript-15-decoding-and-streaming-md--生成与解码怎样重叠">生成与解码怎样重叠</h2>
+<p>在连续 AR-chunk 生成中，当 Chunk $k$ 完成去噪与 clean KV 提交后，其 latent 即可移交 VAE 解码，同时主干继续生成 Chunk $k+1$。下图示意三阶段依赖关系（阶段起止时间见示例表）：</p>
+<div class="mermaid">
+flowchart LR
+    P["条件编码"] --> D0["Chunk 0 去噪与 Commit"]
+    D0 --> D1["Chunk 1 去噪与 Commit"]
+    D1 --> D2["Chunk 2 去噪与 Commit"]
+    D0 --> V0["Chunk 0 VAE 解码"]
+    D1 --> V1["Chunk 1 VAE 解码"]
+    D2 --> V2["Chunk 2 VAE 解码"]
+    V0 --> V1 --> V2
+    V0 --> P0["Chunk 0 播放"]
+    V1 --> P1["Chunk 1 播放"]
+    P0 --> P1
+
+</div>
+
+<table>
+<thead>
+<tr>
+<th>假设阶段</th>
+<th style="text-align: right;">开始（秒）</th>
+<th style="text-align: right;">结束（秒）</th>
+<th>依赖与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>条件编码</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.5</td>
+<td>请求起点起算</td>
+</tr>
+<tr>
+<td>Chunk 0 去噪与 Commit</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">1.7</td>
+<td>条件编码完成</td>
+</tr>
+<tr>
+<td>Chunk 1 去噪与 Commit</td>
+<td style="text-align: right;">1.7</td>
+<td style="text-align: right;">2.9</td>
+<td>Chunk 0 提交完成</td>
+</tr>
+<tr>
+<td>Chunk 2 去噪与 Commit</td>
+<td style="text-align: right;">2.9</td>
+<td style="text-align: right;">4.1</td>
+<td>Chunk 1 提交完成</td>
+</tr>
+<tr>
+<td>Chunk 0 VAE 解码</td>
+<td style="text-align: right;">1.7</td>
+<td style="text-align: right;">2.9</td>
+<td>Chunk 0 提交完成</td>
+</tr>
+<tr>
+<td>Chunk 1 VAE 解码</td>
+<td style="text-align: right;">2.9</td>
+<td style="text-align: right;">4.1</td>
+<td>Chunk 1 提交、前次解码完成</td>
+</tr>
+<tr>
+<td>Chunk 2 VAE 解码</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">5.3</td>
+<td>Chunk 2 提交、前次解码完成</td>
+</tr>
+<tr>
+<td>首块可用（里程碑）</td>
+<td style="text-align: right;">2.9</td>
+<td style="text-align: right;">2.9</td>
+<td>Chunk 0 解码完成，尚未计网络与呈现</td>
+</tr>
+<tr>
+<td>Chunk 0 播放</td>
+<td style="text-align: right;">2.9</td>
+<td style="text-align: right;">4.1</td>
+<td>假设送达即可播放，播放时长也仅为示例</td>
+</tr>
+<tr>
+<td>Chunk 1 播放</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">5.3</td>
+<td>假设下一块已送达且前一块播放完成</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chapter-docs-manuscript-15-decoding-and-streaming-md--首帧与稳态指标">首帧与稳态指标</h3>
+<ol>
+<li>
+<p><strong>首帧呈现延迟（TTFF）与服务端首块就绪时间</strong>：
+   若以客户端实际呈现首帧为终点，端到端指标应按时间边界定义为：
+   $$\text{TTFF} = t_{\text{客户端首帧呈现}} - t_{\text{约定的请求起点}}$$
+   完整关键路径除模型生成外，还可能包含媒体编码/封装、网络传输、客户端解码与播放缓冲等待。若仅统计串行路径上<strong>服务端首块就绪时间</strong>（不含编码封装与网络/客户端阶段），可写作：
+   $$T_{\text{first-chunk,server}} = T_{\text{TextEnc}} + T_{\text{DiT}}(\text{Chunk 0}) + T_{\text{VAE}}(\text{Chunk 0})$$
+   报告中应与<a href="#chapter-docs-manuscript-05-measurement-md--计时边界">第 5 章</a>保持一致，明确 $T_{\text{DiT}}(\text{Chunk 0})$ 是否包含必要的历史 KV commit（clean latent 在末步去噪结束时即已就绪，具体实现可选择在 commit 完成后或与 commit 并行启动首块解码）。无论采用哪种口径，首块生成与首块解码之间都存在严格的数据依赖，流水线重叠无法缩短首块本身的 <code>DiT(Chunk 0) + VAE(Chunk 0)</code> 串行路径；要压低 TTFF，必须靠首块少步求值、预计算条件或更快的解码。</p>
+</li>
+<li>
+<p><strong>稳态播放预算（Steady-State Pacing）</strong>：
+   设每个 Chunk 解码后可播放的视频时长为 $\Delta T_{\text{play}}$。当主干去噪与上一块 VAE 解码分布在不同设备或能充分并行重叠时，不发生播放卡顿（underrun）的稳态预算为：
+   $$\max\left( T_{\text{DiT}}(\text{Chunk } k), T_{\text{VAE}}(\text{Chunk } k) \right) \le \Delta T_{\text{play}}$$
+   以上表排程为例，每块可播放时长 $\Delta T_{\text{play}}=1.2\text{ s}$（例如单块产出 36 帧、按 30 fps 播放），此时 $T_{\text{DiT}}=T_{\text{VAE}}=1.2\text{ s}$ 恰好踩在不卡顿边界上；反之，若某个模型配置每块仅产出 16 帧、按 24 fps 播放（$\Delta T_{\text{play}}\approx 0.67\text{ s}$），则 $1.2\text{ s}$ 的单块生成或解码耗时就会违反上式并触发播放欠载。
+   反之，若 DiT 与 VAE 共用同一张已跑满算力/带宽的 GPU，简单把它们放进两个 CUDA Stream 往往只会触发硬件资源争抢，无法真正掩盖解码耗时。因此验证双缓冲流水线时，必须先分别测出单块 $T_{\text{DiT}}$ 与 $T_{\text{VAE}}$ 的独立耗时，再对比串行与双流在完整多块序列上的总 wall time 及 trace 重叠区间。</p>
+</li>
+</ol>
+<h2 id="chapter-docs-manuscript-15-decoding-and-streaming-md--联合音视频的时间轴">联合音视频的时间轴</h2>
+<p>对于同时产出视频与伴生音轨的多模态生成任务，需将两路 codec 解码纳入同一播放时钟（PTS，Presentation Timestamp）对齐管理。<a href="https://www.rfc-editor.org/rfc/rfc3550#section-5.1">RTP 时间戳与跨流同步规范</a></p>
+<ul>
+<li>设视频帧率为 $\text{FPS}$，音频采样率为 $R_{\text{audio}}$（如 32,000 Hz）；</li>
+<li>每帧视频对应的平均音频采样点数为：
+  $$S_{\text{audio/frame}} = \frac{R_{\text{audio}}}{\text{FPS}}$$
+  当 $R_{\text{audio}} = 32{,}000,\ \text{FPS} = 24$ 时，$S_{\text{audio/frame}} = 1333.\dot{3}$。由于单帧采样点数不是整数，工程上应使用有理数时间基（timebase）或分数累加器计算每个 Chunk 的 PTS，避免按帧向下取整截断为 1333 个样本而导致长视频音画逐渐脱节。</li>
+</ul>
+<h3 id="chapter-docs-manuscript-15-decoding-and-streaming-md--时钟队列与取消">时钟、队列与取消</h3>
+<p>流式服务在生成端与客户端之间维护有界发送队列。当客户端网络阻塞或消费变慢时，背压（backpressure）应限制在当前会话自己的流控状态内，避免阻塞全局事件循环（详见<a href="docs/omni/inference-frameworks.md">Omni 配套文档</a>）。收到客户端打断或取消请求时，服务端立即停止调度该会话的后续 chunk，过滤已在途的旧 epoch 输出，并等待已发射的 GPU Kernel 和 DMA 传输到达完成事件后再安全回收缓冲区。</p>
+<h2 id="chapter-docs-manuscript-15-decoding-and-streaming-md--双向整段与-ar-逐块交付">双向整段与 AR 逐块交付</h2>
+<p>Wan2.2 原生 T2V 入口在全部去噪步结束后才一次性调用 VAE。而 SolarWM 等连续 AR 模型天然支持逐块产出 latent，只需按 codec 的时序上下文要求对齐生成块与解码块的帧索引（并在末尾冲刷残余帧），即可构建边生成、边解码、边推流的端到端管线。</p></div>
+<div id="chapter-docs-manuscript-16-composition-and-validation-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/16-composition-and-validation.md --><h1 id="chapter-docs-manuscript-16-composition-and-validation-md--第16章-组合优化与回归验收">第16章 组合优化与回归验收</h1>
+<p>单项优化通过以后，系统瓶颈和缓存有效条件往往随之转移：Attention 提速后，QKV/MLP 线性层或布局重排可能上升为主导开销；步数压低到 4 步后，跨步缓存判定与历史 KV 提交的占比显著放大。组合多项技术时，应从一个已验证的基线配置出发，逐项测量增量收益与交叉影响。质量评估方法沿用<a href="#chapter-docs-manuscript-05-measurement-md">第 5 章</a>。</p>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--先选值得组合的两项">先选值得组合的两项</h2>
+<p>从目标请求的端到端时间线（wall time 分解）中挑选互补候选，并结合<a href="#chapter-docs-manuscript-15-decoding-and-streaming-md--主干加速后的耗时分布">第 15 章的 Amdahl 分析</a>估算组合上限：若 PCIe 历史回传已占显著耗时，先按第 13 章优化持久锁页内存与预取；若短算子之间存在密集的 Host 发射空档，则优先融合算子或捕获 CUDA Graph。</p>
+<p>两项优化叠加时，即使作用于不同代码层，也可能在底层争用显存容量、PCIe 带宽或共享内存。下表列出四组常见组合的交互焦点与组织方式：</p>
+<table>
+<thead>
+<tr>
+<th>组合</th>
+<th>交互来自哪里</th>
+<th>可实施的组织方式</th>
+<th>重点检查</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TeaCache + CUDA Graph</td>
+<td>命中与重算执行不同子图，Host 判定可能读取 GPU 标量</td>
+<td>在 Graph 外做判定，为重算与复用路径分别捕获稳定子图</td>
+<td>判定同步、两条路径地址、缓存写入、Graph 池峰值</td>
+</tr>
+<tr>
+<td>量化 + 跨步残差缓存</td>
+<td>重算输出已含量化误差，缓存又引入复用误差；proxy 也可能变化</td>
+<td>先固定量化配置，再校准缓存；记录残差的 dtype、scale 及产生版本</td>
+<td>命中率变化、误差随步序传播、条件与 expert 切换</td>
+</tr>
+<tr>
+<td>Offload + CUDA Graph</td>
+<td>重新分配权重或激活会改变捕获地址，预取还引入异步依赖</td>
+<td>向固定 device staging buffer 拷贝，Graph 只读取稳定地址</td>
+<td>ready/消费完成事件、槽位覆盖、搬运与 replay 重叠</td>
+</tr>
+<tr>
+<td>Ulysses + 低精度通信</td>
+<td>All-to-All 改变分片归属，scale 与 payload 必须一起正确重排</td>
+<td>按实际发送分片量化，传输对应 scale，在接收端恢复约定表示</td>
+<td>分组边界、padding、collective dtype 支持、转换成本</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--动态复用与静态-graph-怎样共存">动态复用与静态 Graph 怎样共存</h2>
+<p>TeaCache 的跳步判定依赖当前步输入特征的动态变化量，而单个静态 CUDA Graph 重放的是固定算子序列。要让两者协同工作，可将轻量 proxy 计算、误差累加与分支决策留在 Graph 外部，同时为“完整执行子图并刷新残差”和“直接加上次缓存残差”分别捕获两张独立 CUDA Graph。每步先原地更新输入与时间步 buffer，再根据判定结果重放对应 Graph，两条路径共享同一输出 buffer 地址。</p>
+<p>这种双图分派保留了动态跳步能力，但需要注意 <code>.item()</code> 等将标量拉回 Host 判定的同步开销仍发生在每一步。如果 proxy 评估与同步耗时接近省下的计算时间，或者多分辨率、多 expert 导致需要维护的 Graph 数量过多，则应先在单一固定分辨率下核算显存池与净延迟收益。Graph 显存池复用规则见<a href="#chapter-docs-manuscript-11-fusion-and-graphs-md--共享显存池mempool-sharing与生命周期">第 11 章</a>。</p>
+<p>对采用独立 clean-refresh（或其他专门历史提交前向）协议的连续 AR 模型，多步去噪的残差缓存与历史 KV 提交必须严格解耦：无论去噪步命中多少次缓存，跨步跳步策略都不能无意跳过必要的历史提交路径（是否需要独立 refresh 前向由模型上下文协议决定，见<a href="#chapter-docs-manuscript-12-ar-state-md--从当前块到已提交历史">第 12 章</a>）。</p>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--量化与缓存先固定表示再校准策略">量化与缓存先固定表示，再校准策略</h2>
+<p>将权重量化/激活量化与跨步特征缓存组合时，应先锁定通过质量验收的量化配置，再在量化模型上重新校准缓存阈值 $\tau$。这是因为低精度算子会微调中间特征分布与 proxy 相对变化量，直接沿用全精度模型标定的阈值可能改变跳步序列；同时，被缓存并跨步复用的残差本身已带有量化舍入误差。</p>
+<p>实验对比时，建议同时记录“沿用参考命中的固定跳步序列”与“在量化路径上重新动态判定”的画面差异，从而分清质量波动究竟来自算子数值误差还是跳步决策偏移。</p>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--offload-保持地址事件保护数据内容">Offload 保持地址，事件保护数据内容</h2>
+<p>CUDA Graph 要求重放期间所有被读取的参数与缓冲地址固定不变。若采用按需卸载再动态创建参数张量的普通 Offload，每次搬回 GPU 都会改变底层 <code>data_ptr</code>，直接破坏已捕获的 Graph。解决方案是在显存中预留固定地址的 staging buffer：搬运流（copy stream）先将下一层或下一阶段所需的权重/KV 异步拷入 staging buffer 并记录 <code>ready</code> 事件；计算流等待 <code>ready</code> 事件后重放读取该固定地址的 Graph，并在重放结束后记录 <code>consumed</code> 事件；下一次覆写同一 staging 槽位前必须等待 <code>consumed</code> 事件完成。</p>
+<p>采用双缓冲（ping-pong staging buffers）可以在重放当前层 Graph 的同时预取下一层数据，但新增的常驻缓冲区需与 Graph 私有池、激活峰值一并纳入显存账本。</p>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--ulysses-压缩通信时scale-也参与转置">Ulysses 压缩通信时，scale 也参与转置</h2>
+<p><a href="#chapter-docs-manuscript-14-parallelism-md--ulysses-的两次转置">第 14 章</a>的 Ulysses All-to-All 将 <code>[N/P, H, d]</code>（切序列、全 head）转置为 <code>[N, H/P, d]</code>（全序列、切 head）。若将跨卡交换的 Q/K/V 压缩为 INT8 或 FP8 以节省通信带宽，量化缩放因子（scale）必须与对应的数据分片同步完成跨 rank 转置。</p>
+<p>稳妥的实现顺序是：先按目标 rank 重排打包待发送分片，在每个发送分片内部按约定粒度（如 per-token 或 per-head-block）计算 scale，再将量化载荷与 scale 一并发送，接收端解包反量化后恢复目标布局。</p>
+<h3 id="chapter-docs-manuscript-16-composition-and-validation-md--多卡与图执行的组合核验清单">多卡与图执行的组合核验清单</h3>
+<p>将分布式通信、Offload 与低精度图执行集成到一起时，建议通过以下三项自包含契约测试逐一门禁：</p>
+<ol>
+<li><strong>All-to-All 量化转置核验</strong>：先用可唯一标识位置与 head 编号的索引张量验证跨 rank 转置与逆转置的坐标准确性，再对比 BF16 与 INT8/FP8 打包通信（含 scale 同步转置）的还原误差及端到端通信耗时。</li>
+<li><strong>Offload + CUDA Graph 驻留保护核验</strong>：在跨 Stream 异步拷贝与 Graph 重放循环中校验 staging 槽位指针（<code>data_ptr</code>）全程零重分配，并在重放前向输出缓冲注入 NaN 毒化值，验证事件互锁下每次重放均完整覆写出正确结果。</li>
+<li><strong>低精度算子真实分发核验</strong>：在目标硬件（如 SM90 / SM120）上通过 profiler 确认 <code>torch._scaled_mm</code> 或低精度 Attention 确实命中硬件 Tensor Core 指令，并将前后量化转换、布局重排计入总耗时。</li>
+</ol>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--用-22-对照测增量与交互">用 2×2 对照测增量与交互</h2>
+<p>评估两项候选优化 A 与 B 的组合效果时，按标准 $2\times2$ 消融矩阵采集四组配置（reference $T_{00}$、仅开 A 的 $T_{10}$、仅开 B 的 $T_{01}$、同时开启 A+B 的 $T_{11}$）：</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>方法 A</th>
+<th>方法 B</th>
+<th>同一边界下的 wall time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reference</td>
+<td>关</td>
+<td>关</td>
+<td>$T_{00}$</td>
+</tr>
+<tr>
+<td>A</td>
+<td>开</td>
+<td>关</td>
+<td>$T_{10}$</td>
+</tr>
+<tr>
+<td>B</td>
+<td>关</td>
+<td>开</td>
+<td>$T_{01}$</td>
+</tr>
+<tr>
+<td>A+B</td>
+<td>开</td>
+<td>开</td>
+<td>$T_{11}$</td>
+</tr>
+</tbody>
+</table>
+<p>四组配置固定同一模型权重、输入提示词、随机种子、采样步数与计时边界，各自独立重置状态并完成预热，穿插 A/B/A 基线复测监控环境漂移。在已开启 B 的基础上叠加 A 的边际加速比为 $T_{01}/T_{11}$；两项优化的交互项定义为：</p>
+<p>$$I=T_{11}-T_{10}-T_{01}+T_{00}$$</p>
+<p>当 $I&lt;0$ 时，说明两项优化存在协同增益（例如量化缩小了载荷，使预取更容易被计算完全掩盖）；当 $I&gt;0$ 时，则表明两者消减了同一部分耗时（如少步蒸馏与跨步缓存都在减少主干块执行次数）或引入了额外的格式转换开销。</p>
+<h2 id="chapter-docs-manuscript-16-composition-and-validation-md--从局部案例走到模型回归">从局部案例走到模型回归</h2>
+<p>本书配套的合成实验分别验证了单一底层机制：第 8 章对比 SDPA backend，第 11 章测量固定算子栈的 CUDA Graph 重放与回本点，第 12 章核验滑动窗口容器与 50 层 KV Gather 开销，第 13 章隔离锁页内存与 H2D 搬运带宽。将它们落地到完整模型时，遵循“<strong>冻结原生参考 → 单项算子/模块回放 → 整模单因素 A/B/A 对照 → $2\times2$ 组合消融与长序列质量回归</strong>”的四步闭环，保存完整配置、计时样本与视频评测结果，即可构成一套可复用的推理加速工程基线。</p></div>
+<div id="chapter-docs-manuscript-extension-omni-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/extension-omni.md --><h1 id="chapter-docs-manuscript-extension-omni-md--延伸阅读omni-与推理框架">延伸阅读：Omni 与推理框架</h1>
+<p>视频 DiT 的局部优化进入多阶段服务后，还需与请求调度、跨进程传输、队列背压和取消配合。这些问题与第 12 章的状态生命周期、第 15 章的流式交付相连，但评测单位从单次前向变成了完整请求和服务负载。</p>
+<p>独立配套文档<a href="docs/omni/inference-frameworks.md">《Omni 与推理框架：阶段调度、传输和流式交付》</a>分析 vLLM-Omni 与 SGLang-Omni 的阶段图、调度器和数据通路，并说明声学 Flow Matching 与 DiT 的联系。固定源码链接便于沿调度与数据传输路径继续阅读。</p>
+<p>后续将在该文档中补充更多 Omni 模型，以及 SGLang/vLLM 的整体执行与服务评测。正文到此保持两篇结构：先建立计算、硬件与测量基础，再按方法比较双向和 AR 的实现。</p></div>
+<div id="chapter-docs-manuscript-appendix-a-model-contracts-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/appendix-a-model-contracts.md --><h1 id="chapter-docs-manuscript-appendix-a-model-contracts-md--附录-a-模型与实验配置">附录 A 模型与实验配置</h1>
+<p>方法章使用两类材料：公开模型源码用于定位计算图与优化接入点，无需模型权重的合成实验用于隔离测量 Kernel、Launch、状态容器与数据搬运。这里集中列出模型版本与实验条件。</p>
+<p>代表性模型按生成范式、源码可读性和状态协议选取，选型原则见第 1 章。</p>
+<h2 id="chapter-docs-manuscript-appendix-a-model-contracts-md--wan22双向视频扩散">Wan2.2：双向视频扩散</h2>
+<p>固定源码 revision 为 <code>1ea34ff48f87168174e12956e200b1d908b1c5ff</code>，核心入口为 T2V 的 <code>wan/text2video.py</code> 和 Block 实现 <code>wan/modules/model.py</code>。<a href="https://github.com/Wan-Video/Wan2.2/tree/1ea34ff48f87168174e12956e200b1d908b1c5ff">官方源码</a></p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>固定源码中的行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成</td>
+<td>scheduler 循环更新完整视频 latent，视频 self-attention 与文本 cross-attention 分开</td>
+</tr>
+<tr>
+<td>expert</td>
+<td>high-noise 与 low-noise 主干分别加载，按时间步和 boundary 选择</td>
+</tr>
+<tr>
+<td>CFG</td>
+<td>每步分别计算 conditional、unconditional 前向，再组合预测</td>
+</tr>
+<tr>
+<td>条件</td>
+<td>正、负文本先编码；各层和 expert 使用各自的投影权重</td>
+</tr>
+<tr>
+<td>解码</td>
+<td>去噪结束后在输出 rank 调用 VAE</td>
+</tr>
+<tr>
+<td>驻留</td>
+<td>由 offload、dtype 和并行配置共同决定</td>
+</tr>
+</tbody>
+</table>
+<p>各章的 Wan2.2 小节为源码接入分析；建立完整模型基线的参考命令见附录 B。</p>
+<h2 id="chapter-docs-manuscript-appendix-a-model-contracts-md--solarwm连续-ar-的公开实现">SolarWM：连续 AR 的公开实现</h2>
+<p><a href="https://github.com/Junchao-cs/SolarWM">官方仓库</a>提供按 chunk 生成、历史 KV、滑动窗口及 clean refresh 的完整实现，对应第 12 章的状态生命周期分析。该仓库支持多种 backbone，具体的 latent 布局和时间坐标随 backend 而定。</p>
+<p><a href="https://huggingface.co/junchaoh-cs/SolarWM-H3-33B">H3 模型页</a>包含 base、Stage0.5、Stage1、Stage2 以及 Stage2 step 3900 EMA fix；<a href="https://huggingface.co/junchaoh-cs/SolarWM-H3-33B/tree/main/SolarWM-h3-33B-sgf-stage2-158f-fix">权重目录</a>列出了对应配置文件与 manifest（访问权重需接受模型许可条款）。</p>
+<p>设每块生成 $C$ 个 latent 时间片，codec 的时间步幅为 $r$。由 $rC$ 换算输出像素帧数时，需核对首帧偏置、时间 padding、块间 overlap 与尾部裁剪。</p>
+<h2 id="chapter-docs-manuscript-appendix-a-model-contracts-md--h3-与-abot-world架构对照">H3 与 ABot-World：架构对照</h2>
+<p><a href="https://github.com/MiniMax-AI/MiniMax-H3/blob/d21241f0a4b3acbb34c97dae47fa417b7065e438/README.md">H3 固定 README</a>用于对照混合视频生成架构；<a href="https://arxiv.org/abs/2607.19191v1">ABot-World 论文 v1</a>用于对照双向 teacher、因果 student 与长程自回归训练机制。</p>
+<h2 id="chapter-docs-manuscript-appendix-a-model-contracts-md--合成实验与实测配置">合成实验与实测配置</h2>
+<p>随包实验数据采集自两套硬件环境，其中 GPU 算子、KV 搬运与容量微基准均使用单张 GPU（<code>cuda:0</code>），ring/list 容器对照在 CPU 上执行：</p>
+<ol>
+<li><strong>RTX 5090</strong>：NVIDIA GeForce RTX 5090（32 GB，SM120 Blackwell）、Linux x86_64、Python 3.10.12、PyTorch 2.8.0+cu128、CUDA runtime 12.8、driver 580.82.07，依赖锁文件固定 Triton 3.4.0。完整观测保存在 <a href="docs/manuscript/evidence/measurements.json">measurements.json</a>。</li>
+<li><strong>数据中心 SM90 GPU</strong>：80 GB 级容量、Compute Capability 9.0（Hopper，架构属性参见 <a href="https://docs.nvidia.com/cuda/hopper-compatibility-guide/">NVIDIA Hopper 兼容性指南</a>），Python 3.13.12、PyTorch 2.10.0、CUDA runtime 13.1、cuDNN 91900、driver 580.82.07。单卡算子与搬运完整样本保存在 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a>；50 层 AR 规模 KV 容量与 Gather 延迟汇总保存在 <a href="docs/manuscript/evidence/ar_microbench_sm90.json">ar_microbench_sm90.json</a>。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>案例</th>
+<th>输入几何与对照路径</th>
+<th>采样与计时方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Attention</td>
+<td>BF16 Q/K/V <code>[1,8,512,64]</code>；MATH / FLASH / MATH；seed 42、dropout 0、无 mask</td>
+<td>每臂 5 warmup、30 hot，每次观测调用 10 次；分别记录 wall 与 Stream Event</td>
+</tr>
+<tr>
+<td>CUDA Graph</td>
+<td>BF16 <code>[64,512]</code>；8 组 Linear(512,512)+SiLU；eager / replay / eager；seed 43</td>
+<td>捕获和 side-stream 预热单列，固定输入、权重和输出地址，含 NaN 覆写校验</td>
+</tr>
+<tr>
+<td>ring/list</td>
+<td>CPU FP32，每份 K 或 V <code>[1,2,8,16]</code>、1 KiB；容量 5，12 次提交</td>
+<td>每个 epoch 包含 clone/detach、按序读取、展平及 <code>torch.cat</code> 拼接</td>
+</tr>
+<tr>
+<td>Host→GPU 搬运</td>
+<td>BF16，每份 <code>[1,5040,56,128]</code>，10 份 tensor，共 722,534,400 B</td>
+<td>每臂 5 warmup、30 hot；单 Stream，完成 copy 后同步，隔离源内存与提交方式</td>
+</tr>
+<tr>
+<td>AR 规模 KV Gather</td>
+<td>50 层、56 头、128 维；5 块活跃窗口（6,000 token）vs 7 块分页池（8,512 槽位）</td>
+<td>仅记录 Chunk List 与 Python 侧 Paged BF16/FP8 物化的 50 层 Gather 汇总耗时及池容量构成（<code>summary_only: true</code>）</td>
+</tr>
+</tbody>
+</table>
+<p>前四项实验保存了全部 5 次 warmup 与 30 次 hot 逐次样本，以及采集时执行脚本的 <code>source_sha256</code>（与随包脚本的差异见<a href="#chapter-docs-manuscript-appendix-b-reproduction-md--历史观测与随包脚本版本">附录 B</a>）；第五项仅保存历史汇总结果与池容量几何，不含逐次热样本或独立生成脚本。重算与核验命令见附录 B。</p>
+<h2 id="chapter-docs-manuscript-appendix-a-model-contracts-md--常用符号对照表">常用符号对照表</h2>
+<p>全书在不同章节讨论张量几何、硬件存储与并行切分时，部分字母按领域惯例承担不同含义，阅读时可按下表对照上下文：</p>
+<table class="long-table">
+<thead>
+<tr>
+<th>符号</th>
+<th>主要含义与出现章节</th>
+<th>其他局部含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$B, T, H, W, C$</td>
+<td>视频潜空间张量 <code>[B, C, T, H, W]</code> 的批大小、时序长度、空间高宽与潜变量通道数（第 2 章）</td>
+<td>第 2、8、14 章中 $H$ 亦指注意力头数；第 2 章与附录 A 中 $C$ 亦指单块 latent 时间片数；第 3 章 Roofline 中 $B$ 指访存字节数；第 5 章光流误差中 $C$ 指颜色通道数；第 11 章中 $C$ 指编译冷启动耗时</td>
+</tr>
+<tr>
+<td>$N, M, L_{\mathrm{KV}}$</td>
+<td>$N$ 为完整序列或单块 token 数，$M$ 为 AR 当前块 query token 数或 GEMM 行数，$L_{\mathrm{KV}}$ 为可见 KV 总长度（第 2、3、8、10 章）</td>
+<td>第 2 章 IO 复杂度中 $M$ 指片上快存容量；第 7 章 Taylor 余项中 $M$ 指二阶导上界；第 11 章 LUT 中 $M$ 指每层条件调制分支数；第 4、12 章中 $M_{\cdot}$ 指显存字节数</td>
+</tr>
+<tr>
+<td>$D, H, H_{\mathrm{kv}}, d$</td>
+<td>隐藏层维度 $D$、注意力查询头数 $H$、KV 头数 $H_{\mathrm{kv}}$、单头维度 $d=D/H$（第 2、4、8、12 章）</td>
+<td>第 4 章显存账本中下标 $d$ 指设备编号；第 7 章中 $d_t$ 指特征相对距离；第 11 章冷启动公式中 $d$ 指单次请求节省秒数</td>
+</tr>
+<tr>
+<td>$K$</td>
+<td>AR 滑动窗口保留的历史 chunk 数（第 2、4、12 章，代码亦记 <code>W_history</code>）</td>
+<td>Attention 中的 Key 矩阵（全书），或 GEMM $[M,K]\times[K,N]$ 的归约维（第 3、10 章）</td>
+</tr>
+<tr>
+<td>$S$</td>
+<td>去噪或采样的迭代步数（第 2、6、11 章；第 6 章另用 $S_h,S_l$ 分别计高、低噪声区间的时间点数）</td>
+<td>第 7 章 $S_t$ 为 TeaCache 累计判定量；第 8 章中 $S$ 为 FlashDecoding 的 KV 切分块数，$\Delta S$ 为 Q/K 平滑后的 score 补偿项；第 10 章中 $S$ 为量化缩放因子（$S_{\mathrm{block}}$ 为分块 scale），SVDQuant 中为对角平滑矩阵；第 15 章 $S_{\max}$ 为 Amdahl 加速上限，$S_{\mathrm{audio/frame}}$ 为每帧音频采样数；小写 $s$ 在第 6 章为 shift 系数，在第 12 章为环形池写入槽位</td>
+</tr>
+<tr>
+<td>$P$</td>
+<td>序列并行（Ulysses / Ring）的 GPU 卡数（第 14 章）</td>
+<td>第 2 章中指每个 latent 时间片 patchify 后的视频 token 数；第 3 章 Roofline 中指硬件峰值计算吞吐；第 8 章中 $\widetilde P$ 指分块未归一化注意力权重</td>
+</tr>
+<tr>
+<td>$p_{\mathrm{drop}}, r, r_{\mathrm{area}}$</td>
+<td>第 9 章中 $p_{\mathrm{drop}}$ 为稀疏注意力的被删位置概率质量，$r\in(0,1]$ 为 Token 压缩后的长度保留比例；第 15 章中 $r_{\mathrm{area}}\ge 1$ 为 VAE 瓦片解码覆盖面积比（重复计算比例为 $r_{\mathrm{area}}-1$）</td>
+<td>第 10 章 SVDQuant 中 $r$ 指低秩分支的秩（rank）；附录 A 中 $r$ 指 VAE 时间步幅</td>
+</tr>
+<tr>
+<td>$I$</td>
+<td>第 3 章 Roofline 中的算术强度 $I=F/B$（FLOP/byte）</td>
+<td>第 5 章光流重投影中的视频帧 $I_t$；第 16 章 $2\times2$ 消融矩阵中的组合交互项 $I=T_{11}-T_{10}-T_{01}+T_{00}$</td>
+</tr>
+</tbody>
+</table></div>
+<div id="chapter-docs-manuscript-appendix-b-reproduction-md" class="chapter-container chapter-divider "><!-- source: docs/manuscript/appendix-b-reproduction.md --><h1 id="chapter-docs-manuscript-appendix-b-reproduction-md--附录-b-复现入口与操作步骤">附录 B 复现入口与操作步骤</h1>
+<p>复现实验按三步展开：先用 Python 标准库重算并核验随包保存的实验数据，再在本地 GPU 上运行无需模型权重的算子与搬运小例，最后在完整模型上建立配对基线。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--无-gpu重算实验数据">无 GPU：重算实验数据</h2>
+<p>仅需 Python 标准库即可执行全部三份证据文件的重算与几何核验：</p>
+<pre class="codehilite"><code class="language-bash"># 重算 RTX 5090 单卡算子与搬运数据
+python3 -B examples/review_public_evidence.py
+
+# 重算数据中心 SM90 单卡算子与搬运数据
+python3 -B examples/review_public_evidence.py --input docs/manuscript/evidence/measurements_sm90.json
+
+# 核验 50 层 AR 规模 KV 容量几何与 Gather 汇总数据
+python3 -B examples/review_public_evidence.py --input docs/manuscript/evidence/ar_microbench_sm90.json
+</code></pre>
+
+<p>前两项命令逐样本重算 30 次 hot 观测的均值、中位数、分位数、首尾漂移、A/B 加速比、有效搬运带宽及 CUDA Graph 回本调用数；第三项命令核验 50 层活跃窗口、Gather 输出 BF16 载荷与 7 块分页池（含页尾 padding 与 FP8 scales）的字节算术及 Gather 倍率（该微基准为 <code>summary_only: true</code> 历史汇总，不含逐次热样本或随包生成脚本）。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--cuda-小例先确认设备和输出目录">CUDA 小例：先确认设备和输出目录</h2>
+<p>RTX 5090 数据运行于 Linux x86_64、Python 3.10、PyTorch 2.8.0+cu128；SM90 数据运行于 Python 3.13.12、PyTorch 2.10.0 与 CUDA runtime 13.1。在其他兼容环境中运行时，先记录实际软硬件版本，并通过 profiler 确认命中的算子 backend。</p>
+<p>将环境变量 <code>DIT_LAB_ROOT</code> 指向本地可写的绝对工作目录（父目录需已存在且剩余空间不少于 1 GiB；脚本拒绝覆盖已存在的输出路径）：</p>
+<pre class="codehilite"><code class="language-bash">: &quot;${DIT_LAB_ROOT:?设置为自己的绝对工作目录}&quot;
+mkdir -p &quot;$DIT_LAB_ROOT/results&quot;
+python3 -B examples/rtx_dit_lab.py \
+  --case all --device cuda:0 \
+  --warmup 5 --samples 30 --output &quot;$DIT_LAB_ROOT/results/operators.json&quot;
+python3 -B examples/rtx_kv_transfer_lab.py \
+  --fixture tiny --device cuda:0 \
+  --warmup 5 --samples 30 --output-dir &quot;$DIT_LAB_ROOT/results/transfer-tiny&quot; --pin-each-read
+</code></pre>
+
+<p><code>tiny</code> 通过后，可用 <code>--fixture large</code> 运行通用教学尺寸 <code>[1,4096,32,128]</code>（单张 BF16 张量 33,554,432 B，10 张合计 335,544,320 B）。若要重放第 13 章及附录 A 保存的显式几何尺寸 <code>[1,5040,56,128]</code>（单张 72,253,440 B，10 张合计 722,534,400 B），可执行：</p>
+<pre class="codehilite"><code class="language-bash">python3 -B examples/rtx_kv_transfer_lab.py \
+  --fixture explicit-shape --shape 1 5040 56 128 --device cuda:0 \
+  --warmup 5 --samples 30 --output-dir &quot;$DIT_LAB_ROOT/results/transfer-recorded-shape&quot; --pin-each-read
+</code></pre>
+
+<p>脚本内置了 NaN 毒化覆写、张量版本号与逐位等价检查，并将初始化耗时与热态计时分开保存。默认输出省略 GPU UUID 与 PCI bus ID；如需在本机排查多卡物理拓扑可加 <code>--record-hardware-id</code>，在非 GeForce 数据中心显卡上运行可加 <code>--allow-non-rtx</code>。</p>
+<h3 id="chapter-docs-manuscript-appendix-b-reproduction-md--历史观测与随包脚本版本">历史观测与随包脚本版本</h3>
+<p><code>measurements.json</code> 与 <code>measurements_sm90.json</code> 中的 <code>source_sha256</code> 记录的是采集当时的脚本指纹，与当前随包 <code>rtx_dit_lab.py</code>、<code>rtx_kv_transfer_lab.py</code> 的文件哈希均不同，两次采集的差异范围不同：</p>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>采集所用脚本与随包脚本的差异</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTX 5090</td>
+<td>采集版本更早；截至 r5 已调整目录空间预检、默认 <code>large</code> 教学 Shape 与设备帮助说明；r6 另为 Attention 固定教学输入增加数值验收门</td>
+<td><code>measurements.json</code> 的 <code>export_note</code> 与随包脚本的 <code>numerical_gate</code></td>
+</tr>
+<tr>
+<td>SM90</td>
+<td>截至 r5 仅 <code>--allow-non-rtx</code> 的帮助文本改为通用设备描述；r6 另为 Attention 固定教学输入增加数值验收门</td>
+<td><code>measurements_sm90.json</code> 的 <code>export_note</code> 与随包脚本的 <code>numerical_gate</code></td>
+</tr>
+</tbody>
+</table>
+<p>当前随包脚本文件本身未在 GPU 上重新执行。各章引用的耗时与数值对照均以上述历史样本为准；在本机重跑时，以新生成的输出文件及其 <code>source_sha256</code> 为准。</p>
+<p>r6 的 Attention 数值门要求各必需比较的输出有限、最大绝对误差和 Relative L2 均不超过 0.005，并要求 A1/A2 逐位相同；Flash backend 不可用时记录 <code>skipped</code>，不记为技术通过。这些容差只用于脚本的固定 BF16 教学输入，不是其他 Shape、完整模型或生成质量的通用阈值。可用 <code>python3 -B -m unittest discover -s examples -p 'test_attention_acceptance.py' -v</code> 在无 GPU 环境验证验收逻辑；该测试不替代 CUDA 重放。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--固定依赖与离线环境">固定依赖与离线环境</h2>
+<p><a href="requirements/rtx-lab-py310-cu128.lock.txt">锁定依赖</a>、<a href="requirements/rtx-lab-py310-cu128-wheels-public.json">公开 wheel 清单</a>与<a href="scripts/fetch_rtx_lab_wheels.py">下载校验脚本</a>针对 Linux CPython 3.10 + CUDA 12.8 编制，包含全部安装包的大小与 SHA256：</p>
+<pre class="codehilite"><code class="language-bash">: &quot;${WHEELHOUSE:?设置为已核验存储上的绝对wheel目录}&quot;
+python3 -I -B scripts/fetch_rtx_lab_wheels.py --manifest requirements/rtx-lab-py310-cu128-wheels-public.json --output-dir &quot;$WHEELHOUSE&quot;
+python3 -I -B scripts/fetch_rtx_lab_wheels.py --manifest requirements/rtx-lab-py310-cu128-wheels-public.json --output-dir &quot;$WHEELHOUSE&quot; --verify-only
+</code></pre>
+
+<p>离线机器安装时使用 <code>pip install --no-index --find-links "$WHEELHOUSE" --only-binary=:all: --require-hashes -r requirements/rtx-lab-py310-cu128.lock.txt</code>。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--wan22从原生结果建立新参考">Wan2.2：从原生结果建立新参考</h2>
+<p>在独立工作目录检出<a href="https://github.com/Wan-Video/Wan2.2/tree/1ea34ff48f87168174e12956e200b1d908b1c5ff">固定官方源码</a>，冻结模型权重与依赖版本后，先使用官方单卡入口跑通基准视频：</p>
+<pre class="codehilite"><code class="language-bash">: &quot;${WAN_CKPT:?设置为固定Wan2.2-T2V-A14B权重目录}&quot;
+python generate.py --task t2v-A14B --size '1280*720' \
+  --ckpt_dir &quot;$WAN_CKPT&quot; --offload_model True --convert_model_dtype \
+  --prompt 'A red sailboat moves slowly across a calm lake, with steady camera motion.'
+</code></pre>
+
+<p>确认显存峰值、权重加载与输出视频正常后，冻结帧数、随机种子、采样器时间表、CFG 尺度与计时边界，按第 5 章的 A/B/A 流程采集基准延迟。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--完整模型验收顺序">完整模型验收顺序</h2>
+<p>将各章优化接入完整模型时，先在小尺寸输入上核验输出有限性（finite）与状态更新，再回到目标分辨率保存原生输出并执行单因素 A/B/A 配对实验；profile 采样与纯净计时分开运行。保持数学等价的系统优化核对逐层误差与状态一致性；改变计算精度或跳步的近似方法按第 5 章联合评估感知画质、运动连贯性与长序列稳定性。</p>
+<h2 id="chapter-docs-manuscript-appendix-b-reproduction-md--配套文件完整性">配套文件完整性</h2>
+<p>在解压根目录执行 <code>python3 -B scripts/verify_reader_package.py .</code>，即可校验全部随包文件的大小与 SHA256 清单。</p></div>
+<div id="chapter-docs-manuscript-appendix-c-evidence-md" class="chapter-container chapter-divider last-chapter"><!-- source: docs/manuscript/appendix-c-evidence.md --><h1 id="chapter-docs-manuscript-appendix-c-evidence-md--附录-c-来源与实验数据">附录 C 来源与实验数据</h1>
+<p>本书将理论公式推导、公开模型源码分析与可复现的合成微基准结合在一起：代数公式界定计算量与访存下界，固定 commit 的开源代码定位工程接入点，合成实验则隔离测量单一算子、状态容器或跨设备搬运机制。附录 A 汇总了实验软硬件条件，附录 B 给出了从标准库重算到完整模型基线的操作步骤。</p>
+<h2 id="chapter-docs-manuscript-appendix-c-evidence-md--来源索引">来源索引</h2>
+<p><a href="docs/manuscript/evidence/primary-sources.json">来源清单</a>登记了本书重点核对的开源源码与仓库文档快照（含固定 Git revision 与 SHA256 指纹）；其余随文引用的固定 commit 源码、公开论文与 NVIDIA、PyTorch 等官方技术手册均直接在正文对应结论处通过外链给出。</p>
+<table>
+<thead>
+<tr>
+<th>内容</th>
+<th>主要阅读入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>双向执行图</td>
+<td><a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py">Wan2.2 T2V</a>、<a href="https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/modules/model.py">Block</a></td>
+</tr>
+<tr>
+<td>GPU 与 GEMM</td>
+<td><a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html">CUDA Best Practices</a>、<a href="https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html">Matrix Multiplication</a></td>
+</tr>
+<tr>
+<td>求解与蒸馏</td>
+<td><a href="https://arxiv.org/abs/2210.02747">Flow Matching</a>、<a href="https://arxiv.org/abs/2211.01095">DPM-Solver++</a>、<a href="https://arxiv.org/abs/2302.04867">UniPC</a>；CausVid / Self Forcing 见第 6 章</td>
+</tr>
+<tr>
+<td>Attention 与缓存</td>
+<td><a href="https://arxiv.org/abs/2205.14135">FlashAttention</a>、<a href="https://tridao.me/blog/2024/flash3/">FA3</a>、<a href="https://arxiv.org/abs/2411.19108">TeaCache</a>；稀疏实现见第 9 章</td>
+</tr>
+<tr>
+<td>低精度</td>
+<td><a href="https://arxiv.org/abs/2411.05007">SVDQuant</a>、<a href="https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/">NVFP4 格式</a>；工具链及版本差异见第 10 章</td>
+</tr>
+<tr>
+<td>编译与执行</td>
+<td><a href="https://docs.pytorch.org/docs/2.8/notes/cuda.html">PyTorch 2.8 CUDA 语义</a>、<a href="https://docs.pytorch.org/tutorials/recipes/regional_compilation.html">Regional compilation</a></td>
+</tr>
+<tr>
+<td>AR 状态</td>
+<td><a href="https://github.com/Junchao-cs/SolarWM">SolarWM</a>、<a href="https://arxiv.org/abs/2607.19191v1">ABot-World 论文 v1</a></td>
+</tr>
+<tr>
+<td>Omni 框架</td>
+<td>独立配套文档 <a href="docs/omni/inference-frameworks.md">Omni 推理框架</a>中的固定源码链接</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chapter-docs-manuscript-appendix-c-evidence-md--实验数据如何使用">实验数据如何使用</h2>
+<ol>
+<li><a href="docs/manuscript/evidence/measurements.json">measurements.json</a> 与 <a href="docs/manuscript/evidence/measurements_sm90.json">measurements_sm90.json</a> 分别保存了 RTX 5090 与数据中心 SM90 GPU 环境下的 Attention backend、CUDA Graph、CPU ring/list 容器以及 Host→GPU KV 搬运的全部 warmup/hot 逐次观测、统计分位数、输入张量指纹、显存高水位与数值误差对照。</li>
+<li><a href="docs/manuscript/evidence/ar_microbench_sm90.json">ar_microbench_sm90.json</a> 保存了 50 层 AR 视频规模（56 头、128 维、每块 1200 token）下活跃窗口（5 块 6,000 token，Gather 输出 8.60 GB BF16）与静态分页池（7 块 8,512 槽位，含页尾 padding 与 FP8 scales）的容量分解，以及连续块 <code>torch.cat</code> 与 Python 侧 Paged BF16 / Paged FP8 逐页物化路径的 50 层 Gather 汇总耗时（<code>summary_only: true</code>，无逐次热样本或随包生成脚本）。</li>
+</ol>
+<p>三份数据文件均可通过 <code>python3 -B examples/review_public_evidence.py</code>（配合 <code>--input</code> 参数）离线核验。有效搬运带宽定义为单轮净载荷字节数除以包含提交与同步在内的 Host wall time，用于衡量应用层实际可得的传输吞吐。</p>
+<p>阅读实验数据时，按各章对应的工程问题对号入座：第 8 章对比 Attention 算子后端，第 11 章衡量小算子栈的发射开销与 Graph 摊销回本点，第 12 章对比滑动窗口状态容器与分页物化成本，第 13 章评估锁页内存对 PCIe 搬运的影响。</p>
+<h2 id="chapter-docs-manuscript-appendix-c-evidence-md--后续实验扩展">后续实验扩展</h2>
+<p>在目标业务模型上开展整模评测时，可从 Wan2.2 与公开连续 AR 模型的原生基线出发：先冻结测试集与原生参考输出，按第 5 章设定质量门禁，再按第 16 章的 $2\times2$ 矩阵依次报告单请求延迟、首包/稳态块间隔、显存峰值与长序列视频质量。</p></div>
+
+</body>
+</html>

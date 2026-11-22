@@ -1,0 +1,660 @@
+{
+  "zotero_version": "10.0.9",
+  "pdfjs_version": "5.7.0",
+  "pdfjs_build": "37919f5",
+  "sdt_processor": "Actual Zotero app document-worker, bundled ONNX/WASM models in headless Chrome",
+  "scope": "Mermaid whole-figure preservation in Reading Mode; does not claim complete inline-math reflow compatibility",
+  "documents": [
+    {
+      "document": "main",
+      "pdf_sha256": "d3afc748c619d99a1701657ae9ce642325ea6afc32fdeea351a444d00d093b59",
+      "sdt_source_metadata": {
+        "contentType": "application/pdf",
+        "hash": "1ea2d3e008934b357e786f2610d3e198",
+        "properties": {
+          "PDFFormatVersion": "1.4",
+          "Title": "DiT 推理加速：原理与工程实践",
+          "Subject": "计算与测量基础、加速方法、公开源码分析与合成实验",
+          "Keywords": "DiT, GPU, inference, AR-chunk",
+          "Language": "zh-CN"
+        }
+      },
+      "expected": 16,
+      "diagrams": [
+        {
+          "id": "0001",
+          "page": 3,
+          "receipt_bbox_top_down": [
+            45.0,
+            497.4512023925781,
+            549.57421875,
+            725.5287475585938
+          ],
+          "receipt_pixel_size": [
+            2103,
+            952
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7047,
+              "pixel_size": [
+                2103,
+                952
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 14,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            116.391239,
+            549.7616879999999,
+            344.46879
+          ],
+          "diagram_coverage": 0.9999999840035217,
+          "crop_to_diagram_area": 1.0003715650826135,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0002",
+          "page": 7,
+          "receipt_bbox_top_down": [
+            45.0,
+            94.38934326171875,
+            549.57421875,
+            452.5832824707031
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7053,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 82,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            389.33668,
+            549.57423,
+            747.5306499999999
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.000000108257883,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0003",
+          "page": 12,
+          "receipt_bbox_top_down": [
+            45.0,
+            200.57720947265625,
+            549.57421875,
+            261.14813232421875
+          ],
+          "receipt_pixel_size": [
+            2103,
+            254
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7057,
+              "pixel_size": [
+                2103,
+                254
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 175,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            580.77188,
+            549.5742479999999,
+            641.3433359999999
+          ],
+          "diagram_coverage": 0.9999995143864229,
+          "crop_to_diagram_area": 1.0000088600225872,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0004",
+          "page": 14,
+          "receipt_bbox_top_down": [
+            45.0,
+            306.01593017578125,
+            549.57421875,
+            358.3612365722656
+          ],
+          "receipt_pixel_size": [
+            2103,
+            219
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7061,
+              "pixel_size": [
+                2103,
+                219
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 215,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            483.55873,
+            549.5742479999999,
+            535.90407
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.0000006999282294,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0005",
+          "page": 15,
+          "receipt_bbox_top_down": [
+            45.0,
+            57.0,
+            549.57421875,
+            415.19342041015625
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7065,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 229,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            426.72654,
+            549.57423,
+            784.92
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.0000001328224688,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0006",
+          "page": 19,
+          "receipt_bbox_top_down": [
+            45.0,
+            313.49346923828125,
+            549.57421875,
+            671.6868896484375
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7069,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 289,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            170.2331,
+            549.57423,
+            528.42653
+          ],
+          "diagram_coverage": 0.9999999811881488,
+          "crop_to_diagram_area": 1.0000000490688348,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0007",
+          "page": 22,
+          "receipt_bbox_top_down": [
+            45.0,
+            248.43560791015625,
+            549.57421875,
+            606.6290283203125
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7073,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 349,
+          "crop_type": "math",
+          "crop_bbox_pdf": [
+            45,
+            111.39,
+            549.57423,
+            593.48439
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.3459052380045329,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0008",
+          "page": 26,
+          "receipt_bbox_top_down": [
+            45.0,
+            94.38934326171875,
+            549.57421875,
+            266.38128662109375
+          ],
+          "receipt_pixel_size": [
+            2103,
+            717
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7077,
+              "pixel_size": [
+                2103,
+                717
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 398,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            575.5387,
+            549.5742479999999,
+            747.5306499999999
+          ],
+          "diagram_coverage": 0.9999999784237716,
+          "crop_to_diagram_area": 1.0000000965797633,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0009",
+          "page": 34,
+          "receipt_bbox_top_down": [
+            45.0,
+            306.01495361328125,
+            549.57421875,
+            548.3005981445312
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1010
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7081,
+              "pixel_size": [
+                2103,
+                1010
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 546,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            293.6194,
+            549.57423,
+            535.90505
+          ],
+          "diagram_coverage": 0.999999937122255,
+          "crop_to_diagram_area": 1.0000000448675248,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0010",
+          "page": 36,
+          "receipt_bbox_top_down": [
+            45.0,
+            132.52496337890625,
+            549.57421875,
+            490.7193603515625
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7085,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 587,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            351.20063,
+            549.57423,
+            709.3950600000001
+          ],
+          "diagram_coverage": 0.9999999792252299,
+          "crop_to_diagram_area": 1.0000001145011104,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0011",
+          "page": 39,
+          "receipt_bbox_top_down": [
+            45.0,
+            171.4124755859375,
+            549.57421875,
+            459.3131103515625
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1200
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7089,
+              "pixel_size": [
+                2103,
+                1200
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 631,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            382.60688,
+            549.57423,
+            670.50753
+          ],
+          "diagram_coverage": 0.9999999741528661,
+          "crop_to_diagram_area": 1.0000000752114195,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0012",
+          "page": 42,
+          "receipt_bbox_top_down": [
+            45.0,
+            623.079345703125,
+            549.57421875,
+            661.9649658203125
+          ],
+          "receipt_pixel_size": [
+            2103,
+            163
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7093,
+              "pixel_size": [
+                2103,
+                163
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 678,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            179.95502,
+            549.7616879999999,
+            218.84064
+          ],
+          "diagram_coverage": 0.9999999251611205,
+          "crop_to_diagram_area": 1.0003715364793933,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0013",
+          "page": 43,
+          "receipt_bbox_top_down": [
+            45.0,
+            335.1787414550781,
+            549.57421875,
+            541.5712280273438
+          ],
+          "receipt_pixel_size": [
+            2103,
+            861
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7097,
+              "pixel_size": [
+                2103,
+                861
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 696,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            300.34877,
+            549.7616879999999,
+            506.74126
+          ],
+          "diagram_coverage": 0.9999999267551462,
+          "crop_to_diagram_area": 1.000371556108174,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0014",
+          "page": 49,
+          "receipt_bbox_top_down": [
+            45.0,
+            153.46502685546875,
+            549.57421875,
+            233.478759765625
+          ],
+          "receipt_pixel_size": [
+            2103,
+            334
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7101,
+              "pixel_size": [
+                2103,
+                334
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 797,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            608.4412,
+            549.5742479999999,
+            688.45503
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.0000012713844886,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0015",
+          "page": 50,
+          "receipt_bbox_top_down": [
+            45.0,
+            57.0,
+            549.57421875,
+            415.19622802734375
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1493
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7105,
+              "pixel_size": [
+                2103,
+                1493
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 817,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            78.48,
+            549.57423,
+            784.92004
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.9722152286228924,
+          "overlapping_text_blocks": [],
+          "passed": true
+        },
+        {
+          "id": "0016",
+          "page": 53,
+          "receipt_bbox_top_down": [
+            45.0,
+            578.2124633789062,
+            549.57421875,
+            703.8412475585938
+          ],
+          "receipt_pixel_size": [
+            2103,
+            524
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 7109,
+              "pixel_size": [
+                2103,
+                524
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 854,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            138.07874,
+            549.7616879999999,
+            263.70806400000004
+          ],
+          "diagram_coverage": 0.9999999629986269,
+          "crop_to_diagram_area": 1.000375838038323,
+          "overlapping_text_blocks": [],
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "document": "omni",
+      "pdf_sha256": "c7e6661b28e9e9cc69f8169bbabd970b80de0e33c3d6676c6a90d88930b7dcb3",
+      "sdt_source_metadata": {
+        "contentType": "application/pdf",
+        "hash": "991211f5afd2efb1742e14017eb920b7",
+        "properties": {
+          "PDFFormatVersion": "1.4",
+          "Title": "Omni 与推理框架：阶段调度、传输和流式交付",
+          "Subject": "Omni 与 DiT、vLLM-Omni、SGLang-Omni 的源码分析",
+          "Keywords": "Omni, DiT, vLLM-Omni, SGLang-Omni, streaming",
+          "Language": "zh-CN"
+        }
+      },
+      "expected": 1,
+      "diagrams": [
+        {
+          "id": "0001",
+          "page": 3,
+          "receipt_bbox_top_down": [
+            45.0,
+            57.0,
+            549.57421875,
+            416.2415466308594
+          ],
+          "receipt_pixel_size": [
+            2103,
+            1498
+          ],
+          "actual_image_objects": [
+            {
+              "xref": 1695,
+              "pixel_size": [
+                2103,
+                1498
+              ]
+            }
+          ],
+          "crop_match_count": 1,
+          "sdt_block_index": 30,
+          "crop_type": "image",
+          "crop_bbox_pdf": [
+            45,
+            425.6784,
+            549.57423,
+            784.92001
+          ],
+          "diagram_coverage": 1.0,
+          "crop_to_diagram_area": 1.0000001986930567,
+          "overlapping_text_blocks": [],
+          "passed": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

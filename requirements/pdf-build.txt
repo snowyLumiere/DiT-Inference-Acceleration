@@ -1,0 +1,5 @@
+# Observed installed versions in the existing successful PDF build receipt.
+# This is a top-level version list, NOT a hash-locked fresh-environment certification.
+# External Chrome/Chromium and any math/diagram resources are not pip packages.
+Markdown==3.9
+PyMuPDF==1.26.5

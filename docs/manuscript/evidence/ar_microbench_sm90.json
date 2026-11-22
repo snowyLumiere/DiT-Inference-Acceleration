@@ -1,0 +1,63 @@
+{
+  "schema": "dit.reader-ar-microbench.v1",
+  "benchmark_time": "2026-10-31T17:41:37Z",
+  "scope": "Synthetic 50-layer AR-scale KV capacity and gather summary on a single data-center SM90 GPU (80 GB class, Hopper); summary statistics and pool geometry only",
+  "quality_assessed": false,
+  "production_e2e_claimed": false,
+  "provenance": {
+    "original_receipt_sha256": "ae9c02a27c77811223c498636a7f3051d281348d4546be947bfaaa384833de80",
+    "hot_observations_available": false,
+    "summary_only": true,
+    "interpretation": "Validates 50-layer active window payload, 7-chunk paged pool geometry (including block padding and FP8 scales), and gather summary latencies.",
+    "derived_fields": {
+      "results.kv_cache.geometry.gather_output_bf16_bytes": "Reader-export annotation added after the original receipt: derived from window geometry (equals active_bf16_payload_bytes; each path materializes the 5 active chunks as contiguous BF16). Not a timed measurement."
+    }
+  },
+  "hardware": {
+    "device_name": "Data-center SM90 GPU (80 GB class)",
+    "visible_device_count": 4,
+    "benchmark_device": "cuda:0",
+    "benchmark_device_count": 1,
+    "total_memory_bytes": 85017624576,
+    "compute_capability": [
+      9,
+      0
+    ]
+  },
+  "software": {
+    "torch": "2.10.0",
+    "cuda": "13.1",
+    "python": "3.13.12"
+  },
+  "results": {
+    "kv_cache": {
+      "num_layers": 50,
+      "num_heads": 56,
+      "head_dim": 128,
+      "tokens_per_chunk": 1200,
+      "window_size": 5,
+      "list_gather_ms": 6.630470275878906,
+      "paged_bf16_gather_ms": 21.49884796142578,
+      "paged_fp8_gather_ms": 64.20923461914063,
+      "paged_bf16_speedup": 0.30841049193778197,
+      "paged_fp8_speedup": 0.10326349963845197,
+      "vram_bf16_bytes": 12202803200,
+      "vram_fp8_bytes": 6101401600,
+      "vram_savings_pct": 50.0,
+      "geometry": {
+        "block_size": 64,
+        "blocks_per_chunk": 19,
+        "pool_chunk_capacity": 7,
+        "padded_tokens_per_chunk": 1216,
+        "active_tokens": 6000,
+        "pool_token_slots": 8512,
+        "active_bf16_payload_bytes": 8601600000,
+        "fp8_scale_bytes": 2979200,
+        "fp8_pool_and_scale_bytes": 6104380800,
+        "gather_output_bf16_bytes": 8601600000
+      },
+      "memory_scope": "Saved vram fields count K/V pool payload only, excluding FP8 scales, page tables, inputs, gather buffers and allocator overhead.",
+      "latency_scope": "50-layer gather summary latencies over synthetic tensors; compares contiguous chunk cat against Python-side paged BF16 and paged FP8 materialization."
+    }
+  }
+}

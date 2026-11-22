@@ -1,0 +1,474 @@
+{
+  "schema": "dit.reader-primary-sources.v1",
+  "sources": [
+    {
+      "repository": "Wan-Video/Wan2.2",
+      "revision": "1ea34ff48f87168174e12956e200b1d908b1c5ff",
+      "path": "README.md",
+      "url": "https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/README.md",
+      "sha256": "40222cb3a66cc89aa1cd84589d1fa696806c93c09cf1c4383b3994139202dfa1",
+      "bytes": 35804
+    },
+    {
+      "repository": "Wan-Video/Wan2.2",
+      "revision": "1ea34ff48f87168174e12956e200b1d908b1c5ff",
+      "path": "wan/text2video.py",
+      "url": "https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/text2video.py",
+      "sha256": "2f212e1f6d7ba4408a25998091b70ee35dde8bcaaeaedd3ba03d6cdab84dc683",
+      "bytes": 14679
+    },
+    {
+      "repository": "Wan-Video/Wan2.2",
+      "revision": "1ea34ff48f87168174e12956e200b1d908b1c5ff",
+      "path": "wan/modules/model.py",
+      "url": "https://github.com/Wan-Video/Wan2.2/blob/1ea34ff48f87168174e12956e200b1d908b1c5ff/wan/modules/model.py",
+      "sha256": "8b39115298ca7322806c19b3165b3f435a94fe4a58f0624aec24f8e7f4997432",
+      "bytes": 18097
+    },
+    {
+      "repository": "MiniMax-AI/MiniMax-H3",
+      "revision": "d21241f0a4b3acbb34c97dae47fa417b7065e438",
+      "path": "README.md",
+      "url": "https://github.com/MiniMax-AI/MiniMax-H3/blob/d21241f0a4b3acbb34c97dae47fa417b7065e438/README.md",
+      "sha256": "7964f3044d3c7efaa054bb823644ad98cf9ea43389f994c51e08977822f16bac",
+      "bytes": 40135
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "docs/basic_usage/process_topology.md",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/docs/basic_usage/process_topology.md",
+      "sha256": "5d7b10216c91d47c511e3277bf8463d2c44c1b18739d35a0e6ee69b80be0d33d",
+      "bytes": 11900
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "docs/developer_reference/communication.md",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/docs/developer_reference/communication.md",
+      "sha256": "451c4295c4965534444dd304efef5aec3495c65c4478c15860dd28e8da256b03",
+      "bytes": 13600
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "docs/developer_reference/pipeline.md",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/docs/developer_reference/pipeline.md",
+      "sha256": "4c7dac2a3d6aac355eb12d7697e2449530b1fdf467c85f0ddba740fdc0d1fd3f",
+      "bytes": 9951
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/comm/router.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/comm/router.py",
+      "sha256": "cfa62fe4ec250dfa01b31039a7324118382c45b53f0c6f8855aec63763244348",
+      "bytes": 16439
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/comm/stage_io.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/comm/stage_io.py",
+      "sha256": "b5585238b332f3ce2a2aba8a69bf1ab0cf39394d683f4c326cd882173ee4a9f4",
+      "bytes": 31223
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/pipeline/coordinator.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/pipeline/coordinator.py",
+      "sha256": "64a0bd5da07c949cc5b50749968618d00ae7b1f4c5c0943c54717b5a72938747",
+      "bytes": 47462
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/pipeline/stage/runtime.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/pipeline/stage/runtime.py",
+      "sha256": "6b8b9259892781ee372512c8015ca7323d62b9341100c75ae556c099cbc22659",
+      "bytes": 95815
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/relay/cuda_ipc.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/relay/cuda_ipc.py",
+      "sha256": "f0af0573e892f78e344e1555ecc861a128a6f151001358e9a105b16a21d6c9d1",
+      "bytes": 50588
+    },
+    {
+      "repository": "sgl-project/sglang-omni",
+      "revision": "62dd406efbfc82e0a152e92d666bf86b241684e7",
+      "path": "sglang_omni/scheduling/omni_scheduler.py",
+      "url": "https://github.com/sgl-project/sglang-omni/blob/62dd406efbfc82e0a152e92d666bf86b241684e7/sglang_omni/scheduling/omni_scheduler.py",
+      "sha256": "cbe997f9d3b7ed6139cc91ddaa86be5c50338ac7106e4281d2c9d07b472a0db5",
+      "bytes": 171842
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/architecture_overview.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/architecture_overview.md",
+      "sha256": "c7d964e5d63588bf079f4de8930138861cd52e6beba5db095e999c9a3ff6f42b",
+      "bytes": 29319
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/feature/async_chunk.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/feature/async_chunk.md",
+      "sha256": "2bda1e58124d608f7edbb265d9a04ef69d7b8481ee9171d1beaf594f6bfca041",
+      "bytes": 23735
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/feature/omni_connectors/mooncake_transfer_engine_connector.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/feature/omni_connectors/mooncake_transfer_engine_connector.md",
+      "sha256": "e372a79efc843db8cb4b797b58efe79210bbf9192b7fee10ff4ad01eba5986c8",
+      "bytes": 28201
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/feature/omni_connectors/nixl_connector.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/feature/omni_connectors/nixl_connector.md",
+      "sha256": "cd20634bcb6be5f3a751e14fe65cab02599d58ac621194255c6d1d4374333d08",
+      "bytes": 10307
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/feature/omni_connectors/shared_memory_connector.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/feature/omni_connectors/shared_memory_connector.md",
+      "sha256": "97850548ba2e3c8873e29e6e755ddc6ef9b642b54d84237c56b390b822c25a46",
+      "bytes": 8096
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/fullduplex.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/fullduplex.md",
+      "sha256": "72d638533bb1d2eefa9c20783a5312a5a4ee5f1caf15c6d82cfa3719e00a570b",
+      "bytes": 63925
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "docs/design/module/omni_connector.md",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/docs/design/module/omni_connector.md",
+      "sha256": "4b034123d62e4c00652164c843d33a4d91c95598c3a0a63415cdb8a4a1b06267",
+      "bytes": 1342
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "vllm_omni/distributed/omni_connectors/connectors/shm_connector.py",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/vllm_omni/distributed/omni_connectors/connectors/shm_connector.py",
+      "sha256": "db160e6698983e77afaf0d4a1f358b1f2b875d687e4c4e52b0b61b0868a8a337",
+      "bytes": 13619
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "vllm_omni/distributed/omni_connectors/transfer_adapter/chunk_transfer_adapter.py",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/vllm_omni/distributed/omni_connectors/transfer_adapter/chunk_transfer_adapter.py",
+      "sha256": "2467bc5113c20c863cc497bb77ead89fc48d4df8c0e3c0cac66118c4625c0580",
+      "bytes": 89885
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "vllm_omni/engine/orchestrator.py",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/vllm_omni/engine/orchestrator.py",
+      "sha256": "3bc11969b6954143e27a810778a8855652fa06fac2a040b7803c7d9f0ada7dc5",
+      "bytes": 174488
+    },
+    {
+      "repository": "vllm-project/vllm-omni",
+      "revision": "7266b8bd2f0058645aaa44d53de108e7cc66c999",
+      "path": "vllm_omni/engine/stage_pool.py",
+      "url": "https://github.com/vllm-project/vllm-omni/blob/7266b8bd2f0058645aaa44d53de108e7cc66c999/vllm_omni/engine/stage_pool.py",
+      "sha256": "5abb92051223427c07dcdb042631b584877522c1ed1a65e1e03e90e6a2869884",
+      "bytes": 69701
+    },
+    {
+      "repository": "thu-ml/TurboDiffusion",
+      "revision": "e3d61360b0eeab60c5cd09ff7d6c1020cccc80b2",
+      "path": "README.md",
+      "url": "https://github.com/thu-ml/TurboDiffusion/blob/e3d61360b0eeab60c5cd09ff7d6c1020cccc80b2/README.md",
+      "sha256": "8c6429a25795cd33d29e3fddf7e7fed0749c3cca85f2989a052a84c94e8fd198"
+    },
+    {
+      "repository": "ModelTC/LightX2V",
+      "revision": "a4b8ce30ac73ae561ec9d1a8bc6629e4aed9d2d8",
+      "path": "scripts/minimax_h3/README_zh.md",
+      "url": "https://github.com/ModelTC/LightX2V/blob/a4b8ce30ac73ae561ec9d1a8bc6629e4aed9d2d8/scripts/minimax_h3/README_zh.md",
+      "sha256": "20a16cd397e8542983597d8b91e52950ae4f253225b669b7cf33d8f8c2d3663b"
+    },
+    {
+      "repository": "thu-ml/SLA",
+      "revision": "7db4039111a9002f900be537c2b2061d26d73744",
+      "path": "README.md",
+      "url": "https://github.com/thu-ml/SLA/blob/7db4039111a9002f900be537c2b2061d26d73744/README.md",
+      "sha256": "1d39e8f3eaa1abc049fb8f20c51bf4786906a8fbace1defc8179fd80c5542228"
+    },
+    {
+      "repository": "thu-ml/SageAttention",
+      "revision": "d1a57a546c3d395b1ffcbeecc66d81db76f3b4b5",
+      "path": "sageattention3_blackwell/README.md",
+      "url": "https://github.com/thu-ml/SageAttention/blob/d1a57a546c3d395b1ffcbeecc66d81db76f3b4b5/sageattention3_blackwell/README.md",
+      "sha256": "0168f557575a11fa44fe40e28bd31ce22391e0220389d8603927a3f3d2740f1c"
+    },
+    {
+      "repository": "vipshop/cache-dit",
+      "revision": "f6b26c77bee4339e0c3859f38db62438f8e6d302",
+      "path": "README.md",
+      "url": "https://github.com/vipshop/cache-dit/blob/f6b26c77bee4339e0c3859f38db62438f8e6d302/README.md",
+      "sha256": "2c6125a37de12c8eb07db7da7e58f8749f8d96708dee3d30ed9518b27f1036bf"
+    },
+    {
+      "repository": "hao-ai-lab/FastVideo",
+      "revision": "e90be598e56138af5c82590f0d72f6fa2dfce400",
+      "path": "README.md",
+      "url": "https://github.com/hao-ai-lab/FastVideo/blob/e90be598e56138af5c82590f0d72f6fa2dfce400/README.md",
+      "sha256": "33ca24be1a91c2e6cef913b799fe5be88e51764ecc6781f9c539b698c0dfc2b5"
+    },
+    {
+      "repository": "NVlabs/rcm",
+      "revision": "ed3cb14dd936f92cdc9f9381af7369991509b41f",
+      "path": "Causal_rCM.md",
+      "url": "https://github.com/NVlabs/rcm/blob/ed3cb14dd936f92cdc9f9381af7369991509b41f/Causal_rCM.md",
+      "sha256": "24bbdcc711e44b1c1d8e326d8d12fca2d90c24ae691a437d376ff3c8e79e000e"
+    },
+    {
+      "repository": "FastVideo/FastVideo-FastH3-8-Step-V2",
+      "revision": "3da2ddfe1954d9cda4c05b643dc0f26007a655c5",
+      "url": "https://huggingface.co/FastVideo/FastVideo-FastH3-8-Step-V2/blob/3da2ddfe1954d9cda4c05b643dc0f26007a655c5/README.md",
+      "sha256": "ede6d0e764fcca0421937927753aeefac005b133f11ec44780ab08ae0caee2f6"
+    },
+    {
+      "repository": "lightx2v/Minimax-h3-Turbo-SLA",
+      "revision": "10ade67cd15ff7a135fa35c2a0673ea96c839247",
+      "url": "https://huggingface.co/lightx2v/Minimax-h3-Turbo-SLA/blob/10ade67cd15ff7a135fa35c2a0673ea96c839247/README.md",
+      "sha256": "b2a26ee10143d9e8977391a519eff28c1d093ebcfbe8e0bf1c9cee6ec338edef"
+    },
+    {
+      "repository": "hao-ai-lab/FastVideo",
+      "revision": "e90be598e56138af5c82590f0d72f6fa2dfce400",
+      "path": "examples/inference/basic/basic_fasth3_8step.py",
+      "url": "https://github.com/hao-ai-lab/FastVideo/blob/e90be598e56138af5c82590f0d72f6fa2dfce400/examples/inference/basic/basic_fasth3_8step.py",
+      "sha256": "07ba20c4c912789a862f44fa12c200eb8d3bb6fda5ecf3683125a97f50b4b128"
+    },
+    {
+      "repository": "ModelTC/LightX2V",
+      "revision": "a4b8ce30ac73ae561ec9d1a8bc6629e4aed9d2d8",
+      "path": "configs/minimax_h3/dmd/minimax_h3_fp8_4step_5090_vae_fp8_sla.json",
+      "url": "https://github.com/ModelTC/LightX2V/blob/a4b8ce30ac73ae561ec9d1a8bc6629e4aed9d2d8/configs/minimax_h3/dmd/minimax_h3_fp8_4step_5090_vae_fp8_sla.json",
+      "sha256": "63df8ff45d5eedd30da08686546beeffa6352c02442a217e53f7928179c3304b"
+    },
+    {
+      "repository": "NVlabs/rcm",
+      "revision": "ed3cb14dd936f92cdc9f9381af7369991509b41f",
+      "path": "rcm/inference/wan2pt1_t2v_causal_infer.py",
+      "url": "https://github.com/NVlabs/rcm/blob/ed3cb14dd936f92cdc9f9381af7369991509b41f/rcm/inference/wan2pt1_t2v_causal_infer.py",
+      "sha256": "5cbfa82e8d8661268787ade1de4d490d15b9f975333975b61c4acae2adec226e"
+    },
+    {
+      "repository": "SWivid/F5-TTS",
+      "revision": "45868abaabd74aabf03cd673d6dd00cc9d9c01ae",
+      "path": "src/f5_tts/model/cfm.py",
+      "url": "https://github.com/SWivid/F5-TTS/blob/45868abaabd74aabf03cd673d6dd00cc9d9c01ae/src/f5_tts/model/cfm.py",
+      "sha256": "88cea5f87b78a39dce292910ccac4b9e59d62171f245e2bf6a17c09426a35208",
+      "bytes": 9760
+    },
+    {
+      "repository": "SWivid/F5-TTS",
+      "revision": "45868abaabd74aabf03cd673d6dd00cc9d9c01ae",
+      "path": "src/f5_tts/model/backbones/dit.py",
+      "url": "https://github.com/SWivid/F5-TTS/blob/45868abaabd74aabf03cd673d6dd00cc9d9c01ae/src/f5_tts/model/backbones/dit.py",
+      "sha256": "838484daeea0ffcb5af9048e994721b02016229ed536afaecd6fe0d6d40ecd21",
+      "bytes": 12942
+    },
+    {
+      "repository": "QwenAudio/CosyVoice",
+      "revision": "074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc",
+      "path": "cosyvoice/flow/flow.py",
+      "url": "https://github.com/QwenAudio/CosyVoice/blob/074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc/cosyvoice/flow/flow.py",
+      "sha256": "bb61c86b4cef2d000f397e7d99ca9096372046d433efbdbdfc29d5d5321e2111",
+      "bytes": 19736
+    },
+    {
+      "repository": "QwenAudio/CosyVoice",
+      "revision": "074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc",
+      "path": "cosyvoice/flow/flow_matching.py",
+      "url": "https://github.com/QwenAudio/CosyVoice/blob/074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc/cosyvoice/flow/flow_matching.py",
+      "sha256": "d871c37176a673bde2a1bcd7c1f1e5083afdde246d05fe5d5203fcc9a23cf98e",
+      "bytes": 10552
+    },
+    {
+      "repository": "QwenAudio/CosyVoice",
+      "revision": "074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc",
+      "path": "examples/libritts/cosyvoice2/conf/cosyvoice2.yaml",
+      "url": "https://github.com/QwenAudio/CosyVoice/blob/074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc/examples/libritts/cosyvoice2/conf/cosyvoice2.yaml",
+      "sha256": "7c95cb6edcd278a01264aa6423c22a41884cdfb66026d24cba79703e6581bea5",
+      "bytes": 7481
+    },
+    {
+      "repository": "triton-lang/triton",
+      "revision": "1b4a2041b0e3eda43ad398636098ef9147e4663c",
+      "path": "python/tutorials/10-block-scaled-matmul.py",
+      "url": "https://github.com/triton-lang/triton/blob/1b4a2041b0e3eda43ad398636098ef9147e4663c/python/tutorials/10-block-scaled-matmul.py",
+      "sha256": "6ddb4e552bf4c55eed93a2ffca6ae16c68dc170de978ec958479cef27188f7b5",
+      "bytes": 33161
+    },
+    {
+      "repository": "SWivid/F5-TTS",
+      "revision": "45868abaabd74aabf03cd673d6dd00cc9d9c01ae",
+      "path": "src/f5_tts/infer/utils_infer.py",
+      "url": "https://github.com/SWivid/F5-TTS/blob/45868abaabd74aabf03cd673d6dd00cc9d9c01ae/src/f5_tts/infer/utils_infer.py",
+      "sha256": "f4cdc874c112762d7f6f8be03c787b385a1c0315f50f47b837040632a01ad54d",
+      "bytes": 21274
+    },
+    {
+      "repository": "2noise/ChatTTS",
+      "revision": "77b89ee281cd479f5b1a787ada330dc975ca1f2a",
+      "path": "ChatTTS/core.py",
+      "url": "https://github.com/2noise/ChatTTS/blob/77b89ee281cd479f5b1a787ada330dc975ca1f2a/ChatTTS/core.py",
+      "sha256": "c6a4a900bad17d51b458c85187e3d1f881f7ee712e4071c98bcded6cf440b43d",
+      "bytes": 25060
+    },
+    {
+      "repository": "QwenAudio/CosyVoice",
+      "revision": "074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc",
+      "path": "cosyvoice/flow/decoder.py",
+      "url": "https://github.com/QwenAudio/CosyVoice/blob/074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc/cosyvoice/flow/decoder.py",
+      "sha256": "ef5eceb9db7f63ddda1d5bca6bfa6b28b8ea11656c4b1f9c109d28f656cbbf29",
+      "bytes": 19866
+    },
+    {
+      "repository": "Junchao-cs/SolarWM",
+      "revision": "c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb",
+      "path": "src/solarwm/backends/minimax_h3/torch_flow.py",
+      "url": "https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/torch_flow.py",
+      "sha256": "ffce163c7bdabe1b2c05f6c386b0cabd80e11d02f7e068edfcc864ed4a24c2af",
+      "bytes": 4647
+    },
+    {
+      "repository": "Junchao-cs/SolarWM",
+      "revision": "c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb",
+      "path": "src/solarwm/backends/minimax_h3/sgf_rollout.py",
+      "url": "https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/sgf_rollout.py",
+      "sha256": "93b3405d1faa82ae47901400e26aad7e96f4c02854ddc2a2b979388be13be0db",
+      "bytes": 8094
+    },
+    {
+      "repository": "Junchao-cs/SolarWM",
+      "revision": "c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb",
+      "path": "src/solarwm/backends/minimax_h3/sgf_attention.py",
+      "url": "https://github.com/Junchao-cs/SolarWM/blob/c517b9d7292ab5e3a6e95a7bd2d65ef10c5326bb/src/solarwm/backends/minimax_h3/sgf_attention.py",
+      "sha256": "3eacc2effd9cf2621337775d90735585633b11d09c2f9aa3d7c7e24a7f94f6d2",
+      "bytes": 8231
+    },
+    {
+      "repository": "NVIDIA/Model-Optimizer",
+      "revision": "234776625aac1ecfd5e08ad8e371a7714302af32",
+      "path": "examples/diffusers/README.md",
+      "url": "https://github.com/NVIDIA/Model-Optimizer/blob/234776625aac1ecfd5e08ad8e371a7714302af32/examples/diffusers/README.md",
+      "sha256": "e885e4cc24159d5670ad1362355372f5b50a27792c50a8be84989a516c04d193",
+      "bytes": 30243
+    },
+    {
+      "repository": "pytorch/ao",
+      "revision": "9e9dca96d42cf05985aeaf0afe5546d9d002b337",
+      "path": "docs/source/workflows/inference.md",
+      "url": "https://github.com/pytorch/ao/blob/9e9dca96d42cf05985aeaf0afe5546d9d002b337/docs/source/workflows/inference.md",
+      "sha256": "22535a2ab3187a2677a3e621bbf53157159b65023fa21a396442b27176098d9b",
+      "bytes": 14686
+    },
+    {
+      "repository": "feifeibear/long-context-attention",
+      "revision": "a5f8f600d435ced180a97c91c68e87ff3cfb8f89",
+      "path": "README.md",
+      "url": "https://github.com/feifeibear/long-context-attention/blob/a5f8f600d435ced180a97c91c68e87ff3cfb8f89/README.md",
+      "sha256": "0bb0989a5896c58a1ca74c17fd5822befff6b062598385c64e1b3d820a03164d",
+      "bytes": 12786
+    },
+    {
+      "repository": "xdit-project/xDiT",
+      "revision": "bf7a205658c55903a3d8c4146cafc2253a4f1757",
+      "path": "README.md",
+      "url": "https://github.com/xdit-project/xDiT/blob/bf7a205658c55903a3d8c4146cafc2253a4f1757/README.md",
+      "sha256": "175f3f64932582f72aee2d9ee402b92019dc95b81574d7d65ea8cbbc95d5340b",
+      "bytes": 34979
+    },
+    {
+      "repository": "junchaoh-cs/SolarWM-H3-33B",
+      "revision": "main",
+      "kind": "public model card and directory listing",
+      "url": "https://huggingface.co/junchaoh-cs/SolarWM-H3-33B",
+      "directory_url": "https://huggingface.co/junchaoh-cs/SolarWM-H3-33B/tree/main/SolarWM-h3-33B-sgf-stage2-158f-fix",
+      "scope": "Lists Stage2 step 3900 EMA fix. Weight bytes were not downloaded or compared in this review; file access is subject to repository conditions."
+    },
+    {
+      "repository": "guandeh17/Self-Forcing",
+      "revision": "7b27679bb0a30603a9a6520030474b6ef62d86dd",
+      "path": "pipeline/causal_inference.py",
+      "url": "https://github.com/guandeh17/Self-Forcing/blob/7b27679bb0a30603a9a6520030474b6ef62d86dd/pipeline/causal_inference.py",
+      "sha256": "a06f5653f266dce154116f85d33cee3f2923e8531fbb15b4702b3751abdaab69",
+      "bytes": 14554
+    },
+    {
+      "repository": "guandeh17/Self-Forcing",
+      "revision": "7b27679bb0a30603a9a6520030474b6ef62d86dd",
+      "path": "wan/modules/causal_model.py",
+      "url": "https://github.com/guandeh17/Self-Forcing/blob/7b27679bb0a30603a9a6520030474b6ef62d86dd/wan/modules/causal_model.py",
+      "sha256": "ae2644311ad212977260549e4b6034618647b82e2ee47a244bdaac50d8ff0778",
+      "bytes": 42167
+    },
+    {
+      "repository": "huggingface/diffusers",
+      "revision": "v0.35.1",
+      "path": "src/diffusers/models/autoencoders/autoencoder_kl_wan.py",
+      "url": "https://github.com/huggingface/diffusers/blob/v0.35.1/src/diffusers/models/autoencoders/autoencoder_kl_wan.py",
+      "sha256": "2b4ab9e71a221ecc538d196b8dd3bf312972cc2affee5cc3ae1c09b24ffec571",
+      "bytes": 52618
+    },
+    {
+      "repository": "madebyollin/taehv",
+      "revision": "011dfc2112197741c540e0bdd5b7b67bcc930771",
+      "path": "README.md",
+      "url": "https://github.com/madebyollin/taehv/blob/011dfc2112197741c540e0bdd5b7b67bcc930771/README.md",
+      "sha256": "a1c7afefb557bd09bfd4795e18da2ee3d3ff1c9fb6f3d87e42f6988b9c7718f3",
+      "bytes": 10016
+    },
+    {
+      "repository": "arXiv/2412.07772",
+      "revision": "v4",
+      "url": "https://arxiv.org/html/2412.07772v4"
+    },
+    {
+      "repository": "arXiv/2506.08009",
+      "revision": "v2",
+      "url": "https://arxiv.org/html/2506.08009v2"
+    },
+    {
+      "repository": "arXiv/2502.04507",
+      "revision": "v1",
+      "url": "https://arxiv.org/html/2502.04507v1"
+    },
+    {
+      "repository": "arXiv/2502.01776",
+      "revision": "v1",
+      "url": "https://arxiv.org/html/2502.01776v1"
+    },
+    {
+      "repository": "svg-project/Sparse-VideoGen",
+      "revision": "main",
+      "url": "https://github.com/svg-project/Sparse-VideoGen",
+      "note": "entry link only; mechanism cites v1 paper"
+    }
+  ],
+  "scope": "Public URLs and fixed-source fingerprints; source review is not execution evidence"
+}
