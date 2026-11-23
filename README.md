@@ -1,5 +1,9 @@
 # DiT 推理加速：原理与工程实践
 
+> **English TL;DR** *(prose in Chinese; all code, JSON receipts, stdlib verifiers & pinned refs are universal)*:  
+> A free 63-page engineering handbook on **Video DiT & Continuous AR-Chunk Inference Acceleration** ([Wan2.2](https://github.com/Wan-Video/Wan2.2) & [SolarWM](https://github.com/Junchao-cs/SolarWM) pinned-commit source walkthroughs, Hopper SM90 vs Blackwell SM100/SM120 RTX 5090 migration checklist, reproducible CUDA microbenchmarks with honest negative results) + a 7-page standalone deep-dive on **vLLM-Omni & SGLang-Omni**.  
+> **Download**: [Release v1.0-r9 ZIP + SHA256](https://github.com/snowyLumiere/DiT-Inference-Acceleration/releases/tag/v1.0-r9) · [Main PDF (63p)](DiT_Inference_Acceleration_Whitepaper_v1.0.pdf) · [Omni Companion PDF (7p)](Omni_Inference_Frameworks.pdf) · [Offline Verify (`python3 -B examples/review_public_evidence.py`)](examples/README.md)
+
 > **副定位**：源码解析与合成实验 · **作者**：[SnowyLumiere](https://github.com/snowyLumiere) · **版本**：`v1.0`（读者包 `r9` · 2026-11-20）
 
 [![Release v1.0-r9](https://img.shields.io/badge/Release-v1.0--r9-2563eb?style=flat-square)](https://github.com/snowyLumiere/DiT-Inference-Acceleration/releases/tag/v1.0-r9)
