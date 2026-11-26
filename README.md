@@ -40,6 +40,54 @@
 
 ---
 
+## 核心实测与内页速览（无需下载即可先看）
+
+| 主题 | 关键工程结论 / 反直觉实测 | 对应章节 |
+|---|---|---|
+| **生成范式与源码主线** | 区分全序列双向扩散（**Wan2.2** 双 expert）与连续因果 AR-chunk（**SolarWM / Self Forcing**）；AR-chunk 单次前向有数千 query token，线性层仍是 GEMM 而非单 token LLM Decode 的 GEMV | [第 1 章](docs/manuscript/01-paradigms.md) · [第 12 章](docs/manuscript/12-ar-state.md) |
+| **Hopper → Blackwell 硬件迁移** | **SM90 / B200 (SM100)**：256 KiB 统一池 / 228 KiB 可配置 SMEM（单 Block 227 KiB）；**RTX 5090 (SM120)**：128 KiB 统一池 / 100 KiB 可配置 SMEM（单 Block 99 KiB）、warp 级 `mma.sync`（无 SM100 TMEM）、消费卡无官方跨卡 P2P | [第 10 章](docs/manuscript/10-gemm-and-quantization.md) · [第 14 章](docs/manuscript/14-parallelism.md) |
+| **反直觉负结果（全数保留）** | ① 722.5 MB H2D 搬运：持久锁页池在 5090 / SM90 分别快 **5.46× / 5.98×**（~55 GB/s），但热路径临时 `pin_memory()` 有效带宽**腰斩至 ~28 GB/s**；② 50 层 AR KV Gather：连续 `torch.cat` **`6.63 ms`** vs Python 侧 Paged BF16 `21.50 ms` / Paged FP8 **`64.21 ms`** | [第 12 章](docs/manuscript/12-ar-state.md) · [第 13 章](docs/manuscript/13-residency-and-transfer.md) |
+| **Omni 多阶段框架源码拆解** | 独立 7 页配套按固定 commit 剖析 **vLLM-Omni**（`async_chunk`、NIXL / Mooncake / SHM 传输所有权与取消）与 **SGLang-Omni**（`CudaIpcRelay` 两端拷贝、`max_total_backlog_bytes` 背压） | [Omni 配套](docs/omni/inference-frameworks.md) · [Omni PDF](Omni_Inference_Frameworks.pdf) |
+
+<table>
+  <tr>
+    <td width="50%" valign="top" align="center">
+      <a href=".github/assets/preview-paradigms.png">
+        <img src=".github/assets/preview-paradigms.png" width="100%" alt="主册 P3：三种生成方式与双向 vs 连续 AR-chunk 范式对比" />
+      </a>
+      <br />
+      <sub><b>主册 P3</b> · 三种生成范式地图（<a href="docs/manuscript/01-paradigms.md">第 1 章正文</a>）</sub>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <a href=".github/assets/preview-sm120-checklist.png">
+        <img src=".github/assets/preview-sm120-checklist.png" width="100%" alt="主册 P32：Hopper SM90 vs Blackwell SM100 vs RTX 5090 SM120 硬件迁移核对表" />
+      </a>
+      <br />
+      <sub><b>主册 P32</b> · SM90 / SM100 / RTX 5090 (SM120) 迁移核对表（<a href="docs/manuscript/10-gemm-and-quantization.md">第 10 章正文</a>）</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top" align="center">
+      <a href=".github/assets/preview-ar-kv-gather.png">
+        <img src=".github/assets/preview-ar-kv-gather.png" width="100%" alt="主册 P44：50 层 AR KV Gather 耗时对比（6.63 ms vs 21.50 ms vs 64.21 ms）" />
+      </a>
+      <br />
+      <sub><b>主册 P44</b> · 50 层 AR KV Gather 负结果与选型建议（<a href="docs/manuscript/12-ar-state.md">第 12 章正文</a>）</sub>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <a href=".github/assets/preview-omni-arch.png">
+        <img src=".github/assets/preview-omni-arch.png" width="100%" alt="Omni 配套 P3：Thinker / Talker / Code2Wav 阶段图与 async_chunk 执行追踪" />
+      </a>
+      <br />
+      <sub><b>Omni 配套 P3</b> · 多阶段调度与 <code>async_chunk</code> 源码追踪（<a href="docs/omni/inference-frameworks.md">Omni 配套正文</a>）</sub>
+    </td>
+  </tr>
+</table>
+
+> 💡 **点击任意内页图可查看高清大图**；如果这本手册对你的 DiT / AR 视频推理或 RTX 5090 调优有帮助，欢迎点一颗 **Star** 方便后续追踪 `v1.1` 真实模型端到端案例更新（可在 [Discussions #2](https://github.com/snowyLumiere/DiT-Inference-Acceleration/discussions/2) 投票决定优先案例）。
+
+---
+
 ## 快速导航
 
 [从这里开始](READ_FIRST.md) · [主册 PDF](DiT_Inference_Acceleration_Whitepaper_v1.0.pdf) · [离线 HTML](build_whitepaper.html) · [Omni 配套 PDF](Omni_Inference_Frameworks.pdf) · [配套使用说明](RELEASE_DIT_INFRA.md) · [代码入口](examples/README.md) · [勘误与讨论](https://github.com/snowyLumiere/DiT-Inference-Acceleration/discussions)
